@@ -1,0 +1,4 @@
+dfx canister call rust_video create_video '(record {video_id = ""; name = "video1"; description = "mountain dog"; keywords = vec {"scars"; "toast"}; chunk_count=1})'
+dfx canister call rust_video get_video_info '("video1")'
+dfx canister call rust_video put_chunk '(blob "\CA\FF\EE", 0, "video1")'
+dfx canister call rust_video get_chunk '( 0, "video1")'
