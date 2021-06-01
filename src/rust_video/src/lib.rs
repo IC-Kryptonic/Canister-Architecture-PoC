@@ -10,7 +10,7 @@ type ChunkStore = HashMap<VideoId, VideoChunks>;
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
 struct VideoInfo{
-    pub videoId: VideoId,
+    pub video_id: VideoId,
     pub name: String,
     pub description: String,
     pub keywords: Vec<String>,
@@ -24,4 +24,11 @@ fn get_video_info(id: VideoId) -> VideoInfo {
         .get(&id)
         .cloned()
         .unwrap_or_else(|| VideoInfo::default())
+}
+
+#[update]
+fn update_video_info(video: VideoInfo) {
+    let video_store = storage::get_mut::<VideoStore>();
+
+    video_store.insert(video.video_id.clone(), video);
 }
