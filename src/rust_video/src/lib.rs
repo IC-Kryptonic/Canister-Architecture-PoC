@@ -5,8 +5,8 @@ use std::collections::HashMap;
 
 type VideoInfoStore = HashMap<VideoId, VideoInfo>;
 type VideoId = String;
-type VideoChunk = u8;
-type VideoChunks = Vec<u8>;
+type VideoChunk = Vec<u8>;
+type VideoChunks = Vec<VideoChunk>;
 type ChunkStore = HashMap<VideoId, VideoChunks>; 
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
@@ -15,6 +15,7 @@ struct VideoInfo{
     pub name: String,
     pub description: String,
     pub keywords: Vec<String>,
+    pub chunk_count: usize,
 }
 
 #[query]
@@ -40,11 +41,24 @@ fn create_video(mut video: VideoInfo) {
     video.video_id = id.clone();
     
     let info_store = storage::get_mut::<VideoInfoStore>();
+    let chunk_store = storage::get_mut::<ChunkStore>();
 
+    chunk_store.insert(id.clone(), vec![Vec::new(); video.chunk_count]);
     info_store.insert(id, video);
 }
+
+#[update]
+fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
+    let chunk_store = storage::get_mut::<ChunkStore>();
+
+    let video_chunks = chunk_store.get_mut(&video_id).unwrap();
+
+    video_chunks.insert(chunk_num, chunk);
+}
+
 
 //TODO make unique
 fn generate_video_id(info: &VideoInfo) -> VideoId{
     info.name.clone()
 }
+
