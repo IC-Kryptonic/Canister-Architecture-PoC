@@ -56,6 +56,17 @@ fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
     video_chunks.insert(chunk_num, chunk);
 }
 
+#[update]
+fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
+    let chunk_store = storage::get::<ChunkStore>();
+
+    let video_chunks = chunk_store.get(&video_id).unwrap();
+
+    video_chunks
+        .get(chunk_num)
+        .cloned()
+        .unwrap_or_else(|| VideoChunk::default())
+}
 
 //TODO make unique
 fn generate_video_id(info: &VideoInfo) -> VideoId{
