@@ -1,0 +1,19 @@
+type Video_Id = text;
+
+type Video_Info = record {
+    "video_id": Video_Id;
+    "name": text;
+    "description": text;
+    "keywords": vec text;
+    "chunk_count": nat64;
+};
+
+type Video_Chunk = blob;
+
+service : {
+    "get_video_info": (Video_Id) -> (Video_Info) query;
+    "update_video_info": (Video_Info) -> ();
+    "create_video": (Video_Info) -> ();
+    "put_chunk": (Video_Chunk, nat64, Video_Id) -> ();
+    "get_chunk": (nat64, Video_Id) -> (Video_Chunk) query;
+}
