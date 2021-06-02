@@ -18,6 +18,7 @@ class TestVideoInfo extends React.Component {
       feed: null,
       upload_name: 'Upload Name',
       file: null,
+      video: '',
     };
   }
 
@@ -30,9 +31,42 @@ class TestVideoInfo extends React.Component {
     this.setState({ feed: feed});
   }
 
+  async getVideoChunks(videoInfo) {
+    const { video_id, chunk_count } = videoInfo;
+    const chunkBuffers = [];
+    const chunksAsPromises = [];
+    for (let i = 0; i <= Number(chunk_count.toString()); i++) {
+      chunksAsPromises.push(video_backend.get_chunk(i, video_id));
+    }
+    const nestedBytes = (await Promise.all(chunksAsPromises))
+      .map( (val) => {
+          if(val === undefined) {
+              return null;
+          } else {
+              return val;
+          }
+      })
+      .filter((v) => v !== null);
+    nestedBytes.forEach((bytes) => {
+      const bytesAsBuffer = Buffer.from(new Uint8Array(bytes));
+      chunkBuffers.push(bytesAsBuffer);
+    });
+    const videoBlob = new Blob([Buffer.concat(chunkBuffers)], {
+      type: "video/mp4",
+    });
+    const vidURL = URL.createObjectURL(videoBlob);
+    return vidURL;
+  }
+
   async doSearch() {
-    const video = await video_backend.get_video_info(this.state.id);
-    this.setState({ ...this.state, message: video.name + ": " +  video.description});
+    const videoInfo = await video_backend.get_video_info(this.state.id);
+    this.setState({ ...this.state, message: videoInfo.name + ": " +  videoInfo.description});
+
+    const video_file = await this.getVideoChunks(videoInfo);
+
+    let video_tag = <video controls width="320" height="240" src={video_file} type="video/mp4"/>;
+  
+    this.setState({ ...this.state, video: video_tag});
   }
 
 
@@ -101,7 +135,10 @@ class TestVideoInfo extends React.Component {
           <input id="video_id" value={this.state.id} onChange={ev => this.onIdChange(ev)}></input>
           <button onClick={() => this.doSearch()}>Get Video Info!</button>
         </div>
-        <div>Video name is: "<span>{this.state.message}</span>"</div>
+        <div>
+          {this.state.message}
+          {this.state.video}
+        </div>
         <div>
           <input id="upload_name" value={this.state.upload_name} onChange={ev => this.onNameChange(ev)}></input>
           <input id="video-upload" type="file" accept=".mp4" onChange={ev => this.onFileChange(ev)}/>
