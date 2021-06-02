@@ -7,6 +7,8 @@ const video_backend = Actor.createActor(video_idl, { agent, canisterId: video_id
 import * as React from 'react';
 import { render } from 'react-dom';
 
+const MAX_CHUNK_SIZE = 1024 * 500; // 500kb
+
 class TestVideoInfo extends React.Component {
   constructor(props) {
     super(props);
@@ -33,15 +35,49 @@ class TestVideoInfo extends React.Component {
     this.setState({ ...this.state, message: video.name + ": " +  video.description});
   }
 
+
+  async processAndUploadChunk(
+    videoBuffer,
+    byteStart,
+    videoSize,
+    videoId,
+    chunk
+  ) {
+    const videoSlice = videoBuffer.slice(
+      byteStart,
+      Math.min(videoSize, byteStart + MAX_CHUNK_SIZE)
+    );
+    const data = Array.from(new Uint8Array(videoSlice));
+    return video_backend.put_chunk(data, chunk, videoId);
+  }
+
   async doUpload() {
-      //const videoBuffer = (await this.state.file?.arrayBuffer()) || new ArrayBuffer(0);
-      await video_backend.create_video({
+    const chunkCount = Number(Math.ceil(this.state.file.size / MAX_CHUNK_SIZE));
+    
+    const id = await video_backend.create_video({
           "name": this.state.upload_name,
           "description": '',
           "video_id": '',
-          "chunk_count": 1,
+          "chunk_count": chunkCount,
           "keywords": [],
-      });
+    });
+
+    const videoBuffer = (await this.state.file?.arrayBuffer()) || new ArrayBuffer(0);
+    const putChunkPromises = [];
+
+    let chunk = 0;
+    for (
+      let byteStart = 0;
+      byteStart < this.state.file.size;
+      byteStart += MAX_CHUNK_SIZE, chunk++
+    ){
+      putChunkPromises.push(
+         this.processAndUploadChunk(videoBuffer, byteStart, this.state.file.size, id, chunk)
+      );
+    }
+
+    await Promise.all(putChunkPromises);
+    this.componentDidMount();
   }
 
 
@@ -68,6 +104,7 @@ class TestVideoInfo extends React.Component {
         <div>Video name is: "<span>{this.state.message}</span>"</div>
         <div>
           <input id="upload_name" value={this.state.upload_name} onChange={ev => this.onNameChange(ev)}></input>
+          <input id="video-upload" type="file" accept=".mp4" onChange={ev => this.onFileChange(ev)}/>
           <button onClick={() => this.doUpload()}>Upload</button>
         </div>
       </div>
