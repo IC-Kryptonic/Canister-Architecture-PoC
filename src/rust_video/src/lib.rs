@@ -37,7 +37,7 @@ fn update_video_info(video: VideoInfo) {
 }
 
 #[update]
-fn create_video(mut video: VideoInfo) {
+fn create_video(mut video: VideoInfo) -> VideoId{
     let id = generate_video_id(&video);
     video.video_id = id.clone();
     
@@ -45,7 +45,8 @@ fn create_video(mut video: VideoInfo) {
     let chunk_store = storage::get_mut::<ChunkStore>();
 
     chunk_store.insert(id.clone(), vec![Vec::new(); video.chunk_count]);
-    info_store.insert(id, video);
+    info_store.insert(id.clone(), video);
+    return id;
 }
 
 #[update]
