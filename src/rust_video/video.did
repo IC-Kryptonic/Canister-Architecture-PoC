@@ -9,6 +9,7 @@ type Video_Info = record {
 };
 
 type Video_Chunk = blob;
+type Feed = vec Video_Info;
 
 service : {
     "get_video_info": (Video_Id) -> (Video_Info) query;
@@ -16,4 +17,5 @@ service : {
     "create_video": (Video_Info) -> ();
     "put_chunk": (Video_Chunk, nat64, Video_Id) -> ();
     "get_chunk": (nat64, Video_Id) -> (Video_Chunk) query;
+    "get_default_feed": (nat64) -> (Feed) query; 
 }
