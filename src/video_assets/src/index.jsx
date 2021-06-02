@@ -14,6 +14,8 @@ class TestVideoInfo extends React.Component {
       id: 'Video Id',
       message: '',
       feed: null,
+      upload_name: 'Upload Name',
+      file: null,
     };
   }
 
@@ -31,8 +33,28 @@ class TestVideoInfo extends React.Component {
     this.setState({ ...this.state, message: video.name + ": " +  video.description});
   }
 
+  async doUpload() {
+      //const videoBuffer = (await this.state.file?.arrayBuffer()) || new ArrayBuffer(0);
+      await video_backend.create_video({
+          "name": this.state.upload_name,
+          "description": '',
+          "video_id": '',
+          "chunk_count": 1,
+          "keywords": [],
+      });
+  }
+
+
   onIdChange(ev) {
     this.setState({ ...this.state, id: ev.target.value });
+  }
+
+  onNameChange(ev) {
+    this.setState({ ...this.state, upload_name: ev.target.value });
+  }
+
+  onFileChange(ev) {
+    this.setState({ ...this.state, file: ev.target.files[0] });
   }
 
   render() {
@@ -43,7 +65,11 @@ class TestVideoInfo extends React.Component {
           <input id="video_id" value={this.state.id} onChange={ev => this.onIdChange(ev)}></input>
           <button onClick={() => this.doSearch()}>Get Video Info!</button>
         </div>
-        <div>Greeting is: "<span>{this.state.message}</span>"</div>
+        <div>Video name is: "<span>{this.state.message}</span>"</div>
+        <div>
+          <input id="upload_name" value={this.state.upload_name} onChange={ev => this.onNameChange(ev)}></input>
+          <button onClick={() => this.doUpload()}>Upload</button>
+        </div>
       </div>
     );
   }
