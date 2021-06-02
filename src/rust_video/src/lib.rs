@@ -7,7 +7,8 @@ type VideoInfoStore = HashMap<VideoId, VideoInfo>;
 type VideoId = String;
 type VideoChunk = Vec<u8>;
 type VideoChunks = Vec<VideoChunk>;
-type ChunkStore = HashMap<VideoId, VideoChunks>; 
+type ChunkStore = HashMap<VideoId, VideoChunks>;
+type Feed = Vec<VideoInfo>;
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
 struct VideoInfo{
@@ -36,7 +37,7 @@ fn update_video_info(video: VideoInfo) {
 }
 
 #[update]
-fn create_video(mut video: VideoInfo) {
+fn create_video(mut video: VideoInfo) -> VideoId{
     let id = generate_video_id(&video);
     video.video_id = id.clone();
     
@@ -44,7 +45,8 @@ fn create_video(mut video: VideoInfo) {
     let chunk_store = storage::get_mut::<ChunkStore>();
 
     chunk_store.insert(id.clone(), vec![Vec::new(); video.chunk_count]);
-    info_store.insert(id, video);
+    info_store.insert(id.clone(), video);
+    return id;
 }
 
 #[update]
@@ -56,7 +58,7 @@ fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
     video_chunks.insert(chunk_num, chunk);
 }
 
-#[update]
+#[query]
 fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
     let chunk_store = storage::get::<ChunkStore>();
 
@@ -67,6 +69,18 @@ fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
         .cloned()
         .unwrap_or_else(|| VideoChunk::default())
 }
+
+#[query]
+fn get_default_feed(num: usize) -> Feed{
+    let video_store = storage::get::<VideoInfoStore>();
+
+    video_store
+        .values()
+        .cloned()
+        .take(num)
+        .collect()
+}
+
 
 //TODO make unique
 fn generate_video_id(info: &VideoInfo) -> VideoId{
