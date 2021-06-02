@@ -11,9 +11,19 @@ class TestVideoInfo extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: 'Name',
+      id: 'Video Id',
       message: '',
+      feed: null,
     };
+  }
+
+  async componentDidMount() {
+    let res = await video_backend
+          .get_default_feed(10);
+    let feed = res.map((video) =>
+      <li>{video.name}</li>
+    );
+    this.setState({ feed: feed});
   }
 
   async doSearch() {
@@ -28,6 +38,7 @@ class TestVideoInfo extends React.Component {
   render() {
     return (
       <div style={{ "font-size": "30px" }}>
+        <ul>{this.state.feed}</ul>
         <div style={{ "margin": "30px" }}>
           <input id="video_id" value={this.state.id} onChange={ev => this.onIdChange(ev)}></input>
           <button onClick={() => this.doSearch()}>Get Video Info!</button>
