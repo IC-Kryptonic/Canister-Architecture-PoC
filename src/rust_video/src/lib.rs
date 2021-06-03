@@ -38,12 +38,18 @@ fn update_video_info(video: VideoInfo) {
 
 #[update]
 fn create_video(mut video: VideoInfo) -> VideoId{
-    let id = generate_video_id(&video);
-    video.video_id = id.clone();
-    
     let info_store = storage::get_mut::<VideoInfoStore>();
     let chunk_store = storage::get_mut::<ChunkStore>();
+    
+    let id = loop{
+        let generated = generate_video_id(&video);
+        if !info_store.contains_key(&generated){
+            break generated;
+        }
+    };
+        
 
+    video.video_id = id.clone();
     chunk_store.insert(id.clone(), vec![Vec::new(); video.chunk_count]);
     info_store.insert(id.clone(), video);
     return id;
@@ -82,8 +88,9 @@ fn get_default_feed(num: usize) -> Feed{
 }
 
 
-//TODO make unique
 fn generate_video_id(info: &VideoInfo) -> VideoId{
-    info.name.clone()
-}
+    let time = ic_cdk::api::time();
+    let name = info.name.clone();
 
+    return format!("{}{}", name, time);
+}
