@@ -3,15 +3,15 @@ use ic_cdk::storage;
 use ic_cdk_macros::*;
 use std::collections::HashMap;
 
-type VideoInfoStore = HashMap<VideoId, VideoInfo>;
-type VideoId = String;
-type VideoChunk = Vec<u8>;
-type VideoChunks = Vec<VideoChunk>;
-type ChunkStore = HashMap<VideoId, VideoChunks>;
-type Feed = Vec<VideoInfo>;
+pub type VideoInfoStore = HashMap<VideoId, VideoInfo>;
+pub type VideoId = String;
+pub type VideoChunk = Vec<u8>;
+pub type VideoChunks = Vec<VideoChunk>;
+pub type ChunkStore = HashMap<VideoId, VideoChunks>;
+pub type Feed = Vec<VideoInfo>;
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
-struct VideoInfo{
+pub struct VideoInfo{
     pub video_id: VideoId,
     pub name: String,
     pub description: String,
@@ -19,8 +19,8 @@ struct VideoInfo{
     pub chunk_count: usize,
 }
 
-#[query]
-fn get_video_info(id: VideoId) -> VideoInfo {
+#[query(name = "getVideoInfo")]
+pub fn get_video_info(id: VideoId) -> VideoInfo {
     let video_store = storage::get::<VideoInfoStore>();
 
     video_store
@@ -29,28 +29,34 @@ fn get_video_info(id: VideoId) -> VideoInfo {
         .unwrap_or_else(|| VideoInfo::default())
 }
 
-#[update]
-fn update_video_info(video: VideoInfo) {
+#[update(name = "updateVideoInfo")]
+pub fn update_video_info(video: VideoInfo) {
     let video_store = storage::get_mut::<VideoInfoStore>();
 
     video_store.insert(video.video_id.clone(), video);
 }
 
-#[update]
-fn create_video(mut video: VideoInfo) -> VideoId{
-    let id = generate_video_id(&video);
-    video.video_id = id.clone();
-    
+#[update(name = "createVideo")]
+pub fn create_video(mut video: VideoInfo) -> VideoId{
     let info_store = storage::get_mut::<VideoInfoStore>();
     let chunk_store = storage::get_mut::<ChunkStore>();
+    
+    let id = loop{
+        let generated = generate_video_id(&video);
+        if !info_store.contains_key(&generated){
+            break generated;
+        }
+    };
+        
 
+    video.video_id = id.clone();
     chunk_store.insert(id.clone(), vec![Vec::new(); video.chunk_count]);
     info_store.insert(id.clone(), video);
     return id;
 }
 
-#[update]
-fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
+#[update(name = "putChunk")]
+pub fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
     let chunk_store = storage::get_mut::<ChunkStore>();
 
     let video_chunks = chunk_store.get_mut(&video_id).unwrap();
@@ -58,8 +64,8 @@ fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
     video_chunks.insert(chunk_num, chunk);
 }
 
-#[query]
-fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
+#[query(name = "getChunk")]
+pub fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
     let chunk_store = storage::get::<ChunkStore>();
 
     let video_chunks = chunk_store.get(&video_id).unwrap();
@@ -70,8 +76,8 @@ fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
         .unwrap_or_else(|| VideoChunk::default())
 }
 
-#[query]
-fn get_default_feed(num: usize) -> Feed{
+#[query(name = "getDefaultFeed")]
+pub fn get_default_feed(num: usize) -> Feed{
     let video_store = storage::get::<VideoInfoStore>();
 
     video_store
@@ -81,9 +87,43 @@ fn get_default_feed(num: usize) -> Feed{
         .collect()
 }
 
+#[query(name = "searchVideo")]
+pub fn search_video(to_search: String) -> Option<&'static VideoInfo> {
+    let to_search = to_search.to_lowercase();
+    let video_store = storage::get::<VideoInfoStore>();
 
-//TODO make unique
-fn generate_video_id(info: &VideoInfo) -> VideoId{
-    info.name.clone()
+    for (_, v) in video_store.iter() {
+        if v.name.to_lowercase().contains(&to_search) || v.description.to_lowercase().contains(&to_search) {
+            return Some(v);
+        }
+
+        for word in v.keywords.iter() {
+            if word.to_lowercase() == to_search {
+                return Some(v);
+            }
+        }
+    }
+
+    None
 }
 
+#[update(name = "reset")]
+pub fn reset(){
+    storage::get_mut::<VideoInfoStore>().clear();
+    storage::get_mut::<ChunkStore>().clear();
+}
+
+
+
+fn generate_video_id(info: &VideoInfo) -> VideoId{
+    let time = if cfg!(target_arch = "wasm32"){
+        ic_cdk::api::time() as u64
+    } else {
+        std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() //for testing when not in canister 
+    };
+
+
+    let name = info.name.clone();
+
+    return format!("{}{}", name, time);
+}
