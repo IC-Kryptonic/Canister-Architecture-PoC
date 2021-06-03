@@ -1,8 +1,8 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
-import { idlFactory as video_idl, canisterId as video_id } from 'dfx-generated/rust_video';
+import { idlFactory as video_idl, canisterId as backendVideoId } from 'dfx-generated/rust_video';
 
 const agent = new HttpAgent();
-const video_backend = Actor.createActor(video_idl, { agent, canisterId: video_id });
+const videoBackend = Actor.createActor(video_idl, { agent, canisterId: backendVideoId });
 
 import * as React from 'react';
 import { render } from 'react-dom';
@@ -13,7 +13,7 @@ class TestVideoInfo extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: 'Video Id',
+      search: 'search',
       message: '',
       feed: null,
       upload_name: 'Upload Name',
@@ -23,8 +23,8 @@ class TestVideoInfo extends React.Component {
   }
 
   async componentDidMount() {
-    let res = await video_backend
-          .get_default_feed(10);
+    let res = await videoBackend
+          .getDefaultFeed(10);
     let feed = res.map((video) =>
       <li>{video.name}</li>
     );
@@ -36,7 +36,7 @@ class TestVideoInfo extends React.Component {
     const chunkBuffers = [];
     const chunksAsPromises = [];
     for (let i = 0; i <= Number(chunk_count.toString()); i++) {
-      chunksAsPromises.push(video_backend.get_chunk(i, video_id));
+      chunksAsPromises.push(videoBackend.getChunk(i, video_id));
     }
     const nestedBytes = (await Promise.all(chunksAsPromises))
       .map( (val) => {
@@ -59,7 +59,7 @@ class TestVideoInfo extends React.Component {
   }
 
   async doSearch() {
-    const videoInfo = await video_backend.get_video_info(this.state.id);
+    const videoInfo = (await videoBackend.searchVideo(this.state.search))[0];
     this.setState({ ...this.state, message: videoInfo.name + ": " +  videoInfo.description});
 
     const video_file = await this.getVideoChunks(videoInfo);
@@ -82,13 +82,13 @@ class TestVideoInfo extends React.Component {
       Math.min(videoSize, byteStart + MAX_CHUNK_SIZE)
     );
     const data = Array.from(new Uint8Array(videoSlice));
-    return video_backend.put_chunk(data, chunk, videoId);
+    return videoBackend.putChunk(data, chunk, videoId);
   }
 
   async doUpload() {
     const chunkCount = Number(Math.ceil(this.state.file.size / MAX_CHUNK_SIZE));
     
-    const id = await video_backend.create_video({
+    const id = await videoBackend.createVideo({
           "name": this.state.upload_name,
           "description": '',
           "video_id": '',
@@ -115,8 +115,8 @@ class TestVideoInfo extends React.Component {
   }
 
 
-  onIdChange(ev) {
-    this.setState({ ...this.state, id: ev.target.value });
+  onSearchChange(ev) {
+    this.setState({ ...this.state, search: ev.target.value });
   }
 
   onNameChange(ev) {
@@ -132,7 +132,7 @@ class TestVideoInfo extends React.Component {
       <div style={{ "font-size": "30px" }}>
         <ul>{this.state.feed}</ul>
         <div style={{ "margin": "30px" }}>
-          <input id="video_id" value={this.state.id} onChange={ev => this.onIdChange(ev)}></input>
+          <input id="search" value={this.state.search} onChange={ev => this.onSearchChange(ev)}></input>
           <button onClick={() => this.doSearch()}>Get Video Info!</button>
         </div>
         <div>
