@@ -11,7 +11,7 @@ type ChunkStore = HashMap<VideoId, VideoChunks>;
 type Feed = Vec<VideoInfo>;
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
-struct VideoInfo{
+pub struct VideoInfo{
     pub video_id: VideoId,
     pub name: String,
     pub description: String,
@@ -20,7 +20,7 @@ struct VideoInfo{
 }
 
 #[query(name = "getVideoInfo")]
-fn get_video_info(id: VideoId) -> VideoInfo {
+pub fn get_video_info(id: VideoId) -> VideoInfo {
     let video_store = storage::get::<VideoInfoStore>();
 
     video_store
@@ -30,14 +30,14 @@ fn get_video_info(id: VideoId) -> VideoInfo {
 }
 
 #[update(name = "updateVideoInfo")]
-fn update_video_info(video: VideoInfo) {
+pub fn update_video_info(video: VideoInfo) {
     let video_store = storage::get_mut::<VideoInfoStore>();
 
     video_store.insert(video.video_id.clone(), video);
 }
 
 #[update(name = "createVideo")]
-fn create_video(mut video: VideoInfo) -> VideoId{
+pub fn create_video(mut video: VideoInfo) -> VideoId{
     let info_store = storage::get_mut::<VideoInfoStore>();
     let chunk_store = storage::get_mut::<ChunkStore>();
     
@@ -56,7 +56,7 @@ fn create_video(mut video: VideoInfo) -> VideoId{
 }
 
 #[update(name = "putChunk")]
-fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
+pub fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
     let chunk_store = storage::get_mut::<ChunkStore>();
 
     let video_chunks = chunk_store.get_mut(&video_id).unwrap();
@@ -65,7 +65,7 @@ fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
 }
 
 #[query(name = "getChunk")]
-fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
+pub fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
     let chunk_store = storage::get::<ChunkStore>();
 
     let video_chunks = chunk_store.get(&video_id).unwrap();
@@ -77,7 +77,7 @@ fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
 }
 
 #[query(name = "getDefaultFeed")]
-fn get_default_feed(num: usize) -> Feed{
+pub fn get_default_feed(num: usize) -> Feed{
     let video_store = storage::get::<VideoInfoStore>();
 
     video_store
@@ -88,7 +88,7 @@ fn get_default_feed(num: usize) -> Feed{
 }
 
 #[query(name = "searchVideo")]
-fn search_video(to_search: String) -> Option<&'static VideoInfo> {
+pub fn search_video(to_search: String) -> Option<&'static VideoInfo> {
     let to_search = to_search.to_lowercase();
     let video_store = storage::get::<VideoInfoStore>();
 
@@ -109,7 +109,13 @@ fn search_video(to_search: String) -> Option<&'static VideoInfo> {
 
 
 fn generate_video_id(info: &VideoInfo) -> VideoId{
-    let time = ic_cdk::api::time();
+    let time = if cfg!(target_arch = "wasm32"){
+        ic_cdk::api::time()
+    } else {
+        0 //for testing only!
+    };
+
+
     let name = info.name.clone();
 
     return format!("{}{}", name, time);
