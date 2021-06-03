@@ -1,4 +1,10 @@
-# video_nft
+# Testing
+Rust integration tests have to be run single threaded since the ic functions are not thread safe when not run in a canister.
+```
+cargo test -- --test-threads=1
+```
+
+# DFINITY STUFF 
 
 Welcome to your new video_nft project and to the internet computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
 
