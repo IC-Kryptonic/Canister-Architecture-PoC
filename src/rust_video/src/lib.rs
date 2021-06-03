@@ -19,7 +19,7 @@ struct VideoInfo{
     pub chunk_count: usize,
 }
 
-#[query]
+#[query(name = "getVideoInfo")]
 fn get_video_info(id: VideoId) -> VideoInfo {
     let video_store = storage::get::<VideoInfoStore>();
 
@@ -29,14 +29,14 @@ fn get_video_info(id: VideoId) -> VideoInfo {
         .unwrap_or_else(|| VideoInfo::default())
 }
 
-#[update]
+#[update(name = "updateVideoInfo")]
 fn update_video_info(video: VideoInfo) {
     let video_store = storage::get_mut::<VideoInfoStore>();
 
     video_store.insert(video.video_id.clone(), video);
 }
 
-#[update]
+#[update(name = "createVideo")]
 fn create_video(mut video: VideoInfo) -> VideoId{
     let info_store = storage::get_mut::<VideoInfoStore>();
     let chunk_store = storage::get_mut::<ChunkStore>();
@@ -55,7 +55,7 @@ fn create_video(mut video: VideoInfo) -> VideoId{
     return id;
 }
 
-#[update]
+#[update(name = "putChunk")]
 fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
     let chunk_store = storage::get_mut::<ChunkStore>();
 
@@ -64,7 +64,7 @@ fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
     video_chunks.insert(chunk_num, chunk);
 }
 
-#[query]
+#[query(name = "getChunk")]
 fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
     let chunk_store = storage::get::<ChunkStore>();
 
@@ -76,7 +76,7 @@ fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
         .unwrap_or_else(|| VideoChunk::default())
 }
 
-#[query]
+#[query(name = "getDefaultFeed")]
 fn get_default_feed(num: usize) -> Feed{
     let video_store = storage::get::<VideoInfoStore>();
 
@@ -87,7 +87,7 @@ fn get_default_feed(num: usize) -> Feed{
         .collect()
 }
 
-#[query]
+#[query(name = "searchVideo")]
 fn search_video(to_search: String) -> Option<&'static VideoInfo> {
     let to_search = to_search.to_lowercase();
     let video_store = storage::get::<VideoInfoStore>();
