@@ -12,10 +12,12 @@ type Video_Chunk = blob;
 type Feed = vec Video_Info;
 
 service : {
-    "get_video_info": (Video_Id) -> (Video_Info) query;
-    "update_video_info": (Video_Info) -> ();
-    "create_video": (Video_Info) -> (Video_Id);
-    "put_chunk": (Video_Chunk, nat64, Video_Id) -> ();
-    "get_chunk": (nat64, Video_Id) -> (Video_Chunk) query;
-    "get_default_feed": (nat64) -> (Feed) query; 
+    "getVideoInfo": (Video_Id) -> (Video_Info) query;
+    "updateVideoInfo": (Video_Info) -> ();
+    "createVideo": (Video_Info) -> (Video_Id);
+    "putChunk": (Video_Chunk, nat64, Video_Id) -> ();
+    "getChunk": (nat64, Video_Id) -> (Video_Chunk) query;
+    "getDefaultFeed": (nat64) -> (Feed) query;
+    "searchVideo": (text) -> (opt Video_Info) query;
+    "reset": () -> ();
 }
