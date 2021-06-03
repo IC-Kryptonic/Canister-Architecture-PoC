@@ -17,5 +17,6 @@ service : {
     "create_video": (Video_Info) -> (Video_Id);
     "put_chunk": (Video_Chunk, nat64, Video_Id) -> ();
     "get_chunk": (nat64, Video_Id) -> (Video_Chunk) query;
-    "get_default_feed": (nat64) -> (Feed) query; 
+    "get_default_feed": (nat64) -> (Feed) query;
+    "search": (text) -> (opt Video_Info) query;
 }

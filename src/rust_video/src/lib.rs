@@ -87,6 +87,26 @@ fn get_default_feed(num: usize) -> Feed{
         .collect()
 }
 
+#[query]
+fn search_video(to_search: String) -> Option<&'static VideoInfo> {
+    let to_search = to_search.to_lowercase();
+    let video_store = storage::get::<VideoInfoStore>();
+
+    for (_, v) in video_store.iter() {
+        if v.name.to_lowercase().contains(&to_search) || v.description.to_lowercase().contains(&to_search) {
+            return Some(v);
+        }
+
+        for word in v.keywords.iter() {
+            if word.to_lowercase() == to_search {
+                return Some(v);
+            }
+        }
+    }
+
+    None
+}
+
 
 fn generate_video_id(info: &VideoInfo) -> VideoId{
     let time = ic_cdk::api::time();
