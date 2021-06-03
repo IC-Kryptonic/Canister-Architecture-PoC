@@ -4,3 +4,4 @@ dfx canister call rust_video putChunk '(blob "\CA\FF\EE", 0, "video1")'
 dfx canister call rust_video getChunk '( 0, "video1")'
 dfx canister call rust_video getDefaultFeed '(10)'
 dfx canister call rust_video searchVideo '("toast")' 
+dfx canister call rust_video reset

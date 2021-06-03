@@ -3,12 +3,12 @@ use ic_cdk::storage;
 use ic_cdk_macros::*;
 use std::collections::HashMap;
 
-type VideoInfoStore = HashMap<VideoId, VideoInfo>;
-type VideoId = String;
-type VideoChunk = Vec<u8>;
-type VideoChunks = Vec<VideoChunk>;
-type ChunkStore = HashMap<VideoId, VideoChunks>;
-type Feed = Vec<VideoInfo>;
+pub type VideoInfoStore = HashMap<VideoId, VideoInfo>;
+pub type VideoId = String;
+pub type VideoChunk = Vec<u8>;
+pub type VideoChunks = Vec<VideoChunk>;
+pub type ChunkStore = HashMap<VideoId, VideoChunks>;
+pub type Feed = Vec<VideoInfo>;
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
 pub struct VideoInfo{
@@ -107,12 +107,19 @@ pub fn search_video(to_search: String) -> Option<&'static VideoInfo> {
     None
 }
 
+#[update(name = "reset")]
+pub fn reset(){
+    storage::get_mut::<VideoInfoStore>().clear();
+    storage::get_mut::<ChunkStore>().clear();
+}
+
+
 
 fn generate_video_id(info: &VideoInfo) -> VideoId{
     let time = if cfg!(target_arch = "wasm32"){
-        ic_cdk::api::time()
+        ic_cdk::api::time() as u64
     } else {
-        0 //for testing only!
+        std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() //for testing when not in canister 
     };
 
 
