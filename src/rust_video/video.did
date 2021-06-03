@@ -18,6 +18,6 @@ service : {
     "putChunk": (Video_Chunk, nat64, Video_Id) -> ();
     "getChunk": (nat64, Video_Id) -> (Video_Chunk) query;
     "getDefaultFeed": (nat64) -> (Feed) query;
-    "search": (text) -> (opt Video_Info) query;
+    "searchVideo": (text) -> (opt Video_Info) query;
     "reset": () -> ();
 }
