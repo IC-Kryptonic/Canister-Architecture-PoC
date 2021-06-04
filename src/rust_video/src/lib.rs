@@ -40,7 +40,6 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
             break generated;
         }
     };
-        
 
     video.video_id = id.clone();
     chunk_store.insert(id.clone(), vec![Vec::new(); video.chunk_count]);
