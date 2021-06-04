@@ -13,7 +13,6 @@ type Feed = vec Video_Info;
 
 service : {
     "getVideoInfo": (Video_Id) -> (Video_Info) query;
-    "updateVideoInfo": (Video_Info) -> ();
     "createVideo": (Video_Info) -> (Video_Id);
     "putChunk": (Video_Chunk, nat64, Video_Id) -> ();
     "getChunk": (nat64, Video_Id) -> (Video_Chunk) query;

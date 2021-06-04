@@ -29,13 +29,6 @@ pub fn get_video_info(id: VideoId) -> VideoInfo {
         .unwrap_or_else(|| VideoInfo::default())
 }
 
-#[update(name = "updateVideoInfo")]
-pub fn update_video_info(video: VideoInfo) {
-    let video_store = storage::get_mut::<VideoInfoStore>();
-
-    video_store.insert(video.video_id.clone(), video);
-}
-
 #[update(name = "createVideo")]
 pub fn create_video(mut video: VideoInfo) -> VideoId{
     let info_store = storage::get_mut::<VideoInfoStore>();
