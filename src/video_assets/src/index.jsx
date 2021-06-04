@@ -40,10 +40,10 @@ class TestVideoInfo extends React.Component {
     }
     const nestedBytes = (await Promise.all(chunksAsPromises))
       .map( (val) => {
-          if(val === undefined) {
+          if(val[0] === undefined) {
               return null;
           } else {
-              return val;
+              return val[0];
           }
       })
       .filter((v) => v !== null);
