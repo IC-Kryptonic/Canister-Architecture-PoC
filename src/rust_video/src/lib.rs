@@ -20,13 +20,12 @@ pub struct VideoInfo{
 }
 
 #[query(name = "getVideoInfo")]
-pub fn get_video_info(id: VideoId) -> VideoInfo {
+pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
     let video_store = storage::get::<VideoInfoStore>();
 
     video_store
         .get(&id)
         .cloned()
-        .unwrap_or_else(|| VideoInfo::default())
 }
 
 #[update(name = "createVideo")]
@@ -51,21 +50,23 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
 pub fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
     let chunk_store = storage::get_mut::<ChunkStore>();
 
-    let video_chunks = chunk_store.get_mut(&video_id).unwrap();
-
-    video_chunks.insert(chunk_num, chunk);
+    if let Some(video_chunks) = chunk_store.get_mut(&video_id){
+        video_chunks.insert(chunk_num, chunk);
+    }
+    //TODO What to do when there is no video yet?
 }
 
 #[query(name = "getChunk")]
-pub fn get_chunk(chunk_num: usize, video_id: VideoId) -> VideoChunk{
+pub fn get_chunk(chunk_num: usize, video_id: VideoId) -> Option<VideoChunk>{
     let chunk_store = storage::get::<ChunkStore>();
 
-    let video_chunks = chunk_store.get(&video_id).unwrap();
-
-    video_chunks
-        .get(chunk_num)
-        .cloned()
-        .unwrap_or_else(|| VideoChunk::default())
+    if let Some(video_chunks) = chunk_store.get(&video_id){
+        video_chunks
+            .get(chunk_num)
+            .cloned()
+    } else {
+        None
+    }
 }
 
 #[query(name = "getDefaultFeed")]

@@ -22,7 +22,7 @@ fn test_create_videos(){
 fn test_get_video_info(){
     common::setup();
     let id = common::create_test_video_info();
-    let video_res = rust_video::get_video_info(id);
+    let video_res = rust_video::get_video_info(id).unwrap();
 
     assert_eq!(common::TEST_VIDEO_NAME, video_res.name);
     assert_eq!(common::TEST_VIDEO_DESCRIPTION, video_res.description);
@@ -38,7 +38,7 @@ fn test_put_and_get_chunk(){
     let chunk = vec![0x74, 0x65, 0x73, 0x74];
     rust_video::put_chunk(chunk.clone(), 0, id.clone());
 
-    let chunk_res = rust_video::get_chunk(0, id);
+    let chunk_res = rust_video::get_chunk(0, id).unwrap();
 
     assert_eq!(chunk, chunk_res);
 }
