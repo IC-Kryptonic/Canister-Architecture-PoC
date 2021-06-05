@@ -1,4 +1,4 @@
-import { Actor, HttpAgent } from '@dfinity/agent';
+import { Actor, HttpAgent, Principal} from '@dfinity/agent';
 import { idlFactory as video_idl, canisterId as backendVideoId } from 'dfx-generated/rust_video';
 
 const agent = new HttpAgent();
@@ -90,6 +90,7 @@ class TestVideoInfo extends React.Component {
     
     const id = await videoBackend.createVideo({
           "name": this.state.upload_name,
+          "owner":  Principal.anonymous(),
           "description": '',
           "video_id": '',
           "chunk_count": chunkCount,
