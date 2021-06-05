@@ -49,7 +49,7 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
     video.owner = if cfg!(target_arch = "wasm32"){
         ic_cdk::caller()
     } else {
-        Principal::from_slice(&[0; 29])
+        Principal::from_slice(&[])
     };
 
     chunk_store.insert(id.clone(), vec![Vec::new(); video.chunk_count]);
@@ -61,6 +61,20 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
 ///It silently ignores chunks if the video does not exist.
 #[update(name = "putChunk")]
 pub fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
+    if let Some(video_info) = storage::get::<VideoInfoStore>().get(&video_id){
+        let sender  = if cfg!(target_arch = "wasm32"){
+            ic_cdk::caller()
+        } else {
+            Principal::from_slice(&[])
+        };
+
+        if sender != video_info.owner{
+            return;
+        }
+    } else {
+        return;
+    }
+
     let chunk_store = storage::get_mut::<ChunkStore>();
 
     if let Some(video_chunks) = chunk_store.get_mut(&video_id){
