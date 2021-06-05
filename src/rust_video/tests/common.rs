@@ -1,3 +1,5 @@
+use ic_cdk::export::Principal;
+
 use rust_video;
 
 pub static TEST_VIDEO_NAME: &str = "test";
@@ -9,6 +11,7 @@ pub fn create_test_video_info() -> rust_video::VideoId{
 
     let test_video: rust_video::VideoInfo = rust_video::VideoInfo{
         video_id: String::new(),
+        owner: Principal::from_slice(&[]),
         name: String::from(TEST_VIDEO_NAME),
         description: String::from(TEST_VIDEO_DESCRIPTION),
         keywords: TEST_VIDEO_KEYWORDS.iter().map(|&w| String::from(w)).collect(),

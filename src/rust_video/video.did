@@ -2,6 +2,7 @@ type Video_Id = text;
 
 type Video_Info = record {
     "video_id": Video_Id;
+    "owner": principal;
     "name": text;
     "description": text;
     "keywords": vec text;

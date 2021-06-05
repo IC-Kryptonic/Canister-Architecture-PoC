@@ -1,4 +1,4 @@
-use ic_cdk::export::candid::{CandidType, Deserialize};
+use ic_cdk::export::candid::{{CandidType, Deserialize}, Principal};
 use ic_cdk::storage;
 use ic_cdk_macros::*;
 use std::collections::HashMap;
@@ -10,9 +10,10 @@ pub type VideoChunks = Vec<VideoChunk>;
 pub type ChunkStore = HashMap<VideoId, VideoChunks>;
 pub type Feed = Vec<VideoInfo>;
 
-#[derive(Clone, Debug, Default, CandidType, Deserialize)]
+#[derive(Clone, Debug, CandidType, Deserialize)]
 pub struct VideoInfo{
     pub video_id: VideoId,
+    pub owner: Principal,
     pub name: String,
     pub description: String,
     pub keywords: Vec<String>,
@@ -44,6 +45,13 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
     };
 
     video.video_id = id.clone();
+
+    video.owner = if cfg!(target_arch = "wasm32"){
+        ic_cdk::caller()
+    } else {
+        Principal::from_slice(&[0; 29])
+    };
+
     chunk_store.insert(id.clone(), vec![Vec::new(); video.chunk_count]);
     info_store.insert(id.clone(), video);
     return id;
