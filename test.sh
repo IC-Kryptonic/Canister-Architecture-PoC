@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e
 echo "Running testing script..."
 
 echo "Starting video backend integration tests"
@@ -12,7 +13,7 @@ echo "Deploying canister"
 dfx deploy
 
 set -x
-dfx canister call rust_video createVideo '(record {video_id = ""; name = "video1"; description = "mountain dog"; keywords = vec {"scars"; "toast"}; chunk_count=1})'
+dfx canister call rust_video createVideo '(record {video_id = ""; owner = principal "aaaaa-aa"; name = "video1"; description = "mountain dog"; keywords = vec {"scars"; "toast"}; chunk_count=1})'
 dfx canister call rust_video getVideoInfo '("video1")'
 dfx canister call rust_video putChunk '(blob "\CA\FF\EE", 0, "video1")'
 dfx canister call rust_video getChunk '( 0, "video1")'
