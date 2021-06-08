@@ -141,6 +141,7 @@ pub fn reset(){
     storage::get_mut::<ChunkStore>().clear();
 }
 
+///Stores the videos into the stable storage before an upgrade
 #[pre_upgrade]
 pub fn pre_upgrade() {
     let video_infos = storage::get_mut::<VideoInfoStore>();
@@ -154,6 +155,7 @@ pub fn pre_upgrade() {
     storage::stable_save((combined,)).unwrap();
 }
 
+///Loads the videos from stable storage after an upgrade
 #[post_upgrade]
 pub fn post_upgrade() {
     let (combined_store,): (Vec<(VideoInfo, VideoChunks)>, ) = storage::stable_restore().unwrap();
