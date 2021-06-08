@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
 const dfxJson = require("./dfx.json");
+const isDevelopment = process.env.NODE_ENV === "development";
 
 // List of all aliases for canisters. This creates the module alias for
 // the `import ... from "@dfinity/ic/canisters/xyz"` where xyz is the name of a
@@ -36,15 +37,15 @@ function generateWebpackConfigForCanister(name, info) {
   }
 
   return {
-    mode: "production",
+    mode: isDevelopment ? "development" : "production",
     entry: {
       // The frontend.entrypoint points to the HTML file for this build, so we need
       // to replace the extension to `.js`.
       index: path.join(__dirname, info.frontend.entrypoint).replace(/\.html$/, ".jsx"),
     },
-    devtool: "source-map",
+    devtool: isDevelopment ? "cheap-module-source-map" : "source-map",
     optimization: {
-      minimize: true,
+      minimize: !isDevelopment,
       minimizer: [new TerserPlugin()],
     },
     resolve: {
@@ -85,6 +86,11 @@ function generateWebpackConfigForCanister(name, info) {
         process: require.resolve('process/browser'),
       }),
     ],
+    devServer: {
+      proxy: {
+        "/api": `http://${dfxJson.networks.local.bind}`,
+      },
+    },
   };
 }
 
