@@ -137,8 +137,8 @@ pub fn search_video(to_search: String) -> Option<&'static VideoInfo> {
 ///This function completely resets the storage.
 #[update(name = "reset")]
 pub fn reset(){
-    storage::get_mut::<VideoInfoStore>().clear();
-    storage::get_mut::<ChunkStore>().clear();
+    storage::delete::<VideoInfoStore>();
+    storage::delete::<ChunkStore>();
 }
 
 ///Stores the videos into the stable storage before an upgrade
@@ -173,8 +173,6 @@ pub fn post_upgrade() {
     }
 }
 
-
-
 ///This function generates a id based on the information of the Video and a timestamp.
 fn generate_video_id(info: &VideoInfo) -> VideoId{
     let time = if cfg!(target_arch = "wasm32"){
@@ -188,5 +186,3 @@ fn generate_video_id(info: &VideoInfo) -> VideoId{
 
     return format!("{}{}", name, time);
 }
-
-
