@@ -6,6 +6,9 @@ const headerStyles = makeStyles({
     borderBottom: 'solid 1px rgb(227, 227, 228)',
     marginBottom: 20,
   },
+  logo: {
+    height: 20,
+  },
 });
 
 export { headerStyles };
