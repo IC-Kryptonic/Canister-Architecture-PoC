@@ -13,5 +13,6 @@
       "type": "ephemeral"
     }
   },
-  "version": 1
+  "version": 1,
+  "dfx": "0.7.1"
 }
