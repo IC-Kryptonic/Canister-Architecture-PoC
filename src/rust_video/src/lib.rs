@@ -20,6 +20,7 @@ pub struct VideoInfo{
     pub chunk_count: usize,
 }
 
+
 ///This function returns a wrapped video if there is one for this id, otherwise it return [None].
 #[query(name = "getVideoInfo")]
 pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
@@ -140,6 +141,16 @@ pub fn reset(){
     storage::get_mut::<ChunkStore>().clear();
 }
 
+#[pre_upgrade]
+pub fn pre_upgrade() {
+    let video_infos = storage::get_mut::<VideoInfoStore>();
+    let video_chunks = storage::get_mut::<ChunkStore>();
+
+    let combined: Vec<(VideoInfo, VideoChunks)> = video_infos.drain().zip(video_chunks.drain()).map(|((_, info), (_, chunk))| (info, chunk)).collect();
+
+    storage::stable_save((combined,)).unwrap();
+}
+
 
 ///This function generates a id based on the information of the Video and a timestamp.
 fn generate_video_id(info: &VideoInfo) -> VideoId{
@@ -154,3 +165,5 @@ fn generate_video_id(info: &VideoInfo) -> VideoId{
 
     return format!("{}{}", name, time);
 }
+
+
