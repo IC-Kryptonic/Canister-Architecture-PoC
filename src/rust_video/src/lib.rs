@@ -20,6 +20,7 @@ pub struct VideoInfo{
     pub chunk_count: usize,
 }
 
+
 ///This function returns a wrapped video if there is one for this id, otherwise it return [None].
 #[query(name = "getVideoInfo")]
 pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
@@ -140,6 +141,39 @@ pub fn reset(){
     storage::get_mut::<ChunkStore>().clear();
 }
 
+///Stores the videos into the stable storage before an upgrade
+#[pre_upgrade]
+pub fn pre_upgrade() {
+    let video_infos = storage::get_mut::<VideoInfoStore>();
+    let video_chunks = storage::get_mut::<ChunkStore>();
+
+    let combined: Vec<(VideoInfo, VideoChunks)> = video_infos
+        .drain()
+        .map(|(id, video_info)| (video_info, video_chunks.remove(&id).unwrap()))
+        .collect();
+
+    storage::stable_save((combined,)).unwrap();
+}
+
+///Loads the videos from stable storage after an upgrade
+#[post_upgrade]
+pub fn post_upgrade() {
+    let (combined_store,): (Vec<(VideoInfo, VideoChunks)>, ) = storage::stable_restore().unwrap();
+    
+    let video_info_store = storage::get_mut::<VideoInfoStore>();
+    let chunks_store = storage::get_mut::<ChunkStore>();
+
+    video_info_store.reserve(combined_store.len());
+    chunks_store.reserve(combined_store.len());
+
+    for (video_info, chunks) in combined_store {
+        let id = video_info.video_id.clone();
+        video_info_store.insert(id.clone(), video_info);
+        chunks_store.insert(id, chunks);
+    }
+}
+
+
 
 ///This function generates a id based on the information of the Video and a timestamp.
 fn generate_video_id(info: &VideoInfo) -> VideoId{
@@ -154,3 +188,5 @@ fn generate_video_id(info: &VideoInfo) -> VideoId{
 
     return format!("{}{}", name, time);
 }
+
+
