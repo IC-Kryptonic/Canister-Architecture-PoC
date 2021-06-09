@@ -70,18 +70,19 @@ pub fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
         };
 
         if sender != video_info.owner{
+            ic_cdk::api::print("Someone tried to upload a chunk to a video that is not theirs");
             return;
         }
     } else {
+        ic_cdk::api::print("Someone tried to upload a chunk to a video that does not exist");
         return;
     }
 
     let chunk_store = storage::get_mut::<ChunkStore>();
 
     if let Some(video_chunks) = chunk_store.get_mut(&video_id){
-        video_chunks.insert(chunk_num, chunk);
+        video_chunks[chunk_num] = chunk;
     }
-    //TODO What to do when there is no video yet?
 }
 
 ///This function retrieves a wrapped video chunk.
