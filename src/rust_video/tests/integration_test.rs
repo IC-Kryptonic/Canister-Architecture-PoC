@@ -33,7 +33,7 @@ fn test_get_video_info(){
 #[test]
 fn test_put_and_get_chunk(){
     common::setup();
-    let id = common::create_test_video_info();
+    let id = common::create_test_video_info_with_chunks(1);
 
     let chunk = vec![0x74, 0x65, 0x73, 0x74];
     rust_video::put_chunk(chunk.clone(), 0, id.clone());
@@ -41,6 +41,28 @@ fn test_put_and_get_chunk(){
     let chunk_res = rust_video::get_chunk(0, id).unwrap();
 
     assert_eq!(chunk, chunk_res);
+}
+
+#[test]
+fn test_put_and_get_multiple_chunks(){
+
+    let mut chunks = Vec::new();
+    for i in 0u8..10u8{
+        chunks.push(vec![i, i+1]);
+    }
+
+    common::setup();
+    let id = common::create_test_video_info_with_chunks(chunks.len());
+
+    for (i, chunk) in chunks.iter().enumerate(){
+        rust_video::put_chunk(chunk.clone(), i, id.clone());
+    }
+
+    for (i, chunk) in chunks.drain(..).enumerate(){
+        let chunk_res = rust_video::get_chunk(i, id.clone()).unwrap();
+
+        assert_eq!(chunk, chunk_res);
+    }
 }
 
 #[test]
