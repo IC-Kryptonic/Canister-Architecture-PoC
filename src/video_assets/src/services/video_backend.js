@@ -9,6 +9,7 @@ const videoBackend = Actor.createActor(video_idl, {
   agent,
   canisterId: backendVideoId,
 });
+const maxChunkSize = 1024 * 500; // 500kb
 
 async function loadDefaultFeed(count) {
   const feed = await videoBackend.getDefaultFeed(count);
@@ -42,4 +43,55 @@ async function loadVideo(videoInfo) {
   return vidURL;
 }
 
-export { loadDefaultFeed, loadVideo };
+function _processAndUploadChunk(
+  videoBuffer,
+  byteStart,
+  videoSize,
+  videoId,
+  chunk
+) {
+  const videoSlice = videoBuffer.slice(
+    byteStart,
+    Math.min(videoSize, byteStart + maxChunkSize)
+  );
+  const data = Array.from(new Uint8Array(videoSlice));
+  return videoBackend.putChunk(data, chunk, videoId);
+}
+
+async function uploadVideo(videoName, videoDescription, video) {
+  //console.debug('starting upload');
+  if (!video.size) {
+    throw new Error('The video you are trying to upload has no size', video);
+  }
+  const chunkCount = Number(Math.ceil(video.size / maxChunkSize));
+  //console.debug('chunkCount:', chunkCount);
+
+  const id = await videoBackend.createVideo({
+    name: videoName,
+    owner: Principal.anonymous(),
+    description: videoDescription,
+    video_id: '', // TODO should be set by backend
+    chunk_count: chunkCount,
+    keywords: [],
+  });
+  //console.debug('videoId:', id);
+
+  const videoBuffer = (await video?.arrayBuffer()) || new ArrayBuffer(0);
+  const putChunkPromises = [];
+
+  let chunk = 0;
+  for (
+    let byteStart = 0;
+    byteStart < video.size;
+    byteStart += maxChunkSize, chunk++
+  ) {
+    putChunkPromises.push(
+      _processAndUploadChunk(videoBuffer, byteStart, video.size, id, chunk)
+    );
+  }
+  //console.debug('starting to upload chunks');
+  await Promise.all(putChunkPromises);
+  //console.debug('upload finished');
+}
+
+export { loadDefaultFeed, loadVideo, uploadVideo };

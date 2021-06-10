@@ -35,6 +35,10 @@ const postStyles = makeStyles({
     marginTop: 10,
     marginBottom: 20,
   },
+  loadingSpinner: {
+    margin: 40,
+    color: 'black',
+  },
   userProfile: {
     width: 50,
     height: 50,

@@ -30,7 +30,7 @@ const Feed = () => {
     <>
       <Header />
       <Grid container justify="center">
-        {posts && (
+        {posts && posts.length > 0 ? (
           <>
             {posts.map((post, index) => (
               <Post
@@ -40,6 +40,8 @@ const Feed = () => {
               />
             ))}
           </>
+        ) : (
+          <span>In deinem Feed gibt es noch keine Videos :)</span>
         )}
       </Grid>
     </>

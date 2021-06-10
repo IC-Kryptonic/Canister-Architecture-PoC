@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Button } from '@material-ui/core';
+import { Grid, Button, CircularProgress } from '@material-ui/core';
 import { postStyles } from '../styles/post_styles';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -74,7 +74,7 @@ const Post = ({ post, toggleFollow }) => {
               <source src={video} type="video/mp4" />
             </video>
           ) : (
-            'Loading...'
+            <CircularProgress className={classes.loadingSpinner} />
           )}
         </Grid>
         {/* Post footer with likes and views */}
