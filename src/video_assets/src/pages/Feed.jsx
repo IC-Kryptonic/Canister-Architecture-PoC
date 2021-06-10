@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import Post from '../components/Post';
 import { loadDefaultFeed } from '../services/video_backend';
 
-const Home = () => {
+const Feed = () => {
   const [posts, setPosts] = useState([]);
   const [userToToggle, setUserToToggle] = useState(null);
 
@@ -46,4 +46,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Feed;
