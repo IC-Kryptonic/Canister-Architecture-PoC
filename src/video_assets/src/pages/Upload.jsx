@@ -4,9 +4,11 @@ import { DropzoneArea } from 'material-ui-dropzone';
 import Header from '../components/Header';
 import { uploadStyles } from '../styles/upload_styles';
 import { uploadVideo } from '../services/video_backend';
+import { ToastContainer, toast } from 'react-toastify';
 
 const maxFileSize = 30000000;
 const filesLimit = 1;
+const acceptedFiles = ['video/*'];
 
 const Upload = () => {
   const classes = uploadStyles();
@@ -23,6 +25,11 @@ const Upload = () => {
     setUploading(true);
     try {
       await uploadVideo(title, description, video);
+      toast.success('Video erfolgreich hochgeladen!', {
+        position: 'bottom-left',
+        autoClose: 5000,
+        hideProgressBar: true,
+      });
       setVideo(undefined);
       setTitle('');
       setDescription('');
@@ -36,6 +43,17 @@ const Upload = () => {
   return (
     <>
       <Header />
+      <ToastContainer
+        position="bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <Grid container justify="center">
         <Grid container className={classes.uploadContainer} spacing={3}>
           <Grid container item justify="center">
@@ -57,6 +75,8 @@ const Upload = () => {
                   onChange={(videos) => setVideo(videos[0])}
                   maxFileSize={maxFileSize}
                   filesLimit={filesLimit}
+                  acceptedFiles={acceptedFiles}
+                  fileObjects={[video]}
                 />
               </div>
             </Grid>

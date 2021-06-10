@@ -59,22 +59,22 @@ function _processAndUploadChunk(
 }
 
 async function uploadVideo(videoName, videoDescription, video) {
-  //console.debug('starting upload');
+  console.debug('starting upload');
   if (!video.size) {
     throw new Error('The video you are trying to upload has no size', video);
   }
   const chunkCount = Number(Math.ceil(video.size / maxChunkSize));
-  //console.debug('chunkCount:', chunkCount);
+  console.debug('chunkCount:', chunkCount, `timestamp: ${Date.now()}`);
 
   const id = await videoBackend.createVideo({
     name: videoName,
     owner: Principal.anonymous(),
     description: videoDescription,
-    video_id: '', // TODO should be set by backend
+    video_id: '', // TODO id should be set by backend, why set it here?
     chunk_count: chunkCount,
     keywords: [],
   });
-  //console.debug('videoId:', id);
+  console.debug('videoId:', id, `timestamp: ${Date.now()}`);
 
   const videoBuffer = (await video?.arrayBuffer()) || new ArrayBuffer(0);
   const putChunkPromises = [];
@@ -89,9 +89,9 @@ async function uploadVideo(videoName, videoDescription, video) {
       _processAndUploadChunk(videoBuffer, byteStart, video.size, id, chunk)
     );
   }
-  //console.debug('starting to upload chunks');
+  console.debug('starting to upload chunks', `timestamp: ${Date.now()}`);
   await Promise.all(putChunkPromises);
-  //console.debug('upload finished');
+  console.debug('upload finished', `timestamp: ${Date.now()}`);
 }
 
 export { loadDefaultFeed, loadVideo, uploadVideo };
