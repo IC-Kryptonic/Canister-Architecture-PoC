@@ -1,24 +1,19 @@
 {
   "canisters": {
     "rust_video": {
-        "build": "cargo build --target wasm32-unknown-unknown --package  rust_video --release",
-        "candid": "src/rust_video/video.did",
-        "wasm": "target/wasm32-unknown-unknown/release/rust_video.wasm",
-        "type": "custom"
+      "build": "cargo build --target wasm32-unknown-unknown --package  rust_video --release",
+      "candid": "src/rust_video/video.did",
+      "wasm": "target/wasm32-unknown-unknown/release/rust_video.wasm",
+      "type": "custom"
     },
     "video_assets": {
-          "dependencies": [
-            "rust_video"
-          ],
-          "frontend": {
-            "entrypoint": "src/video_assets/src/index.html"
-          },
-          "source": [
-            "src/video_assets/assets",
-            "dist/video_assets/"
-          ],
-          "type": "assets"
-        }
+      "dependencies": ["rust_video"],
+      "frontend": {
+        "entrypoint": "src/video_assets/src/index.html"
+      },
+      "source": ["src/video_assets/src/assets", "dist/video_assets/"],
+      "type": "assets"
+    }
   },
   "networks": {
     "local": {
