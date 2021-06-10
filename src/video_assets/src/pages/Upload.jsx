@@ -55,7 +55,12 @@ const Upload = () => {
         pauseOnHover
       />
       <Grid container justify="center">
-        <Grid container className={classes.uploadContainer} spacing={3}>
+        <Grid
+          container
+          justify="center"
+          className={classes.uploadContainer}
+          spacing={3}
+        >
           <Grid container item justify="center">
             <span className={classes.headerText}>
               <strong>Video hochladen</strong>
@@ -69,7 +74,13 @@ const Upload = () => {
             spacing={1}
             className={classes.uploadArea}
           >
-            <Grid item>
+            <Grid
+              container
+              item
+              justify="center"
+              className={classes.dropzoneContainer}
+              xs={4}
+            >
               <div className={classes.dropzone}>
                 <DropzoneArea
                   onChange={(videos) => setVideo(videos[0])}
@@ -80,8 +91,8 @@ const Upload = () => {
                 />
               </div>
             </Grid>
-            <Grid item>
-              <Grid container spacing={2}>
+            <Grid container item xs={4} justify="center">
+              <Grid container spacing={2} className={classes.form}>
                 <Grid container item>
                   Titel:
                 </Grid>
@@ -111,12 +122,17 @@ const Upload = () => {
           </Grid>
           <Grid container item justify="center">
             <Button
+              className={classes.uploadButton}
               disabled={uploading || !canSubmit()}
               variant="contained"
               color="secondary"
               onClick={executeUpload}
             >
-              {uploading ? <CircularProgress /> : 'Hochladen'}
+              {uploading ? (
+                <CircularProgress className={classes.progress} />
+              ) : (
+                'Hochladen'
+              )}
             </Button>
           </Grid>
         </Grid>
