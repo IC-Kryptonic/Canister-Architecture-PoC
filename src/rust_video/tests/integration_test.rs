@@ -40,7 +40,7 @@ fn test_put_and_get_chunk(){
 
     let chunk_res = rust_video::get_chunk(0, id).unwrap();
 
-    assert_eq!(chunk, chunk_res);
+    assert_eq!(chunk, *chunk_res);
 }
 
 #[test]
@@ -61,7 +61,7 @@ fn test_put_and_get_multiple_chunks(){
     for (i, chunk) in chunks.drain(..).enumerate(){
         let chunk_res = rust_video::get_chunk(i, id.clone()).unwrap();
 
-        assert_eq!(chunk, chunk_res);
+        assert_eq!(chunk, *chunk_res);
     }
 }
 
