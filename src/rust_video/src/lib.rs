@@ -88,13 +88,12 @@ pub fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
 ///This function retrieves a wrapped video chunk.
 ///If the video or chunk does not exist it returns [None].
 #[query(name = "getChunk")]
-pub fn get_chunk(chunk_num: usize, video_id: VideoId) -> Option<VideoChunk>{
+pub fn get_chunk(chunk_num: usize, video_id: VideoId) -> Option<&'static VideoChunk>{
     let chunk_store = storage::get::<ChunkStore>();
 
     if let Some(video_chunks) = chunk_store.get(&video_id){
         video_chunks
             .get(chunk_num)
-            .cloned()
     } else {
         None
     }
