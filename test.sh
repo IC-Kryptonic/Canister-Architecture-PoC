@@ -13,12 +13,17 @@ echo "Deploying canister"
 dfx deploy
 
 set -x
-dfx canister call rust_video createVideo '(record {video_id = ""; owner = principal "aaaaa-aa"; name = "video1"; description = "mountain dog"; keywords = vec {"scars"; "toast"}; chunk_count=1})'
-dfx canister call rust_video getVideoInfo '("video1")'
-dfx canister call rust_video putChunk '(blob "\CA\FF\EE", 0, "video1")'
-dfx canister call rust_video getChunk '( 0, "video1")'
-dfx canister call rust_video getDefaultFeed '(10)'
-dfx canister call rust_video searchVideo '("toast")'
-dfx canister call rust_video reset
+dfx canister call backend createVideo '(record {video_id = ""; owner = principal "aaaaa-aa"; name = "video1"; description = "mountain dog"; keywords = vec {"scars"; "toast"}; chunk_count=1})'
+dfx canister call backend getVideoInfo '("video1")'
+dfx canister call backend putChunk '(blob "\CA\FF\EE", 0, "video1")'
+dfx canister call backend getChunk '( 0, "video1")'
+dfx canister call backend getDefaultFeed '(10)'
+dfx canister call backend searchVideo '("toast")'
+dfx canister call backend reset
+
+dfx canister call backend getProfile '(principal "aaaaa-aa")'
+dfx canister call backend getCurrentProfile
+dfx canister call backend createProfile '(record {"principal" = principal "aaaaa-aa"; name = "testuser" ; likes = vec {}})'
+dfx canister call backend likeVideo '("videoId")'
 
 dfx stop

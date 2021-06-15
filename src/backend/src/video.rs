@@ -31,7 +31,7 @@ pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
         .cloned()
 }
 
-///This function creates a new based on the video information of the argument.
+///This function creates a new Video based on the video information of the argument.
 ///It returns the newly generated id of the function.
 #[update(name = "createVideo")]
 pub fn create_video(mut video: VideoInfo) -> VideoId{
@@ -58,7 +58,7 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
     return id;
 }
 
-///This function takes a video chuk and adds it to the chunks for the video.
+///This function takes a video chunk and adds it to the chunks for the video.
 ///It silently ignores chunks if the video does not exist.
 #[update(name = "putChunk")]
 pub fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
@@ -132,13 +132,6 @@ pub fn search_video(to_search: String) -> Option<&'static VideoInfo> {
     }
 
     None
-}
-
-///This function completely resets the storage.
-#[update(name = "reset")]
-pub fn reset(){
-    storage::delete::<VideoInfoStore>();
-    storage::delete::<ChunkStore>();
 }
 
 ///Stores the videos into the stable storage before an upgrade
