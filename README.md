@@ -1,4 +1,20 @@
 # Set-up
+Instal Rust
+```
+$ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+```
+Install wasm-pack
+```
+curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+```
+Install CMake, for exmaple with Homebrew
+```
+brew install cmake
+```
+Install node.js, for example with Homebrew
+```
+brew install node
+```
 Install the DFINITY SDK:
 ```
 DFX_VERSION=0.7.1 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
@@ -9,7 +25,7 @@ dfx start
 ```
 Open a new window and install npm dependencies:
 ```
-npm ci
+npm install
 ```
 Deploy the canister:
 ```
