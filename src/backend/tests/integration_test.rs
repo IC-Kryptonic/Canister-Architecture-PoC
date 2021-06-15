@@ -1,4 +1,6 @@
 use backend;
+use ic_types::Principal;
+use backend::video::VideoId;
 
 mod common;
 
@@ -127,8 +129,62 @@ fn test_reset(){
         common::create_test_video_info();
     }
 
-    backend::video::reset();
+    backend::reset();
     let feed = backend::video::get_default_feed(10);
 
     assert!(feed.is_empty());
+}
+
+#[test]
+fn test_get_profile(){
+    common::setup();
+    common::create_test_profile();
+
+    let profile = backend::profile::get_profile(Principal::from_slice(&[])).unwrap();
+
+    assert_eq!(common::TEST_PROFILE_NAME, profile.name);
+    assert_eq!(common::TEST_PROFILE_LIKES.iter().collect::<Vec<&&str>>().sort(), profile.likes.iter().collect::<Vec<&VideoId>>().sort());
+}
+
+#[test]
+fn test_get_current_profile(){
+    common::setup();
+    common::create_test_profile();
+
+    let profile = backend::profile::get_current_profile().unwrap();
+
+    assert_eq!(common::TEST_PROFILE_NAME, profile.name);
+    assert_eq!(common::TEST_PROFILE_LIKES.iter().collect::<Vec<&&str>>().sort(), profile.likes.iter().collect::<Vec<&VideoId>>().sort());
+}
+
+
+#[test]
+fn test_create_profile(){
+    common::setup();
+
+    let name = "I am a test name";
+    let new_profile = backend::profile::Profile{
+        principal: Principal::from_slice(&[]),
+        name: String::from(name),
+        likes: ["id1", "id2", "id3"].iter().map(|&w| VideoId::from(w)).collect(),
+    };
+    backend::profile::create_profile(new_profile.clone());
+
+    let profile = backend::profile::get_profile(Principal::from_slice(&[])).unwrap();
+
+    assert_eq!(new_profile.name, profile.name);
+    assert_eq!(new_profile.likes, profile.likes);
+}
+
+#[test]
+fn test_like_video(){
+    common::setup();
+    common::create_test_profile();
+
+    let liked_video = VideoId::from("cool_video");
+    backend::profile::like_video(liked_video.clone());
+
+    let profile = backend::profile::get_current_profile().unwrap();
+
+    assert!(profile.likes.contains(&liked_video));
 }

@@ -21,4 +21,9 @@ dfx canister call backend getDefaultFeed '(10)'
 dfx canister call backend searchVideo '("toast")'
 dfx canister call backend reset
 
+dfx canister call backend getProfile '(principal "aaaaa-aa")'
+dfx canister call backend getCurrentProfile
+dfx canister call backend createProfile '(record {"principal" = principal "aaaaa-aa"; name = "testuser" ; likes = vec {}})'
+dfx canister call backend likeVideo '("videoId")'
+
 dfx stop
