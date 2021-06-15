@@ -2,7 +2,7 @@ import { Actor, HttpAgent, Principal } from '@dfinity/agent';
 import {
   idlFactory as video_idl,
   canisterId as backendVideoId,
-} from 'dfx-generated/rust_video';
+} from 'dfx-generated/backend';
 
 const agent = new HttpAgent();
 const videoBackend = Actor.createActor(video_idl, {
