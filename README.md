@@ -31,6 +31,13 @@ Deploy the canister:
 ```
 dfx deploy
 ```
+If you get the error `error[E0463]: can't find crate for 'core'`, following the instruction in the terminal, e.g.
+```
+rustup target add wasm32-unknown-unknown
+cargo build --target wasm32-unknown-unknown
+```
+Then try to deploy again.
+
 Open the front-end canister in your brower, for example: `http://ryjl3-tyaaa-aaaaa-aaaba-cai.localhost:8000/`.
 
 To stop the replica use Control-C in the replica terminal window and then
