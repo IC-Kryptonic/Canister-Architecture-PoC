@@ -1,5 +1,8 @@
 {
   "canisters": {
+    "video_storage": {
+      "main": "src/video_storage/Video_Storage.mo"
+    },
     "backend": {
       "build": "cargo build --target wasm32-unknown-unknown --package  backend --release",
       "candid": "src/backend/backend.did",
