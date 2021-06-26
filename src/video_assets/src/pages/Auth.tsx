@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 import Header from '../components/Header';
 import { AuthContext } from '../contexts/AuthContext';
-import { authWithInternetIdentity } from '../services/auth_client';
+import { authWithInternetIdentity } from '../services/auth_services';
 
 const Auth = () => {
   const { isLoading, isAuthenticated, setIsLoading, setIsAuthenticated } =
@@ -19,7 +19,7 @@ const Auth = () => {
       const authenticatedNow = await authWithInternetIdentity();
       setIsAuthenticated(authenticatedNow);
     } catch (error) {
-      console.log('Error authenticating with Internet Identity', error);
+      console.error('Error authenticating with Internet Identity', error);
     } finally {
       setIsLoading(false);
     }

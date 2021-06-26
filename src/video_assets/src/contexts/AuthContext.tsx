@@ -8,4 +8,5 @@ export const AuthContext = createContext<AuthContextProperties>({
   isAuthenticated: false,
   setIsAuthenticated: () => {},
   setIsLoading: () => {},
+  identity: null,
 });
