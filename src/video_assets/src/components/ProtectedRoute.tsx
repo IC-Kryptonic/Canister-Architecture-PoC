@@ -6,7 +6,7 @@ const ProtectedRoute = ({ component: Component, ...rest }: any) => {
   const { isLoading, isAuthenticated } = useContext(AuthContext);
 
   if (isLoading) {
-    return <>Loading...</>;
+    return <>Authenzifizierung läuft...</>;
   }
   if (isAuthenticated) {
     return (
