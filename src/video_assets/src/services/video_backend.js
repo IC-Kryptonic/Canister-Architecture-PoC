@@ -1,4 +1,5 @@
-import { Actor, HttpAgent, Principal } from '@dfinity/agent';
+import { Actor, HttpAgent } from '@dfinity/agent';
+import { Principal } from '@dfinity/principal';
 import {
   idlFactory as video_idl,
   canisterId as backendVideoId,
@@ -68,7 +69,7 @@ async function uploadVideo(videoName, videoDescription, video) {
 
   const id = await videoBackend.createVideo({
     name: videoName,
-    owner: Principal.anonymous(),
+    owner: Principal.fromUint8Array([]),
     description: videoDescription,
     video_id: '', // TODO id should be set by backend, why set it here?
     chunk_count: chunkCount,
