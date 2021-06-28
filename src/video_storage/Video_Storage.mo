@@ -1,37 +1,28 @@
 import HashMap "mo:base/HashMap";
 import Text "mo:base/Text";
+import Types "Types";
 
 actor Video_Storage {
 
-	public type VideoId = Text;
-	public type IPFSData = Text; //TODO
-	public type ChunkData = [Nat8];
-	public type ChunkNum = Nat;
-
-	class Chunk(chunkData : ChunkData, chunkNum : ChunkNum) = {
-		var data = chunkData;
-		var num = chunkNum;
-	};
-
 	public type VideoDataType = {
-		#inContainer : Chunk;
-		#simpleDistMap : Chunk;
-		#ipfs : IPFSData
+		#inContainer : Types.Chunk;
+		#simpleDistMap : Types.Chunk;
+		#ipfs : Types.IPFSData
 	};
 	public type GetStorageType = {
-		#inContainer : ChunkNum;
-		#simpleDistMap : ChunkNum;
-		#ipfs : IPFSData
+		#inContainer : Types.ChunkNum;
+		#simpleDistMap : Types.ChunkNum;
+		#ipfs : Types.IPFSData
 	};
 	public type StorageType = {
 		#inContainer;
 		#simpleDistMap;
-		#ipfs : IPFSData;
+		#ipfs : Types.IPFSData;
 	};
 
-	let videoStorageTypes = HashMap.HashMap<VideoId, StorageType>(3, Text.equal, Text.hash);
+	let videoStorageTypes = HashMap.HashMap<Types.VideoId, StorageType>(3, Text.equal, Text.hash);
 
-	public func putVideo(videoId : VideoId, storageType : VideoDataType) : async () {
+	public func putVideo(videoId : Types.VideoId, storageType : VideoDataType) : async () {
 		let storeType = switch (storageType) {
 			case (#inContainer chunk) {
 				//TODO
@@ -49,11 +40,11 @@ actor Video_Storage {
 		videoStorageTypes.put(videoId, storeType);
 	};
 
-	public func getVideoType(videoId: VideoId) : async ?StorageType {
+	public func getVideoType(videoId: Types.VideoId) : async ?StorageType {
 	 (videoStorageTypes.get(videoId))
 	};
 
-	public func getVideo(videoId : VideoId, storageType : GetStorageType) : async ?VideoDataType {
+	public func getVideo(videoId : Types.VideoId, storageType : GetStorageType) : async ?VideoDataType {
 		switch (storageType) {
 			case (#inContainer chunk) {
 				null //TODO
