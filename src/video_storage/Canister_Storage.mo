@@ -3,7 +3,7 @@ import Text "mo:base/Text";
 import Types "Types";
 
 
-actor class Container_Storage(initMapSize: Nat) {
+actor class Canister_Storage(initMapSize: Nat) {
 	
 	let chunks_store = HashMap.HashMap<Types.VideoId, Types.Chunks>(initMapSize, Text.equal, Text.hash);
 
