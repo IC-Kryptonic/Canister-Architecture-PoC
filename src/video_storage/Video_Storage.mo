@@ -1,5 +1,7 @@
 import HashMap "mo:base/HashMap";
 import Text "mo:base/Text";
+import P "mo:base/Prelude";
+
 import Types "Types";
 import Canister_Store "Canister_Storage";
 
@@ -12,7 +14,7 @@ actor Video_Storage {
 		#simpleDistMap : Types.Chunk;
 		#ipfs : Types.IPFSData
 	};
-	public type GetStorageType = {
+	public type GetVideoType = {
 		#inCanister : Types.ChunkNum;
 		#simpleDistMap : Types.ChunkNum;
 		#ipfs : Types.IPFSData
@@ -38,19 +40,18 @@ actor Video_Storage {
 						#inCanister
 					};
 					case null {
-						//should be unreachable
-						return ();
+						P.unreachable()
 					};
 				};
 			};
 
 			case (#simpleDistMap chunk) {
-				//TODO
+				P.nyi();
 				#simpleDistMap
 			};
 
 			case (#ipfs data) {
-				//TODO
+				P.nyi();
 				#ipfs data
 			};
 		};
@@ -61,13 +62,13 @@ actor Video_Storage {
 	 (videoStorageTypes.get(videoId))
 	};
 
-	public func getVideo(videoId : Types.VideoId, storageType : GetStorageType) : async ?VideoData {
+	public func getVideo(videoId : Types.VideoId, storageType : GetVideoType) : async ?VideoData {
 		switch (storageType) {
 			
 			case (#inCanister chunkNum) {
 				switch (canister_store){
 					case null {
-					return null
+						return null
 					};
 					case (?canister_store){
 						switch (await canister_store.get(videoId, chunkNum)){
@@ -83,6 +84,7 @@ actor Video_Storage {
 			};
 
 			case (#simpleDistMap chunkNum) {
+				P.nyi();
 				null //TODO
 			};
 

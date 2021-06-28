@@ -1,5 +1,8 @@
 import HashMap "mo:base/HashMap";
 import Text "mo:base/Text";
+import Nat "mo:base/Nat";
+import Hash "mo:base/Hash";
+
 import Types "Types";
 
 
@@ -13,7 +16,9 @@ actor class Canister_Storage(initMapSize: Nat) {
 				chunks.put(chunk.num, chunk.data)
 			};
 			case (null){
-				()
+				let chunks = HashMap.HashMap<Types.ChunkNum, Types.ChunkData>(chunk.num, Nat.equal, Hash.hash); 
+				chunks.put(chunk.num, chunk.data);
+				chunks_store.put(videoId, chunks);
 			}
 		};
 	};
@@ -21,7 +26,14 @@ actor class Canister_Storage(initMapSize: Nat) {
 	public func get(videoId : Types.VideoId, chunkNum : Types.ChunkNum) : async ?Types.Chunk {
 		switch (chunks_store.get(videoId)) {
 			case (?chunks){
-				return ?(Types.Chunk(chunks[chunkNum], chunkNum));
+				switch (chunks.get(chunkNum)) {
+					case (?chunk) {
+						return ?(Types.Chunk(chunk, chunkNum));
+					};
+					case (null){
+						return null;
+					};
+				};
 			};
 			case (null){
 				return null;
