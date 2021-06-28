@@ -49,6 +49,10 @@ actor Video_Storage {
 		videoStorageTypes.put(videoId, storeType);
 	};
 
+	public func getVideoType(videoId: VideoId) : async ?StorageType {
+	 (videoStorageTypes.get(videoId))
+	};
+
 	public func getVideo(videoId : VideoId, storageType : GetStorageType) : async ?VideoDataType {
 		switch (storageType) {
 			case (#inContainer chunk) {
@@ -58,8 +62,14 @@ actor Video_Storage {
 				null //TODO
 			};
 			case (#ipfs IPFSData) {
-				let (#ipfs data) = videoStorageTypes.get(videoId);
-				data
+				switch (videoStorageTypes.get(videoId)){
+					case (?(#ipfs data)) {
+						return ?(#ipfs data)
+					};
+					case _ {
+						return null
+					};
+				};
 			};
 		}
 	};
