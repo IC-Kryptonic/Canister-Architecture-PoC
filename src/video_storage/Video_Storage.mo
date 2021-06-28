@@ -29,7 +29,7 @@ actor Video_Storage {
 		#ipfs : IPFSData;
 	};
 
-	let videoStorageTypes = HashMap.HashMap<Text, StorageType>(3, Text.equal, Text.hash);
+	let videoStorageTypes = HashMap.HashMap<VideoId, StorageType>(3, Text.equal, Text.hash);
 
 	public func putVideo(videoId : VideoId, storageType : VideoDataType) : async () {
 		let storeType = switch (storageType) {
