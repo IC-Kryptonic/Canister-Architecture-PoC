@@ -7,9 +7,11 @@ public type IPFSData = Text; //TODO
 public type ChunkData = [Nat8];
 public type ChunkNum = Nat;
 
+public type Chunks = [var ChunkData];
+
 public class Chunk(chunkData : ChunkData, chunkNum : ChunkNum) = {
-	var data = chunkData;
-	var num = chunkNum;
+	public let data = chunkData;
+	public let num = chunkNum;
 };
 
 
