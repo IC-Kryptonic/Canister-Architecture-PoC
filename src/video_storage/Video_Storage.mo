@@ -5,11 +5,11 @@ import Canister_Store "Canister_Storage";
 
 actor Video_Storage {
 	
-	var Canister_store: ?Canister_Store.Canister_Storage = null;
+	var canister_store: ?Canister_Store.Canister_Storage = null;
 
 	public type VideoData = {
-		#inCanister : Types.ChunkData;
-		#simpleDistMap : Types.ChunkData;
+		#inCanister : Types.Chunk;
+		#simpleDistMap : Types.Chunk;
 		#ipfs : Types.IPFSData
 	};
 	public type GetStorageType = {
@@ -25,15 +25,23 @@ actor Video_Storage {
 
 	let videoStorageTypes = HashMap.HashMap<Types.VideoId, StorageType>(3, Text.equal, Text.hash);
 
-	public func putVideo(videoId : Types.VideoId, storageType : VideoData) : async () {
-		let storeType = switch (storageType) {
+	public func putVideo(videoId : Types.VideoId, storageData : VideoData) : async () {
+		let storeType = switch (storageData) {
 
 			case (#inCanister chunk) {
-				if (Canister_store == null) {
-					Canister_store := ? (await Canister_Store.Canister_Storage(1));
+				if (canister_store == null) {
+					canister_store := ? (await Canister_Store.Canister_Storage(1));
 				};
-				//TODO
-				#inCanister
+				switch canister_store {
+					case (?canister_store){
+						await canister_store.put(videoId, chunk);
+						#inCanister
+					};
+					case null {
+						//should be unreachable
+						return ();
+					};
+				};
 			};
 
 			case (#simpleDistMap chunk) {
@@ -57,12 +65,12 @@ actor Video_Storage {
 		switch (storageType) {
 			
 			case (#inCanister chunkNum) {
-				switch (Canister_store){
+				switch (canister_store){
 					case null {
 					return null
 					};
-					case (?Canister_store){
-						switch (await Canister_store.get(videoId, chunkNum)){
+					case (?canister_store){
+						switch (await canister_store.get(videoId, chunkNum)){
 							case (?chunk) {
 								return ?(#inCanister chunk);
 							};

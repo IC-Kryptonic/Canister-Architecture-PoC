@@ -18,10 +18,10 @@ actor class Canister_Storage(initMapSize: Nat) {
 		};
 	};
 
-	public func get(videoId : Types.VideoId, chunkNum : Types.ChunkNum) : async ?Types.ChunkData {
+	public func get(videoId : Types.VideoId, chunkNum : Types.ChunkNum) : async ?Types.Chunk {
 		switch (chunks_store.get(videoId)) {
 			case (?chunks){
-				return ?chunks[chunkNum];
+				return ?(Types.Chunk(chunks[chunkNum], chunkNum));
 			};
 			case (null){
 				return null;
