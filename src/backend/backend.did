@@ -1,12 +1,30 @@
 type Video_Id = text;
-type Chunk_Num = nat;
+type Chunk_Num = nat64;
+type Chunk_Data = blob;
 
 type IPFS_Data = record {};
+
+type Chunk = record {
+    "data": Chunk_Data;
+    "num": Chunk_Num;
+};
 
 type Storage_Type = variant {
     inCanister: Chunk_Num;
     simpleDistMap: Chunk_Num;
-    IPFS: IPFS_Data;
+    ipfs: IPFS_Data;
+};
+
+type Video_Data = variant {
+    inCanister: Chunk;
+    simpleDistMap: Chunk;
+    ipfs: IPFS_Data;
+};
+
+type Load_Info = variant {
+    inCanister: Chunk_Num;
+    simpleDistMap: Chunk_Num;
+    ipfs;
 };
 
 type Video_Info = record {
@@ -15,7 +33,7 @@ type Video_Info = record {
     "name": text;
     "description": text;
     "keywords": vec text;
-    "chunk_count": nat64;
+    "storage_type": Storage_Type;
 };
 
 type Profile = record {
@@ -24,7 +42,6 @@ type Profile = record {
         "likes": vec Video_Id;
 };
 
-type Video_Chunk = blob;
 type Feed = vec Video_Info;
 
 service : {
@@ -32,8 +49,8 @@ service : {
 
     "getVideoInfo": (Video_Id) -> (opt Video_Info) query;
     "createVideo": (Video_Info) -> (Video_Id);
-    "putChunk": (Video_Chunk, nat64, Video_Id) -> () oneway;
-    "getChunk": (nat64, Video_Id) -> (opt Video_Chunk) query;
+    "store_video": (Video_Id, Video_Data) -> () oneway;
+    "load_video": (Video_Id, Load_Info) -> (opt Video_Data) query;
     "getDefaultFeed": (nat64) -> (Feed) query;
     "searchVideo": (text) -> (opt Video_Info) query;
 
