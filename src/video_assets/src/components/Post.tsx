@@ -5,11 +5,16 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { trimString } from '../utils/texts';
 import { loadVideo } from '../services/video_backend';
+import { Post } from '../interfaces/video_interface';
 
 const defaultAvatar =
   'https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg';
 
-const Post = ({ post, toggleFollow }) => {
+interface PostProps {
+  post: Post;
+}
+
+const Post = ({ post }: PostProps) => {
   const classes = postStyles();
   const [video, setVideo] = useState(null);
 
@@ -59,12 +64,7 @@ const Post = ({ post, toggleFollow }) => {
             </Grid>
           </Grid>
           <Grid item>
-            <Button
-              className={classes.followButton}
-              onClick={() => toggleFollow(post)}
-            >
-              Follow
-            </Button>
+            <Button className={classes.followButton}>Follow</Button>
           </Grid>
         </Grid>
         {/* Post body with video */}

@@ -4,6 +4,7 @@ import {
   idlFactory as video_idl,
   canisterId as backendVideoId,
 } from 'dfx-generated/backend';
+import { Post } from '../interfaces/video_interface';
 
 const agent = new HttpAgent();
 const videoBackend = Actor.createActor(video_idl, {
@@ -12,12 +13,12 @@ const videoBackend = Actor.createActor(video_idl, {
 });
 const maxChunkSize = 1024 * 500; // 500kb
 
-async function loadDefaultFeed(count) {
-  const feed = await videoBackend.getDefaultFeed(count);
+async function loadDefaultFeed(count: number): Promise<Array<Post>> {
+  const feed: Array<Post> = await videoBackend.getDefaultFeed(count);
   return feed;
 }
 
-async function loadVideo(videoInfo) {
+async function loadVideo(videoInfo: Video): Promise<string> {
   const { video_id, chunk_count } = videoInfo;
   const chunkBuffers = [];
   const chunksAsPromises = [];
