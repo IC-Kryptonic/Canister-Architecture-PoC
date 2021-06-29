@@ -115,13 +115,17 @@ dfx deploy
 ```
 
 10. Access the application in your browser. Either:
-    a) Access the deployed frontend canister (production-like):
+a) Access the deployed frontend canister (production-like):
 
-    `http://ryjl3-tyaaa-aaaaa-aaaba-cai.localhost:8000/`
+`http://ryjl3-tyaaa-aaaaa-aaaba-cai.localhost:8000/`
+(ryjl3-tyaaa-aaaaa-aaaba-cai is your frontend canister id)
 
-    b) Run a development server:
-    `npm start`
-    (will automatically open a browser tab for http://localhost:8080)
+You can retrieve the canister id like this:
+`dfx canister id video_assets`
+
+b) Run a development server:
+`npm start`
+(will automatically open a browser tab for http://localhost:8080)
 
 11. Stop / Restart the application
 
