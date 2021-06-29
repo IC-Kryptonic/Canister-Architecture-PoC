@@ -1,4 +1,13 @@
 type Video_Id = text;
+type Chunk_Num = nat;
+
+type IPFS_Data = record {};
+
+type Storage_Type = variant {
+    inCanister: Chunk_Num;
+    simpleDistMap: Chunk_Num;
+    IPFS: IPFS_Data;
+};
 
 type Video_Info = record {
     "video_id": Video_Id;

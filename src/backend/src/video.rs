@@ -9,15 +9,27 @@ pub type VideoChunk = Vec<u8>;
 pub type VideoChunks = Vec<VideoChunk>;
 pub type ChunkStore = HashMap<VideoId, VideoChunks>;
 pub type Feed = Vec<VideoInfo>;
+pub type ChunkNum = usize;
 
-#[derive(Clone, Debug, CandidType, Deserialize)]
+
+#[derive(Clone, CandidType, Deserialize)]
+pub struct IPFSData;
+
+#[derive(Clone, CandidType, Deserialize)]
+pub enum StorageType{
+    InCanister(ChunkNum),
+    SimpleDistMap(ChunkNum),
+    IPFS(IPFSData),
+}
+
+#[derive(Clone, CandidType, Deserialize)]
 pub struct VideoInfo{
     pub video_id: VideoId,
     pub owner: Principal,
     pub name: String,
     pub description: String,
     pub keywords: Vec<String>,
-    pub chunk_count: usize,
+    pub storage_type: StorageType,
 }
 
 
@@ -61,7 +73,7 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
 ///This function takes a video chunk and adds it to the chunks for the video.
 ///It silently ignores chunks if the video does not exist.
 #[update(name = "putChunk")]
-pub fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
+pub fn put_chunk(chunk: Vec<u8>, chunk_num: ChunkNum, video_id: VideoId){
     if let Some(video_info) = storage::get::<VideoInfoStore>().get(&video_id){
         let sender  = if cfg!(target_arch = "wasm32"){
             ic_cdk::caller()
@@ -88,7 +100,7 @@ pub fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
 ///This function retrieves a wrapped video chunk.
 ///If the video or chunk does not exist it returns [None].
 #[query(name = "getChunk")]
-pub fn get_chunk(chunk_num: usize, video_id: VideoId) -> Option<&'static VideoChunk>{
+pub fn get_chunk(chunk_num: ChunkNum, video_id: VideoId) -> Option<&'static VideoChunk>{
     let chunk_store = storage::get::<ChunkStore>();
 
     if let Some(video_chunks) = chunk_store.get(&video_id){
