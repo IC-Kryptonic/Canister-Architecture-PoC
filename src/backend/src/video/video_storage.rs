@@ -18,22 +18,31 @@ pub struct Chunk{
 
 #[derive(Clone, CandidType, Deserialize)]
 pub enum StorageType{
+    #[serde(rename = "inCanister")]
     InCanister(ChunkNum),
+    #[serde(rename = "simpleDistMap")]
     SimpleDistMap(ChunkNum),
+    #[serde(rename = "ipfs")]
     IPFS(IPFSData),
 }
 
 #[derive(Clone, CandidType, Deserialize)]
 pub enum VideoData{
+    #[serde(rename = "inCanister")]
     InCanister(Chunk),
+    #[serde(rename = "simpleDistMap")]
     SimpleDistMap(Chunk),
+    #[serde(rename = "ipfs")]
     IPFS(IPFSData)
 }
 
 #[derive(Clone, CandidType, Deserialize)]
 pub enum LoadInfo{
+    #[serde(rename = "inCanister")]
     InCanister(ChunkNum),
+    #[serde(rename = "simpleDistMap")]
     SimpleDistMap(ChunkNum),
+    #[serde(rename = "ipfs")]
     IPFS,
 }
 
