@@ -28,7 +28,7 @@ type Load_Info = variant {
 };
 
 type Video_Info = record {
-    "video_id": Video_Id;
+    "video_id": opt Video_Id;
     "owner": principal;
     "name": text;
     "description": text;

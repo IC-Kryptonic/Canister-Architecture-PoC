@@ -12,7 +12,7 @@ pub type Feed = Vec<VideoInfo>;
 
 #[derive(Clone, CandidType, Deserialize)]
 pub struct VideoInfo{
-    pub video_id: VideoId,
+    pub video_id: Option<VideoId>,
     pub owner: Principal,
     pub name: String,
     pub description: String,
@@ -44,7 +44,7 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
         }
     };
 
-    video.video_id = id.clone();
+    video.video_id = Some(id.clone());
 
     video.owner = if cfg!(target_arch = "wasm32"){
         ic_cdk::caller()
@@ -134,8 +134,8 @@ pub fn post_upgrade() {
 
     for (video_info, chunks) in combined_store {
         let id = video_info.video_id.clone();
-        video_info_store.insert(id.clone(), video_info);
-        chunks_store.insert(id, chunks);
+        video_info_store.insert(id.clone().unwrap(), video_info);
+        chunks_store.insert(id.unwrap(), chunks);
     }
 }
 
