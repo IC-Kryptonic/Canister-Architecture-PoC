@@ -17,19 +17,27 @@ async function loadDefaultFeed(count) {
   return feed;
 }
 
+
 async function loadVideo(videoInfo) {
-  const { video_id, chunk_count } = videoInfo;
+  const { video_id, storage_type} = videoInfo;
+  let video_id_unpacked = video_id[0];
+
+  let chunk_count = storage_type.inCanister;
+
   const chunkBuffers = [];
   const chunksAsPromises = [];
   for (let i = 0; i <= Number(chunk_count.toString()); i++) {
-    chunksAsPromises.push(videoBackend.getChunk(i, video_id));
+    let loadInfo = {
+      inCanister: i,
+    };
+    chunksAsPromises.push(videoBackend.loadVideo(video_id_unpacked, loadInfo));
   }
   const nestedBytes = (await Promise.all(chunksAsPromises))
     .map((val) => {
       if (val[0] === undefined) {
         return null;
       } else {
-        return val[0];
+        return val[0].inCanister;
       }
     })
     .filter((v) => v !== null);
@@ -49,14 +57,24 @@ function _processAndUploadChunk(
   byteStart,
   videoSize,
   videoId,
-  chunk
+  chunkNum
 ) {
   const videoSlice = videoBuffer.slice(
     byteStart,
     Math.min(videoSize, byteStart + maxChunkSize)
   );
   const data = Array.from(new Uint8Array(videoSlice));
-  return videoBackend.putChunk(data, chunk, videoId);
+
+
+  let chunk = {
+    "data" : data,
+    "num" : chunkNum,
+  };
+  let videoData = {
+    inCanister: chunk
+  };
+
+  return videoBackend.storeVideo(videoId, videoData);
 }
 
 async function uploadVideo(videoName, videoDescription, video) {
@@ -71,11 +89,11 @@ async function uploadVideo(videoName, videoDescription, video) {
 
   const id = await videoBackend.createVideo({
     name: videoName,
+    video_id: [],
     owner: Principal.fromUint8Array([]),
     description: videoDescription,
-    video_id: '', // TODO id should be set by backend, why set it here?
-    chunk_count: chunkCount,
     keywords: [],
+    storage_type: { inCanister : chunkCount}, 
   });
   console.debug('videoId:', id, `timestamp: ${Date.now()}`);
 
