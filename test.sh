@@ -9,11 +9,11 @@ echo "Running testing script..."
 echo "Starting replica"
 dfx start --background --clean
 
-echo "Deploying canister"
-dfx deploy
+echo "Deploying backend canister"
+dfx deploy backend
 
 set -x
-dfx canister call backend createVideo '(record {video_id = ""; owner = principal "aaaaa-aa"; name = "video1"; description = "mountain dog"; keywords = vec {"scars"; "toast"}; storage_type = variant {inCanister = 1}})'
+dfx canister call backend createVideo '(record {video_id = null; owner = principal "aaaaa-aa"; name = "video1"; description = "mountain dog"; keywords = vec {"scars"; "toast"}; storage_type = variant {inCanister = 1}})'
 dfx canister call backend getVideoInfo '("video1")'
 dfx canister call backend storeVideo '("video1", variant {inCanister = record { "data" = blob "\CA\FF\EE"; "num" = 0 : nat64}})'
 dfx canister call backend loadVideo '("video1", variant {inCanister = 0 : nat64})'
