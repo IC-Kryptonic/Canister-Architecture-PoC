@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const dotenv = require('dotenv');
 const dfxJson = require('./dfx.json');
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -35,6 +36,13 @@ function generateWebpackConfigForCanister(name, info) {
   if (typeof info.frontend !== 'object') {
     return;
   }
+
+  // set env variables
+  const env = dotenv.config().parsed;
+  const envKeys = Object.keys(env).reduce((prev, next) => {
+    prev[`process.env.${next}`] = JSON.stringify(env[next]);
+    return prev;
+  }, {});
 
   return {
     mode: isDevelopment ? 'development' : 'production',
@@ -95,6 +103,7 @@ function generateWebpackConfigForCanister(name, info) {
         filename: 'index.html',
         chunks: ['index'],
       }),
+      new webpack.DefinePlugin(envKeys),
       new webpack.ProvidePlugin({
         Buffer: [require.resolve('buffer/'), 'Buffer'],
         process: require.resolve('process/browser'),
