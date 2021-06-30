@@ -87,7 +87,7 @@ const Upload = () => {
                   maxFileSize={maxFileSize}
                   filesLimit={filesLimit}
                   acceptedFiles={acceptedFiles}
-                  //@ts-ignore
+                  //@ts-ignore (fault of the package afaik)
                   fileObjects={[video]}
                 />
               </div>

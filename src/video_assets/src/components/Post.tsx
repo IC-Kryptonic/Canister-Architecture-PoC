@@ -39,14 +39,14 @@ const Post = ({ post }: PostProps) => {
               <Grid item>
                 <img
                   className={classes.userProfile}
-                  src={post?.avatar || defaultAvatar}
+                  src={defaultAvatar}
                   width={'100%'}
                 />
               </Grid>
               <Grid item>
                 <Grid container spacing={1}>
                   <Grid item>
-                    <strong>{post?.username || '<<username>>'}</strong>
+                    <strong>{'<<username>>'}</strong>
                   </Grid>
                   <Grid item className={classes.lightText}>
                     {post?.video_id
@@ -82,11 +82,9 @@ const Post = ({ post }: PostProps) => {
           <Grid item>
             <FavoriteBorderIcon />
           </Grid>
-          <Grid item>{post.likes}</Grid>
           <Grid item>
             <VisibilityIcon />
           </Grid>
-          <Grid item>{post.views}</Grid>
         </Grid>
       </Grid>
     </Grid>
