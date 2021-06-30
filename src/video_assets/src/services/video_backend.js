@@ -37,7 +37,7 @@ async function loadVideo(videoInfo) {
       if (val[0] === undefined) {
         return null;
       } else {
-        return val[0].inCanister;
+        return val[0].inCanister.data;
       }
     })
     .filter((v) => v !== null);
