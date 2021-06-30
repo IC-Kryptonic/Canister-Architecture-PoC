@@ -60,6 +60,8 @@ function _processAndUploadChunk(
 }
 
 async function uploadVideo(videoName, videoDescription, video) {
+
+  await agent.fetchRootKey();
   console.debug('starting upload');
   if (!video.size) {
     throw new Error('The video you are trying to upload has no size', video);
