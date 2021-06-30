@@ -137,6 +137,10 @@ dfx stop
 
 To restart the replica just use `dfx start` again or `dfx start --clean` to start without previously deployed canisters.
 
+If you start with a clean dfx replica, the deployment of the internet-identity canister might fail because it tries to upgrade a (now deleted) canister. 
+
+In that case, run `rm -rf .dfx` in the internet-identity repository and then deploy the canister.
+
 # Troubleshooting
 
 If you get the error `error[E0463]: can't find crate for 'core'`, following the instruction in the terminal, e.g.
