@@ -1,4 +1,4 @@
-function trimString(input, length) {
+function trimString(input: string, length: number) {
   if (input.length > length) {
     const halfLength = length / 2;
     input =

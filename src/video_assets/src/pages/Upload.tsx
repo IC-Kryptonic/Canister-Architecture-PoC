@@ -12,10 +12,10 @@ const acceptedFiles = ['video/*'];
 
 const Upload = () => {
   const classes = uploadStyles();
-  const [video, setVideo] = useState(undefined);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [uploading, setUploading] = useState(false);
+  const [video, setVideo] = useState<File | undefined>(undefined);
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [uploading, setUploading] = useState<boolean>(false);
 
   const canSubmit = () => {
     return video !== undefined && title !== '' && description !== '';
@@ -87,6 +87,7 @@ const Upload = () => {
                   maxFileSize={maxFileSize}
                   filesLimit={filesLimit}
                   acceptedFiles={acceptedFiles}
+                  //@ts-ignore (fault of the package afaik)
                   fileObjects={[video]}
                 />
               </div>

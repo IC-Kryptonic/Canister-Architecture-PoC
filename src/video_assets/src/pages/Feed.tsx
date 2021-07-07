@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
 import Header from '../components/Header';
-import Post from '../components/Post';
+import PostComponent from '../components/Post';
 import { loadDefaultFeed } from '../services/video_backend';
+import { Post } from '../interfaces/video_interface';
 
 const Feed = () => {
-  const [posts, setPosts] = useState([]);
-  const [userToToggle, setUserToToggle] = useState(null);
+  const [posts, setPosts] = useState<Array<Post>>([]);
 
   useEffect(() => {
     async function queryFeed() {
@@ -20,12 +20,6 @@ const Feed = () => {
     queryFeed();
   }, []);
 
-  //toggle user from followed to unfollowed
-  if (userToToggle) {
-    //do something to follow / unfollow
-    setUserToToggle(null);
-  }
-
   return (
     <>
       <Header />
@@ -33,11 +27,7 @@ const Feed = () => {
         {posts && posts.length > 0 ? (
           <>
             {posts.map((post, index) => (
-              <Post
-                key={index}
-                post={post}
-                toggleFollow={(userToToggle) => setUserToToggle(userToToggle)}
-              />
+              <PostComponent key={index} post={post} />
             ))}
           </>
         ) : (

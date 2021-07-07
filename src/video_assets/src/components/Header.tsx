@@ -4,7 +4,7 @@ import { headerStyles } from '../styles/header_styles';
 import logo from '../assets/images/logo.svg';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
-import history from '../components/History';
+import history from './History';
 
 const Header = () => {
   const classes = headerStyles();
