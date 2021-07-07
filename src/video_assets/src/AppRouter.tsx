@@ -5,7 +5,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { AuthContextState } from './contexts/AuthContextState';
 import Auth from './pages/Auth';
 import Feed from './pages/Feed';
-import TestVideoInfo from './pages/TestVideoInfo';
 import Upload from './pages/Upload';
 
 export const AppRouter = () => {
@@ -13,7 +12,6 @@ export const AppRouter = () => {
     <AuthContextState>
       <Router history={History}>
         <Switch>
-          <ProtectedRoute exact path="/test-upload" component={TestVideoInfo} />
           <ProtectedRoute exact path="/upload" component={Upload} />
           <ProtectedRoute exact path="/feed" component={Feed} />
           <Route exact path="/login" component={Auth} />

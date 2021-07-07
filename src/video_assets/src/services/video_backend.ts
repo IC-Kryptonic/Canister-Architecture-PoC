@@ -4,6 +4,7 @@ import {
   idlFactory as video_idl,
   canisterId as backendVideoId,
 } from 'dfx-generated/backend';
+import { Post } from '../interfaces/video_interface';
 
 const agent = new HttpAgent();
 const videoBackend = Actor.createActor(video_idl, {
@@ -12,20 +13,20 @@ const videoBackend = Actor.createActor(video_idl, {
 });
 const maxChunkSize = 1024 * 500; // 500kb
 
-async function loadDefaultFeed(count) {
-  const feed = await videoBackend.getDefaultFeed(count);
+async function loadDefaultFeed(count: number): Promise<Array<Post>> {
+  const feed = (await videoBackend.getDefaultFeed(count)) as Array<Post>;
   return feed;
 }
 
-async function loadVideo(videoInfo) {
+async function loadVideo(videoInfo: Post): Promise<string> {
   const { video_id, chunk_count } = videoInfo;
-  const chunkBuffers = [];
+  const chunkBuffers: Uint8Array[] | Buffer[] = [];
   const chunksAsPromises = [];
   for (let i = 0; i <= Number(chunk_count.toString()); i++) {
     chunksAsPromises.push(videoBackend.getChunk(i, video_id));
   }
   const nestedBytes = (await Promise.all(chunksAsPromises))
-    .map((val) => {
+    .map((val: Array<number>) => {
       if (val[0] === undefined) {
         return null;
       } else {
@@ -45,11 +46,11 @@ async function loadVideo(videoInfo) {
 }
 
 function _processAndUploadChunk(
-  videoBuffer,
-  byteStart,
-  videoSize,
-  videoId,
-  chunk
+  videoBuffer: ArrayBuffer,
+  byteStart: number,
+  videoSize: number,
+  videoId: string,
+  chunk: number
 ) {
   const videoSlice = videoBuffer.slice(
     byteStart,
@@ -59,24 +60,27 @@ function _processAndUploadChunk(
   return videoBackend.putChunk(data, chunk, videoId);
 }
 
-async function uploadVideo(videoName, videoDescription, video) {
-
+async function uploadVideo(
+  videoName: string,
+  videoDescription: string,
+  video: File
+) {
   await agent.fetchRootKey();
   console.debug('starting upload');
   if (!video.size) {
-    throw new Error('The video you are trying to upload has no size', video);
+    throw new Error('The video you are trying to upload has no size: ' + video);
   }
   const chunkCount = Number(Math.ceil(video.size / maxChunkSize));
   console.debug('chunkCount:', chunkCount, `timestamp: ${Date.now()}`);
 
-  const id = await videoBackend.createVideo({
+  const id = (await videoBackend.createVideo({
     name: videoName,
-    owner: Principal.fromUint8Array([]),
+    owner: Principal.fromUint8Array(new Uint8Array([])),
     description: videoDescription,
     video_id: '', // TODO id should be set by backend, why set it here?
     chunk_count: chunkCount,
     keywords: [],
-  });
+  })) as string;
   console.debug('videoId:', id, `timestamp: ${Date.now()}`);
 
   const videoBuffer = (await video?.arrayBuffer()) || new ArrayBuffer(0);

@@ -6,7 +6,11 @@ import {
 } from '../services/auth_services';
 import { Identity } from '@dfinity/agent';
 
-const AuthContextState = (props) => {
+interface AuthContextStateProps {
+  children: Array<React.ReactElement> | React.ReactElement;
+}
+
+const AuthContextState = (props: AuthContextStateProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [identity, setIdentity] = useState<Identity | null>(null);
