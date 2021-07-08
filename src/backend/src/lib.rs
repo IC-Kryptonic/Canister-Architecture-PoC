@@ -8,6 +8,6 @@ pub mod profile;
 #[update(name = "reset")]
 pub fn reset(){
     storage::delete::<video::VideoInfoStore>();
-    storage::delete::<video::ChunkStore>();
+    storage::delete::<video::video_storage::local::ChunkStore>();
     storage::delete::<profile::ProfileStore>();
 }

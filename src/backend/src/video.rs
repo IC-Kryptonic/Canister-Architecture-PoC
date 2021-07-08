@@ -3,21 +3,21 @@ use ic_cdk::storage;
 use ic_cdk_macros::*;
 use std::collections::HashMap;
 
+pub mod video_storage;
+
 pub type VideoInfoStore = HashMap<VideoId, VideoInfo>;
 pub type VideoId = String;
-pub type VideoChunk = Vec<u8>;
-pub type VideoChunks = Vec<VideoChunk>;
-pub type ChunkStore = HashMap<VideoId, VideoChunks>;
 pub type Feed = Vec<VideoInfo>;
 
-#[derive(Clone, Debug, CandidType, Deserialize)]
+
+#[derive(Clone, CandidType, Deserialize)]
 pub struct VideoInfo{
-    pub video_id: VideoId,
+    pub video_id: Option<VideoId>,
     pub owner: Principal,
     pub name: String,
     pub description: String,
     pub keywords: Vec<String>,
-    pub chunk_count: usize,
+    pub storage_type: video_storage::StorageType,
 }
 
 
@@ -36,7 +36,6 @@ pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
 #[update(name = "createVideo")]
 pub fn create_video(mut video: VideoInfo) -> VideoId{
     let info_store = storage::get_mut::<VideoInfoStore>();
-    let chunk_store = storage::get_mut::<ChunkStore>();
     
     let id = loop{
         let generated = generate_video_id(&video);
@@ -45,7 +44,7 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
         }
     };
 
-    video.video_id = id.clone();
+    video.video_id = Some(id.clone());
 
     video.owner = if cfg!(target_arch = "wasm32"){
         ic_cdk::caller()
@@ -53,50 +52,24 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
         Principal::from_slice(&[])
     };
 
-    chunk_store.insert(id.clone(), vec![Vec::new(); video.chunk_count]);
+    video_storage::create_video(id.clone(), &video.storage_type);
+
     info_store.insert(id.clone(), video);
     return id;
 }
 
-///This function takes a video chunk and adds it to the chunks for the video.
-///It silently ignores chunks if the video does not exist.
-#[update(name = "putChunk")]
-pub fn put_chunk(chunk: Vec<u8>, chunk_num: usize, video_id: VideoId){
-    if let Some(video_info) = storage::get::<VideoInfoStore>().get(&video_id){
-        let sender  = if cfg!(target_arch = "wasm32"){
-            ic_cdk::caller()
-        } else {
-            Principal::from_slice(&[])
-        };
-
-        if sender != video_info.owner{
-            ic_cdk::api::print("Someone tried to upload a chunk to a video that is not theirs");
-            return;
-        }
-    } else {
-        ic_cdk::api::print("Someone tried to upload a chunk to a video that does not exist");
-        return;
-    }
-
-    let chunk_store = storage::get_mut::<ChunkStore>();
-
-    if let Some(video_chunks) = chunk_store.get_mut(&video_id){
-        video_chunks[chunk_num] = chunk;
-    }
+///This function takes a data from video that should be stored and adds it to the appropiate
+///storage.
+#[update(name = "storeVideo")]
+pub fn store_video(video_id: VideoId, data: video_storage::VideoData){
+    video_storage::store_video(video_id, data);
 }
 
-///This function retrieves a wrapped video chunk.
-///If the video or chunk does not exist it returns [None].
-#[query(name = "getChunk")]
-pub fn get_chunk(chunk_num: usize, video_id: VideoId) -> Option<&'static VideoChunk>{
-    let chunk_store = storage::get::<ChunkStore>();
-
-    if let Some(video_chunks) = chunk_store.get(&video_id){
-        video_chunks
-            .get(chunk_num)
-    } else {
-        None
-    }
+///This function retrieves video storage data.
+///If the video or data does not exist it returns [None].
+#[query(name = "loadVideo")]
+pub fn load_video(video_id: VideoId, load_info: video_storage::LoadInfo) -> Option<video_storage::VideoData>{
+    video_storage::load_video(video_id, load_info)
 }
 
 ///This funtion retrieves the specified number of [VideoInfo] and returns them as a [Feed].
@@ -138,9 +111,9 @@ pub fn search_video(to_search: String) -> Option<&'static VideoInfo> {
 #[pre_upgrade]
 pub fn pre_upgrade() {
     let video_infos = storage::get_mut::<VideoInfoStore>();
-    let video_chunks = storage::get_mut::<ChunkStore>();
+    let video_chunks = storage::get_mut::<video_storage::local::ChunkStore>();
 
-    let combined: Vec<(VideoInfo, VideoChunks)> = video_infos
+    let combined: Vec<(VideoInfo, video_storage::local::Chunks)> = video_infos
         .drain()
         .map(|(id, video_info)| (video_info, video_chunks.remove(&id).unwrap()))
         .collect();
@@ -151,18 +124,18 @@ pub fn pre_upgrade() {
 ///Loads the videos from stable storage after an upgrade
 #[post_upgrade]
 pub fn post_upgrade() {
-    let (combined_store,): (Vec<(VideoInfo, VideoChunks)>, ) = storage::stable_restore().unwrap();
+    let (combined_store,): (Vec<(VideoInfo, video_storage::local::Chunks)>, ) = storage::stable_restore().unwrap();
     
     let video_info_store = storage::get_mut::<VideoInfoStore>();
-    let chunks_store = storage::get_mut::<ChunkStore>();
+    let chunks_store = storage::get_mut::<video_storage::local::ChunkStore>();
 
     video_info_store.reserve(combined_store.len());
     chunks_store.reserve(combined_store.len());
 
     for (video_info, chunks) in combined_store {
         let id = video_info.video_id.clone();
-        video_info_store.insert(id.clone(), video_info);
-        chunks_store.insert(id, chunks);
+        video_info_store.insert(id.clone().unwrap(), video_info);
+        chunks_store.insert(id.unwrap(), chunks);
     }
 }
 

@@ -8,6 +8,9 @@
     "build": "NODE_ENV=production webpack"
   },
   "devDependencies": {
+    "@dfinity/candid": "0.9.1",
+    "@dfinity/authentication": "0.9.1",
+    "@dfinity/identity": "0.9.1",
     "@dfinity/agent": "0.9.1",
     "@dfinity/principal": "0.9.1",
     "@types/react-dom": "^17.0.8",

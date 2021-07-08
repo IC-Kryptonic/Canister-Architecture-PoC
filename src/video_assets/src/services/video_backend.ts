@@ -4,7 +4,7 @@ import {
   idlFactory as video_idl,
   canisterId as backendVideoId,
 } from 'dfx-generated/backend';
-import { Post } from '../interfaces/video_interface';
+import { Post, Video_Data } from '../interfaces/video_interface';
 
 const agent = new HttpAgent();
 const videoBackend = Actor.createActor(video_idl, {
@@ -19,18 +19,25 @@ async function loadDefaultFeed(count: number): Promise<Array<Post>> {
 }
 
 async function loadVideo(videoInfo: Post): Promise<string> {
-  const { video_id, chunk_count } = videoInfo;
+  const { video_id, storage_type} = videoInfo;
+  let video_id_unpacked: string = video_id[0];
+
+  let chunk_count: number = storage_type.inCanister;
+
   const chunkBuffers: Uint8Array[] | Buffer[] = [];
   const chunksAsPromises = [];
   for (let i = 0; i <= Number(chunk_count.toString()); i++) {
-    chunksAsPromises.push(videoBackend.getChunk(i, video_id));
+    let loadInfo = {
+      inCanister: i,
+    };
+    chunksAsPromises.push(videoBackend.loadVideo(video_id_unpacked, loadInfo));
   }
   const nestedBytes = (await Promise.all(chunksAsPromises))
-    .map((val: Array<number>) => {
+    .map((val: Array<Video_Data>) => {
       if (val[0] === undefined) {
         return null;
       } else {
-        return val[0];
+        return val[0].inCanister.data;
       }
     })
     .filter((v) => v !== null);
@@ -50,14 +57,24 @@ function _processAndUploadChunk(
   byteStart: number,
   videoSize: number,
   videoId: string,
-  chunk: number
+  chunkNum: number
 ) {
   const videoSlice = videoBuffer.slice(
     byteStart,
     Math.min(videoSize, byteStart + maxChunkSize)
   );
   const data = Array.from(new Uint8Array(videoSlice));
-  return videoBackend.putChunk(data, chunk, videoId);
+
+
+  let chunk = {
+    "data" : data,
+    "num" : chunkNum,
+  };
+  let videoData = {
+    inCanister: chunk
+  };
+
+  return videoBackend.storeVideo(videoId, videoData);
 }
 
 async function uploadVideo(
@@ -75,11 +92,11 @@ async function uploadVideo(
 
   const id = (await videoBackend.createVideo({
     name: videoName,
+    video_id: [],
     owner: Principal.fromUint8Array(new Uint8Array([])),
     description: videoDescription,
-    video_id: '', // TODO id should be set by backend, why set it here?
-    chunk_count: chunkCount,
     keywords: [],
+    storage_type: { inCanister : chunkCount}, 
   })) as string;
   console.debug('videoId:', id, `timestamp: ${Date.now()}`);
 
