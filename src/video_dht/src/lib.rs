@@ -1,9 +1,17 @@
-use ic_cdk::export::candid::{CandidType, Deserialize, Principal};
+use ic_cdk::export::candid::{CandidType, Deserialize, Principal, Encode, Decode};
 use ic_cdk_macros::*;
 use ic_cdk::api::call;
 
-#[update(name = "testBucket")]
-pub async fn call_bucket() {
-    let principal = Principal::from_text("ryjl3-tyaaa-aaaaa-aaaba-cai").unwrap();
-    let _res: Result<(i32,), _>  = call::call( principal, "test", ()).await;
+
+#[derive(CandidType, Deserialize)]
+struct CreateCanisterResult {
+    canister_id: Principal,
+}
+
+#[update(name = "createCanister")]
+pub async fn create_canister() -> Principal{
+    let manage_princ = Principal::from_text("aaaaa-aa").unwrap();
+    let response: Result<(CreateCanisterResult,), _> = call::call( manage_princ, "create_canister", ()).await;
+
+    return response.unwrap().0.canister_id;
 }

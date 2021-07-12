@@ -1,8 +1,10 @@
 {
   "canisters": {
-    "Video_DHT": {
-      "type": "motoko",
-      "main": "src/video_dht/Table.mo"
+    "video_dht": {
+      "build": "cargo build --target wasm32-unknown-unknown --package  video_dht --release",
+      "candid": "src/video_dht/video_dht.did",
+      "wasm": "target/wasm32-unknown-unknown/release/video_dht.wasm",
+      "type": "custom"
     },
     "backend": {
       "build": "cargo build --target wasm32-unknown-unknown --package  backend --release",
