@@ -1,61 +1,7 @@
 type Video_Id = text;
 type Chunk_Num = nat64;
-type Chunk_Data = blob;
-
-type IPFS_Data = record {};
-
-type Chunk = record {
-    "data": Chunk_Data;
-    "num": Chunk_Num;
-};
-
-type Storage_Type = variant {
-    inCanister: Chunk_Num;
-    simpleDistMap: Chunk_Num;
-    ipfs: IPFS_Data;
-};
-
-type Video_Data = variant {
-    inCanister: Chunk;
-    simpleDistMap: Chunk;
-    ipfs: IPFS_Data;
-};
-
-type Load_Info = variant {
-    inCanister: Chunk_Num;
-    simpleDistMap: Chunk_Num;
-    ipfs;
-};
-
-type Video_Info = record {
-    "video_id": opt Video_Id;
-    "owner": principal;
-    "name": text;
-    "description": text;
-    "keywords": vec text;
-    "storage_type": Storage_Type;
-};
-
-type Profile = record {
-        "principal": principal;
-        "name": text;
-        "likes": vec Video_Id;
-};
-
-type Feed = vec Video_Info;
 
 service : {
-    "reset": () -> () oneway;
-
-    "getVideoInfo": (Video_Id) -> (opt Video_Info) query;
-    "createVideo": (Video_Info) -> (Video_Id);
-    "storeVideo": (Video_Id, Video_Data) -> () oneway;
-    "loadVideo": (Video_Id, Load_Info) -> (opt Video_Data) query;
-    "getDefaultFeed": (nat64) -> (Feed) query;
-    "searchVideo": (text) -> (opt Video_Info) query;
-
-    "getProfile": (principal) -> (opt Profile) query;
-    "getCurrentProfile": () -> (opt Profile) query;
-    "createProfile": (Profile) -> () oneway;
-    "likeVideo": (Video_Id) -> () oneway;
+    "createVideo": (Video_Id, Chunk_Num) -> () oneway; 
+    "createCanister": () -> () oneway;
 }

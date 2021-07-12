@@ -7,6 +7,7 @@
       "type": "custom"
     },
     "backend": {
+      "dependencies": ["video_dht"],
       "build": "cargo build --target wasm32-unknown-unknown --package  backend --release",
       "candid": "src/backend/backend.did",
       "wasm": "target/wasm32-unknown-unknown/release/backend.wasm",

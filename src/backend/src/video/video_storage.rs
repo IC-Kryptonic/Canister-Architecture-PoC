@@ -3,6 +3,7 @@ use ic_cdk::export::candid::{CandidType, Deserialize};
 use super::VideoId;
 
 pub mod local;
+pub mod simple_dist_map;
 
 pub type ChunkData = Vec<u8>;
 pub type ChunkNum = usize;
@@ -65,9 +66,12 @@ pub fn load_video(video_id: VideoId, load_info: LoadInfo) -> Option<VideoData>{
     }
 }
 
-pub fn create_video(video_id: VideoId, storage_type: &StorageType){
+pub async fn create_video(video_id: VideoId, storage_type: &StorageType){
     match storage_type {
         StorageType::InCanister(chunk_num) => local::create_video_store(video_id, chunk_num),
+        StorageType::SimpleDistMap(chunk_num) => {
+            simple_dist_map::create_video(video_id, *chunk_num).await;
+        }
         _ => unimplemented!(),
     }
 }

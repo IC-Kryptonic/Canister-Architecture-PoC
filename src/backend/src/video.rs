@@ -34,7 +34,7 @@ pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
 ///This function creates a new Video based on the video information of the argument.
 ///It returns the newly generated id of the function.
 #[update(name = "createVideo")]
-pub fn create_video(mut video: VideoInfo) -> VideoId{
+pub async fn create_video(mut video: VideoInfo) -> VideoId{
     let info_store = storage::get_mut::<VideoInfoStore>();
     
     let id = loop{
@@ -52,7 +52,7 @@ pub fn create_video(mut video: VideoInfo) -> VideoId{
         Principal::from_slice(&[])
     };
 
-    video_storage::create_video(id.clone(), &video.storage_type);
+    video_storage::create_video(id.clone(), &video.storage_type).await;
 
     info_store.insert(id.clone(), video);
     return id;
@@ -108,7 +108,7 @@ pub fn search_video(to_search: String) -> Option<&'static VideoInfo> {
 }
 
 ///Stores the videos into the stable storage before an upgrade
-#[pre_upgrade]
+/*#[pre_upgrade]
 pub fn pre_upgrade() {
     let video_infos = storage::get_mut::<VideoInfoStore>();
     let video_chunks = storage::get_mut::<video_storage::local::ChunkStore>();
@@ -137,7 +137,7 @@ pub fn post_upgrade() {
         video_info_store.insert(id.clone().unwrap(), video_info);
         chunks_store.insert(id.unwrap(), chunks);
     }
-}
+}*/
 
 ///This function generates a id based on the information of the Video and a timestamp.
 fn generate_video_id(info: &VideoInfo) -> VideoId{
