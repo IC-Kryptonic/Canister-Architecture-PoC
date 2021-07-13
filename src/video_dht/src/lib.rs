@@ -9,6 +9,7 @@ use std::hash::{Hash, Hasher};
 pub type VideoId = String;
 pub type ChunkNum = usize;
 pub type BucketStore = Vec<Option<Principal>>;
+pub type BucketCode = Vec<u8>;
 
 const MAP_SIZE: usize = 10000;
 
@@ -17,10 +18,35 @@ struct CreateCanisterResult {
     canister_id: Principal,
 }
 
+#[derive(CandidType, Deserialize)]
+enum InstallMode {
+    #[serde(rename = "install")]
+    Install,
+    #[serde(rename = "reinstall")]
+    Reinstall,
+    #[serde(rename = "upgrade")]
+    Upgrade,
+}
+
+#[derive(CandidType)]
+struct InstallCodeArg {
+    mode: InstallMode,
+    canister_id: Principal,
+    wasm_module: Vec<u8>,
+    arg : Vec<u8>,
+}
+
+
 #[init]
-pub fn init(){
-    let mut store = storage::get_mut::<BucketStore>();
-    store.append(&mut vec![None; MAP_SIZE])
+fn init(mut bucket_code: Vec<u8>){
+    storage::get_mut::<BucketStore>().append(&mut vec![None; MAP_SIZE]);
+
+    storage::get_mut::<BucketCode>().append(&mut bucket_code);
+}
+
+#[post_upgrade]
+pub fn post_upgrade() {
+    init(Vec::new()); //TODO SAVE WASM CODE AND RESTORE IT
 }
 
 ///Creates a new video canister, currently it always creates a new bucket which only stores this
@@ -54,7 +80,9 @@ async fn create_video_bucket(_princ: &Principal, _id: &VideoId, _chunk_num: Chun
 }
 
 async fn install_bucket(_princ: &Principal){
-    ic_cdk::api::print("Instal Bucket not yet implemented");
+    let manage_princ = Principal::management_canister();
+
+
 }
 
 async fn create_canister() -> Principal{
