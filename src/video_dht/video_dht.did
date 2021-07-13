@@ -1,7 +1,7 @@
 type Video_Id = text;
 type Chunk_Num = nat64;
 
-service : (opt blob) -> {
+service : (blob) -> {
     "createVideo": (Video_Id, Chunk_Num) -> () oneway; 
     "createCanister": () -> () oneway;
 }

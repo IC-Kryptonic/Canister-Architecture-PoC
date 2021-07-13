@@ -28,7 +28,7 @@ enum InstallMode {
     Upgrade,
 }
 
-#[derive(CandidType)]
+#[derive(CandidType, Deserialize)]
 struct InstallCodeArg {
     mode: InstallMode,
     canister_id: Principal,
@@ -72,21 +72,28 @@ pub async fn create_video(id: VideoId, chunk_num: ChunkNum){
         }
     }
 
-    ic_cdk::api::print(format!("Created Video {} with {} chunks", id, chunk_num));
+    ic_cdk::api::print(format!("Created Video {} with {} chunks in Bucket {:?}", id, chunk_num));
 }
 
 async fn create_video_bucket(_princ: &Principal, _id: &VideoId, _chunk_num: ChunkNum){
     ic_cdk::api::print("Create video net yet implemented");
 }
 
-async fn install_bucket(_princ: &Principal){
+async fn install_bucket(new_princ: &Principal){
     let manage_princ = Principal::management_canister();
 
+    let install_arg = InstallCodeArg {
+        mode: InstallMode::Install,
+        canister_id: new_princ.clone(),
+        wasm_module: storage::get::<BucketCode>().clone(),
+        arg : Vec::new(),
+    };
 
+    let _response: Result<(), _> = call::call( manage_princ, "install_code", (install_arg,)).await;
 }
 
 async fn create_canister() -> Principal{
-    let manage_princ = Principal::from_text("aaaaa-aa").unwrap();
+    let manage_princ = Principal::management_canister();
     let response: Result<(CreateCanisterResult,), _> = call::call( manage_princ, "create_canister", ()).await;
 
     return response.unwrap().0.canister_id;
