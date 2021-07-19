@@ -1,10 +1,25 @@
 import React from 'react';
-import { Grid, Button } from '@material-ui/core';
-import { headerStyles } from '../styles/header_styles';
+import { Grid, Button, makeStyles } from '@material-ui/core';
+
 import logo from '../assets/images/logo.svg';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 import history from './History';
+
+const headerStyles = makeStyles({
+  logo_wrapper: {
+    padding: 10,
+    marginLeft: 20
+  },
+  logo: {
+    height: 20,
+  },
+  profile: {
+    width: 40,
+    height: 40,
+  }
+});
 
 const Header = () => {
   const classes = headerStyles();
@@ -17,33 +32,32 @@ const Header = () => {
     history.push('/feed');
   };
 
+  const onClickProfileButton = () => {
+    history.push('/profile');
+  }
+
   return (
-    <Grid container justify="center" className={classes.outerHeaderContainer}>
-      <Grid
-        container
-        justify="space-between"
-        alignItems="center"
-        className={classes.innerHeaderContainer}
-      >
-        <Grid item md={10} xs="auto">
-          <img className={classes.logo} src={logo} alt="logo" />
-        </Grid>
-        <Grid item>
-          <Button component="label" onClick={onClickFeedButton}>
-            <DynamicFeedIcon />
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button component="label" onClick={onClickUploadButton}>
-            <CloudUploadIcon />
-          </Button>
-        </Grid>
-        <Grid item>
-          <img
-            className="personal"
-            src="https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg"
-            alt="avatar"
-          />
+    <Grid container justify="space-between" alignItems="center">
+      <Grid item className={classes.logo_wrapper}>
+        <img className={classes.logo} src={logo} alt="logo" />
+      </Grid>
+      <Grid item>
+        <Grid container direction="row" alignItems="center">
+          <Grid item >
+            <Button component="label" onClick={onClickFeedButton}>
+              <DynamicFeedIcon />
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button component="label" onClick={onClickUploadButton}>
+              <CloudUploadIcon />
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button component="label" onClick={onClickProfileButton}>
+              <AccountCircle className={classes.profile}/>
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
     </Grid>
