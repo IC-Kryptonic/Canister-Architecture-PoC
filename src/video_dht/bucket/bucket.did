@@ -4,5 +4,6 @@ type Chunk = blob;
 
 service : {
     "createVideo": (Video_Id, Chunk_Num) -> () oneway;
-    "insertChunk": (Video_Id, Chunk_Num, Chunk) -> () oneway; 
+    "insertChunk": (Video_Id, Chunk_Num, Chunk) -> () oneway;
+    "getChunk": (Video_Id, Chunk_Num) -> (opt Chunk) query; 
 }

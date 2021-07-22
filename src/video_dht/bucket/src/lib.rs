@@ -30,3 +30,23 @@ pub async fn insert_chunk(id: VideoId, chunk_num: ChunkNum, chunk: Chunk){
         }
     }
 }
+
+
+///Retrieve a chunk
+#[query(name = "getChunk")]
+pub async fn get_chunk(id: VideoId, chunk_num: ChunkNum) -> Option<&'static Chunk>{
+    let video_storage = storage::get::<VideoStore>();
+
+    match video_storage.get(&id){
+        Some(chunks) => {
+            chunks.get(chunk_num).and_then( |chunk| {
+                if chunk.len() == 0 {
+                    None
+                } else {
+                    Some(chunk)
+                }
+            })
+        }
+        None => None,
+    }
+}
