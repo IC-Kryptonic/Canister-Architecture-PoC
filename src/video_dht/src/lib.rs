@@ -9,8 +9,8 @@ use std::hash::{Hash, Hasher};
 pub type VideoId = String;
 pub type ChunkNum = usize;
 pub type BucketStore = Vec<Option<Principal>>;
-pub type BucketCode = Vec<u8>;
 
+static BUCKET_CODE: &[u8;  include_bytes!("../../../target/wasm32-unknown-unknown/release/bucket_opt.wasm").len()] = include_bytes!("../../../target/wasm32-unknown-unknown/release/bucket_opt.wasm");
 const MAP_SIZE: usize = 10000;
 
 #[derive(CandidType, Deserialize)]
@@ -38,15 +38,14 @@ struct InstallCodeArg {
 
 
 #[init]
-fn init(mut bucket_code: Vec<u8>){
+fn init(){
     storage::get_mut::<BucketStore>().append(&mut vec![None; MAP_SIZE]);
-
-    storage::get_mut::<BucketCode>().append(&mut bucket_code);
 }
 
+//TODO properly save and restore buckets
 #[post_upgrade]
-pub fn post_upgrade() {
-    init(Vec::new()); //TODO SAVE WASM CODE AND RESTORE IT
+fn post_upgrade(){
+    init();
 }
 
 ///Creates a new video canister, currently it always creates a new bucket which only stores this
@@ -72,12 +71,12 @@ pub async fn create_video(id: VideoId, chunk_num: ChunkNum){
         }
     }
 
-    ic_cdk::api::print(format!("Created Video {} with {} chunks in Bucket {:?}", id, chunk_num, canister_princ));
+    ic_cdk::api::print(format!("Created Video {} with {} chunks in Bucket {}", id, chunk_num, canister_princ.to_string()));
 }
 
 async fn create_video_bucket(princ: Principal, id: &VideoId, chunk_num: ChunkNum){
     //TODO handle response
-    let _response: Result<(), _> = call::call( princ, "create_video", (id, chunk_num,)).await;
+    let _response: Result<(), _> = call::call( princ, "createVideo", (id, chunk_num,)).await;
 }
 
 async fn install_bucket(new_princ: &Principal){
@@ -86,7 +85,7 @@ async fn install_bucket(new_princ: &Principal){
     let install_arg = InstallCodeArg {
         mode: InstallMode::Install,
         canister_id: new_princ.clone(),
-        wasm_module: storage::get::<BucketCode>().clone(),
+        wasm_module: BUCKET_CODE.to_vec(),
         arg : Vec::new(),
     };
 
@@ -100,3 +99,4 @@ async fn create_canister() -> Principal{
 
     return response.unwrap().0.canister_id;
 }
+

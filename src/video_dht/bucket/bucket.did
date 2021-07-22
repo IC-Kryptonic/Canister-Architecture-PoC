@@ -3,5 +3,4 @@ type Chunk_Num = nat64;
 
 service : {
     "createVideo": (Video_Id, Chunk_Num) -> () oneway; 
-    "createCanister": () -> () oneway;
 }
