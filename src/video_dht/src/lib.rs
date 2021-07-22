@@ -76,7 +76,14 @@ pub async fn create_video(id: VideoId, chunk_num: ChunkNum){
 
 async fn create_video_bucket(princ: Principal, id: &VideoId, chunk_num: ChunkNum){
     //TODO handle response
-    let _response: Result<(), _> = call::call( princ, "createVideo", (id, chunk_num,)).await;
+    let response: Result<(), _> = call::call( princ, "createVideo", (id, chunk_num,)).await;
+
+    match response{
+        Ok(_) => return,
+        Err((rej_code, msg)) => {
+            ic_cdk::api::trap(format!("Error creating video in bucket with code {:?}, message: {}", rej_code, msg).as_str());
+        }
+    }
 }
 
 async fn install_bucket(new_princ: &Principal){
