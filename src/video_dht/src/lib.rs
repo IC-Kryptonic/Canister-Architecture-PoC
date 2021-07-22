@@ -55,7 +55,7 @@ pub fn post_upgrade() {
 pub async fn create_video(id: VideoId, chunk_num: ChunkNum){
     let canister_princ = create_canister().await;
     install_bucket(&canister_princ).await;
-    create_video_bucket(&canister_princ, &id, chunk_num).await;
+    create_video_bucket(canister_princ.clone(), &id, chunk_num).await;
 
     let mut hasher = DefaultHasher::new();
     id.hash(&mut hasher);
@@ -68,15 +68,17 @@ pub async fn create_video(id: VideoId, chunk_num: ChunkNum){
             unimplemented!(); //collision
         }
         None => {
-            buckets[hash] = Some(canister_princ);
+            buckets[hash] = Some(canister_princ.clone());
         }
     }
 
-    ic_cdk::api::print(format!("Created Video {} with {} chunks in Bucket {:?}", id, chunk_num));
+    ic_cdk::api::print(format!("Created Video {} with {} chunks in Bucket {:?}", id, chunk_num, canister_princ));
 }
 
-async fn create_video_bucket(_princ: &Principal, _id: &VideoId, _chunk_num: ChunkNum){
-    ic_cdk::api::print("Create video net yet implemented");
+async fn create_video_bucket(princ: Principal, id: &VideoId, chunk_num: ChunkNum){
+    //TODO handle response
+    let _response: Result<(), _> = call::call( princ, "create_video", (id, chunk_num,)).await;
+
 }
 
 async fn install_bucket(new_princ: &Principal){
@@ -89,6 +91,7 @@ async fn install_bucket(new_princ: &Principal){
         arg : Vec::new(),
     };
 
+    //TODO hand response
     let _response: Result<(), _> = call::call( manage_princ, "install_code", (install_arg,)).await;
 }
 
