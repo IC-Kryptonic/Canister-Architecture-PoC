@@ -1,20 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, Paper, makeStyles } from '@material-ui/core';
+import { Identity } from '@dfinity/agent';
 import Header from '../components/Header';
-import PostComponent from '../components/Post';
-import { loadDefaultFeed } from '../services/video_backend';
-import { Post } from '../interfaces/video_interface';
+import { loadProfile } from '../services/profile_service';
+
+import { Profile } from '../interfaces/profile_interface';
+import ProfileInfo from '../components/profile/ProfileInfo';
+import { getAuthenticatedIdentity } from '../services/auth_services';
+import VideoList from '../components/profile/VideoList';
+
+const profileStyles = makeStyles({
+  grid_wrapper: {
+    margin: 20
+  },
+  paper: {
+    minWidth: 400,
+    minHeight: 800
+  }
+});
 
 const Profile = () => {
-  const [profile, setProfile] = useState<Array<Post>>([]);
+
+  const classes = profileStyles();
+
+  const [identity, setIdentity] = useState<Identity | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  const handleProfile = async () => {
+    let identity = await getAuthenticatedIdentity();
+    setIdentity(identity);
+
+    let profile = await loadProfile();
+    setProfile(profile);
+  }
 
   useEffect(() => {
-    console.info("Profile view initialized!");
+    handleProfile();
   }, []);
+
+
 
   return (
     <>
       <Header />
+      <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+        spacing={3}
+        className={classes.grid_wrapper}
+      >
+        <Grid item xs={4}>
+          <Paper className={classes.paper}>
+            <ProfileInfo profile={profile} identity={identity}/>
+          </Paper>
+        </Grid>
+        <Grid item xs={6}>
+          <Paper className={classes.paper}>
+            <VideoList />
+          </Paper>
+        </Grid>
+      </Grid>
     </>
   );
 };
