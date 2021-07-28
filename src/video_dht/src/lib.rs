@@ -9,6 +9,7 @@ use std::hash::{Hash, Hasher};
 pub type VideoId = String;
 pub type ChunkNum = usize;
 pub type BucketStore = Vec<Option<Principal>>;
+pub type Chunk = Vec<u8>;
 
 static BUCKET_CODE: &[u8;  include_bytes!("../../../target/wasm32-unknown-unknown/release/bucket_opt.wasm").len()] = include_bytes!("../../../target/wasm32-unknown-unknown/release/bucket_opt.wasm");
 const MAP_SIZE: usize = 10000;
@@ -56,23 +57,46 @@ pub async fn create_video(id: VideoId, chunk_num: ChunkNum){
     install_bucket(&canister_princ).await;
     create_video_bucket(canister_princ.clone(), &id, chunk_num).await;
 
-    let mut hasher = DefaultHasher::new();
-    id.hash(&mut hasher);
-    let hash = hasher.finish() as usize % MAP_SIZE;
+    let bucket_index = get_bucket_index(&id);
 
     let buckets = storage::get_mut::<BucketStore>();
 
-    match &buckets[hash]{
+    match &buckets[bucket_index]{
         Some(_bucket) => {
             unimplemented!(); //collision
         }
         None => {
-            buckets[hash] = Some(canister_princ.clone());
+            buckets[bucket_index] = Some(canister_princ.clone());
         }
     }
 
     ic_cdk::api::print(format!("Created Video {} with {} chunks in Bucket {}", id, chunk_num, canister_princ.to_string()));
 }
+
+#[update(name = "insertChunk")] //Can this be used as query to speed up, since nothing in this container changed?
+pub async fn insert_chunk(id: VideoId, chunk_num: ChunkNum, chunk: Chunk){
+    let bucket_index = get_bucket_index(&id);
+
+    let buckets = storage::get::<BucketStore>();
+
+    match &buckets[bucket_index]{
+        Some(bucket) => {
+            //TODO handle Response
+            let response: Result<(), _> = call::call( bucket.clone(), "insertChunk", (id, chunk_num, chunk)).await;
+
+            match response{
+                Ok(_) => return,
+                Err((rej_code, msg)) => {
+                    ic_cdk::api::trap(format!("Error inserting video chunk in bucket with code {:?}, message: {}", rej_code, msg).as_str());
+                }
+            }
+        }
+        None => {
+            ic_cdk::api::trap(format!("Can't insert chunk, bucket for video index {} does not exist", id).as_str());
+        }
+    }
+}
+            
 
 async fn create_video_bucket(princ: Principal, id: &VideoId, chunk_num: ChunkNum){
     //TODO handle response
@@ -107,3 +131,8 @@ async fn create_canister() -> Principal{
     return response.unwrap().0.canister_id;
 }
 
+fn get_bucket_index(id: &VideoId) -> usize{
+    let mut hasher = DefaultHasher::new();
+    id.hash(&mut hasher);
+    hasher.finish() as usize % MAP_SIZE
+}
