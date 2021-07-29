@@ -53,24 +53,27 @@ fn post_upgrade(){
 ///one video
 #[update(name = "createVideo")]
 pub async fn create_video(id: VideoId, chunk_num: ChunkNum) -> Principal{
-    let canister_princ = create_canister().await;
-    install_bucket(&canister_princ).await;
-    create_video_bucket(canister_princ.clone(), &id, chunk_num).await;
 
     let bucket_index = get_bucket_index(&id);
 
     let buckets = storage::get_mut::<BucketStore>();
 
-    match &buckets[bucket_index]{
-        Some(_bucket) => {
-            unimplemented!(); //collision
+    let bucket_princ = match &buckets[bucket_index]{
+        Some(bucket) => {
+           bucket.clone() 
         }
         None => {
-            buckets[bucket_index] = Some(canister_princ.clone());
-        }
-    }
+            let bucket_princ = create_canister().await;
+            install_bucket(&bucket_princ).await;
 
-    return canister_princ;
+            buckets[bucket_index] = Some(bucket_princ.clone());
+            bucket_princ
+        }
+    };
+
+    create_video_bucket(bucket_princ.clone(), &id, chunk_num).await;
+
+    return bucket_princ;
 }
 
 #[update(name = "insertChunk")] 
@@ -93,6 +96,31 @@ pub async fn insert_chunk(id: VideoId, chunk_num: ChunkNum, chunk: Chunk){
         }
         None => {
             ic_cdk::api::trap(format!("Can't insert chunk, bucket for video index {} does not exist", id).as_str());
+        }
+    }
+}
+
+#[query(name = "getChunk")]
+pub async fn get_chunk(id: VideoId, chunk_num: ChunkNum) -> Option<Chunk>{
+    let bucket_index = get_bucket_index(&id);
+
+    let buckets = storage::get::<BucketStore>();
+
+    match &buckets[bucket_index]{
+        Some(bucket) => {
+            let response: Result<(Option<Chunk>,), _> = call::call( bucket.clone(), "getChunk", (id, chunk_num)).await;
+
+            match response{
+                Ok((maybe_chunk,)) => {
+                    return maybe_chunk;
+                }
+                Err((rej_code, msg)) => {
+                    ic_cdk::api::trap(format!("Error getting video chunk from bucket with code {:?}, message: {}", rej_code, msg).as_str());
+                }
+            }
+        }
+        None => {
+            ic_cdk::api::trap(format!("Can't get chunk, bucket for video index {} does not exist", id).as_str());
         }
     }
 }
