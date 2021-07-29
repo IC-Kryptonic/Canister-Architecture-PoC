@@ -52,7 +52,7 @@ fn post_upgrade(){
 ///Creates a new video canister, currently it always creates a new bucket which only stores this
 ///one video
 #[update(name = "createVideo")]
-pub async fn create_video(id: VideoId, chunk_num: ChunkNum){
+pub async fn create_video(id: VideoId, chunk_num: ChunkNum) -> Principal{
     let canister_princ = create_canister().await;
     install_bucket(&canister_princ).await;
     create_video_bucket(canister_princ.clone(), &id, chunk_num).await;
@@ -70,10 +70,10 @@ pub async fn create_video(id: VideoId, chunk_num: ChunkNum){
         }
     }
 
-    ic_cdk::api::print(format!("Created Video {} with {} chunks in Bucket {}", id, chunk_num, canister_princ.to_string()));
+    return canister_princ;
 }
 
-#[update(name = "insertChunk")] //Can this be used as query to speed up, since nothing in this container changed?
+#[update(name = "insertChunk")] 
 pub async fn insert_chunk(id: VideoId, chunk_num: ChunkNum, chunk: Chunk){
     let bucket_index = get_bucket_index(&id);
 
