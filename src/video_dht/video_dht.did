@@ -6,5 +6,5 @@ service : {
     "createVideo": (Video_Id, Chunk_Num) -> (principal); 
     "insertChunk": (Video_Id, Chunk_Num, Chunk) -> () oneway;
     "getChunk": (Video_Id, Chunk_Num) -> (opt Chunk) query;
-    "getBucketPrincipal": (Video_Id) -> (principal) query;
+    "getBucketPrincipal": (Video_Id) -> (opt principal) query;
 }

@@ -124,6 +124,15 @@ pub async fn get_chunk(id: VideoId, chunk_num: ChunkNum) -> Option<Chunk>{
         }
     }
 }
+
+#[query(name = "getBucketPrincipal")]
+pub async fn get_bucket_principal(id: VideoId) -> Option<&'static Principal>{
+    let bucket_index = get_bucket_index(&id);
+
+    let buckets = storage::get::<BucketStore>();
+
+    return  buckets[bucket_index].as_ref();
+}
             
 
 async fn create_video_bucket(princ: Principal, id: &VideoId, chunk_num: ChunkNum){
