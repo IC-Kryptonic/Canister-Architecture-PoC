@@ -66,6 +66,8 @@ pub async fn create_video(id: VideoId, chunk_num: ChunkNum) -> Principal{
             let bucket_princ = create_canister().await;
             install_bucket(&bucket_princ).await;
 
+            ic_cdk::api::print(format!("Created a new bucket {:?}", bucket_princ.to_text()).as_str());
+
             buckets[bucket_index] = Some(bucket_princ.clone());
             bucket_princ
         }

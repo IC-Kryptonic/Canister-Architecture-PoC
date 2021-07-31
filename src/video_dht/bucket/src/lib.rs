@@ -15,7 +15,6 @@ pub async fn create_video(id: VideoId, chunk_num: ChunkNum){
     let video_storage = storage::get_mut::<VideoStore>();
 
     video_storage.insert(id, vec![Vec::new(); chunk_num]);
-    ic_cdk::print("Created a new video");
 }
 
 ///Inserts new chunk into existing video

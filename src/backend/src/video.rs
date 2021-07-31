@@ -34,7 +34,7 @@ pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
 ///This function creates a new Video based on the video information of the argument.
 ///It returns the newly generated id of the function.
 #[update(name = "createVideo")]
-pub async fn create_video(mut video: VideoInfo) -> VideoId{
+pub async fn create_video(mut video: VideoInfo) -> &'static VideoInfo{
     let info_store = storage::get_mut::<VideoInfoStore>();
     
     let id = loop{
@@ -52,10 +52,10 @@ pub async fn create_video(mut video: VideoInfo) -> VideoId{
         Principal::from_slice(&[])
     };
 
-    video_storage::create_video(id.clone(), &video.storage_type).await;
+    video_storage::create_video(&mut video).await;
 
     info_store.insert(id.clone(), video);
-    return id;
+    return &info_store[&id];
 }
 
 ///This function takes a data from video that should be stored and adds it to the appropiate

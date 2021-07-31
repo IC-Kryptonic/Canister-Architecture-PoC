@@ -2,7 +2,9 @@ type Video_Id = text;
 type Chunk_Num = nat64;
 type Chunk_Data = blob;
 
-type IPFS_Data = record {};
+type IPFS_Data = record {
+    "data": text;
+};
 
 type Chunk = record {
     "data": Chunk_Data;
@@ -11,19 +13,19 @@ type Chunk = record {
 
 type Storage_Type = variant {
     inCanister: Chunk_Num;
-    simpleDistMap: Chunk_Num;
+    simpleDistMap: record{Chunk_Num; opt principal};
     ipfs: IPFS_Data;
 };
 
 type Video_Data = variant {
     inCanister: Chunk;
-    simpleDistMap: Chunk;
+    simpleDistMap: principal;
     ipfs: IPFS_Data;
 };
 
 type Load_Info = variant {
     inCanister: Chunk_Num;
-    simpleDistMap: Chunk_Num;
+    simpleDistMap;
     ipfs;
 };
 
@@ -48,7 +50,7 @@ service : {
     "reset": () -> () oneway;
 
     "getVideoInfo": (Video_Id) -> (opt Video_Info) query;
-    "createVideo": (Video_Info) -> (Video_Id);
+    "createVideo": (Video_Info) -> (Video_Info);
     "storeVideo": (Video_Id, Video_Data) -> () oneway;
     "loadVideo": (Video_Id, Load_Info) -> (opt Video_Data) query;
     "getDefaultFeed": (nat64) -> (Feed) query;
