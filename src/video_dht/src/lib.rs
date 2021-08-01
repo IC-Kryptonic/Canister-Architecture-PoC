@@ -49,8 +49,8 @@ fn post_upgrade(){
     init();
 }
 
-///Creates a new video canister, currently it always creates a new bucket which only stores this
-///one video
+///Creates a new video in the bucket that matches the hash of the [VideoId]
+/// If there is no bucket already it will create a new bucket for the hash
 #[update(name = "createVideo")]
 pub async fn create_video(id: VideoId, chunk_num: ChunkNum) -> Principal{
 
@@ -78,6 +78,7 @@ pub async fn create_video(id: VideoId, chunk_num: ChunkNum) -> Principal{
     return bucket_princ;
 }
 
+///Inserts a chunk into the bucket matching the hash of [VideoId]
 #[update(name = "insertChunk")] 
 pub async fn insert_chunk(id: VideoId, chunk_num: ChunkNum, chunk: Chunk){
     let bucket_index = get_bucket_index(&id);
@@ -102,6 +103,7 @@ pub async fn insert_chunk(id: VideoId, chunk_num: ChunkNum, chunk: Chunk){
     }
 }
 
+///Retrieves a [Chunk] from the bucket matching the hash of [VideoId]
 #[query(name = "getChunk")]
 pub async fn get_chunk(id: VideoId, chunk_num: ChunkNum) -> Option<Chunk>{
     let bucket_index = get_bucket_index(&id);
@@ -127,6 +129,7 @@ pub async fn get_chunk(id: VideoId, chunk_num: ChunkNum) -> Option<Chunk>{
     }
 }
 
+///Retrieves the [Principal] from the bucket matching the hash of the [VideoId]
 #[query(name = "getBucketPrincipal")]
 pub async fn get_bucket_principal(id: VideoId) -> Option<&'static Principal>{
     let bucket_index = get_bucket_index(&id);

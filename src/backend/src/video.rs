@@ -32,7 +32,7 @@ pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
 }
 
 ///This function creates a new Video based on the video information of the argument.
-///It returns the newly generated id of the function.
+///It returns all the meta information for the video.
 #[update(name = "createVideo")]
 pub async fn create_video(mut video: VideoInfo) -> &'static VideoInfo{
     let info_store = storage::get_mut::<VideoInfoStore>();
@@ -58,7 +58,7 @@ pub async fn create_video(mut video: VideoInfo) -> &'static VideoInfo{
     return &info_store[&id];
 }
 
-///This function takes a data from video that should be stored and adds it to the appropiate
+///This function takes a data from video that should be stored and adds it to the appropriate
 ///storage.
 #[update(name = "storeVideo")]
 pub fn store_video(video_id: VideoId, data: video_storage::VideoData){
@@ -106,38 +106,6 @@ pub fn search_video(to_search: String) -> Option<&'static VideoInfo> {
 
     None
 }
-
-///Stores the videos into the stable storage before an upgrade
-/*#[pre_upgrade]
-pub fn pre_upgrade() {
-    let video_infos = storage::get_mut::<VideoInfoStore>();
-    let video_chunks = storage::get_mut::<video_storage::local::ChunkStore>();
-
-    let combined: Vec<(VideoInfo, video_storage::local::Chunks)> = video_infos
-        .drain()
-        .map(|(id, video_info)| (video_info, video_chunks.remove(&id).unwrap()))
-        .collect();
-
-    storage::stable_save((combined,)).unwrap();
-}
-
-///Loads the videos from stable storage after an upgrade
-#[post_upgrade]
-pub fn post_upgrade() {
-    let (combined_store,): (Vec<(VideoInfo, video_storage::local::Chunks)>, ) = storage::stable_restore().unwrap();
-    
-    let video_info_store = storage::get_mut::<VideoInfoStore>();
-    let chunks_store = storage::get_mut::<video_storage::local::ChunkStore>();
-
-    video_info_store.reserve(combined_store.len());
-    chunks_store.reserve(combined_store.len());
-
-    for (video_info, chunks) in combined_store {
-        let id = video_info.video_id.clone();
-        video_info_store.insert(id.clone().unwrap(), video_info);
-        chunks_store.insert(id.unwrap(), chunks);
-    }
-}*/
 
 ///This function generates a id based on the information of the Video and a timestamp.
 fn generate_video_id(info: &VideoInfo) -> VideoId{
