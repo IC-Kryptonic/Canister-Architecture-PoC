@@ -1,0 +1,14 @@
+@startuml
+alt via Backend
+    Frontend -> Backend: getVideoInfo(videoId)
+    Backend -> Frontend: getVideoInfo: videoInfo
+else via DHT
+    Frontend -> DHT: getBucketPrincipal(videoId)
+    DHT -> Frontend: getVideoInfo: bucketPrincipal
+end
+
+loop chunkNum times
+    Frontend -> Bucket: getChunk(videoId)
+    Frontend <- Bucket: getChunk: Chunk
+end
+@enduml

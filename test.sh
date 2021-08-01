@@ -11,7 +11,7 @@ dfx start --background --clean --no-artificial-delay
 
 echo "Compiling and optimizing bucket code"
 ./bucket_creation.sh
-echo "Deploying backend canister"
+echo "Deploying backend and dht canister"
 dfx deploy backend
 
 set -x

@@ -6,6 +6,6 @@ Backend <-- DHT: createVideo: bucket
 Frontend <-- Backend: createVideo: videoInfo
 
 loop chunkNum times
-    Frontend ->> Bucket: putChunk(chunk)
+    Frontend ->> Bucket: insertChunk(videoId, chunk)
 end
 @enduml
