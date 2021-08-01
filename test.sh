@@ -7,7 +7,7 @@ echo "Running testing script..."
 #cargo test -- --test-threads=1
 
 echo "Starting replica"
-dfx start --background --clean
+dfx start --background --clean --no-artificial-delay
 
 echo "Compiling and optimizing bucket code"
 ./bucket_creation.sh
