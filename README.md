@@ -40,6 +40,14 @@ DFX_VERSION=0.7.1 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
 
 ```
 
+Install the ic-cdk-optimizer:
+
+```
+
+cargo install ic-cdk-optimizer
+
+```
+
 Checkout our video_nft project:
 
 ```
@@ -67,7 +75,7 @@ git clone https://github.com/dfinity/internet-identity.git
 
 3. Use `bash stop.sh` to stop the dfx network
 
-In case of errors refer to manue project setup
+In case of errors refer to manual project setup
 
 # Manual project Setup
 
@@ -83,7 +91,7 @@ npm install
 
 ```
 
-dfx start --background
+dfx start --background --no-artificial-delay
 
 ```
 
@@ -119,15 +127,25 @@ IDENTITY_PROVIDER=http://localhost:8000?canisterId=renrk-eyaaa-aaaaa-aaada-cai
 
 ```
 
-8. In Repository **video_nft**, deploy the canisters:
+8. In Repository **video_nft**, compile the bucket code and optimize it:
 
 ```
 
-dfx deploy
+dfx canister create bucket
+dfx build bucket
+ic-cdk-optimizer target/wasm32-unknown-unknown/release/bucket.wasm -o target/wasm32-unknown-unknown/release/bucket_opt.wasm
 
 ```
 
-9. Access the application in your browser. Either:
+9. In Repository **video_nft**, deploy the front-end canisters and its dependencies:
+
+```
+
+dfx deploy video_assets
+
+```
+
+10. Access the application in your browser. Either:
 a) Access the deployed frontend canister (production-like):
 
 `http://ryjl3-tyaaa-aaaaa-aaaba-cai.localhost:8000/`
@@ -140,7 +158,7 @@ b) Run a development server:
 `npm start`
 (will automatically open a browser tab for http://localhost:8080)
 
-10. Stop / Restart the application
+11. Stop / Restart the application
 
 ```
 
