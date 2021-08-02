@@ -40,9 +40,7 @@ DFX_VERSION=0.7.1 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
 
 ```
 
-# Project Setup
-
-1. Checkout and install our video_nft project:
+Checkout our video_nft project:
 
 ```
 
@@ -50,23 +48,8 @@ git clone https://gitlab.lrz.de/tum-nft/video_nft.git
 
 ```
 
-2. In repository **video_nft**, install the npm dependencies:
+Checkout the internet identity project, preferably in a neighboring directory:
 
-```
-
-npm install
-
-```
-
-3. In repository **video_nft**, start the local dfx replica in the background:
-
-```
-
-dfx start --background
-
-```
-
-4. Open a new window and checkout the internet identity project:
 
 ```
 
@@ -74,7 +57,21 @@ git clone https://github.com/dfinity/internet-identity.git
 
 ```
 
-5. In repository **internet-identity**, install the npm dependencies:
+# Quick start
+
+0. Update the IDENTITY_PATH variable in all scripts if the internet identity is not in the neighbouring directory
+
+1. Run `bash setup.sh` once to install all the required dependencies
+
+2. Use `bash start.sh` to start the dfx network
+
+3. Use `bash stop.sh` to stop the dfx network
+
+In case of errors refer to manue project setup
+
+# Manual project Setup
+
+1. In repository **video_nft**, install the npm dependencies:
 
 ```
 
@@ -82,7 +79,23 @@ npm install
 
 ```
 
-6. In repository **internet-identity**, deploy the canister:
+2. In repository **video_nft**, start the local dfx replica in the background:
+
+```
+
+dfx start --background
+
+```
+
+4. In repository **internet-identity**, install the npm dependencies:
+
+```
+
+npm install
+
+```
+
+5. In repository **internet-identity**, deploy the canister:
 
 ```
 
@@ -90,7 +103,7 @@ II_ENV=development dfx deploy --no-wallet --argument '(null)'
 
 ```
 
-7. In repository **internet-identity**, retrieve the local connection link to the deployed canister:
+6. In repository **internet-identity**, retrieve the local connection link to the deployed canister:
 
 ```
 
@@ -98,7 +111,7 @@ echo "http://localhost:8000?canisterId=$(dfx canister id internet_identity)"
 
 ```
 
-8. In repository **video_nft**, create a .env file by copying and renaming the .env.example file and insert the internet-identity link, e.g.:
+7. In repository **video_nft**, create a .env file by copying and renaming the .env.example file and insert the internet-identity link, e.g.:
 
 ```
 
@@ -106,7 +119,7 @@ IDENTITY_PROVIDER=http://localhost:8000?canisterId=renrk-eyaaa-aaaaa-aaada-cai
 
 ```
 
-9. In Repository **video_nft**, deploy the canisters:
+8. In Repository **video_nft**, deploy the canisters:
 
 ```
 
@@ -114,7 +127,7 @@ dfx deploy
 
 ```
 
-10. Access the application in your browser. Either:
+9. Access the application in your browser. Either:
 a) Access the deployed frontend canister (production-like):
 
 `http://ryjl3-tyaaa-aaaaa-aaaba-cai.localhost:8000/`
@@ -127,7 +140,7 @@ b) Run a development server:
 `npm start`
 (will automatically open a browser tab for http://localhost:8080)
 
-11. Stop / Restart the application
+10. Stop / Restart the application
 
 ```
 
