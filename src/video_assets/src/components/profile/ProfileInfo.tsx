@@ -4,6 +4,7 @@ import { Profile } from "../../interfaces/profile_interface";
 import { Identity } from '@dfinity/agent';
 
 import ProfileIcon from "./ProfileIcon";
+import ProfileId from "./ProfileId";
 import EditProfileDialog from "./EditProfileDialog";
 
 interface ProfileProps {
@@ -27,7 +28,6 @@ const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
 
     const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-    let profileId = profile ? profile.principal.toText() : "123456";
     let profileName = profile ? profile.name : "Unknown";
 
     const openEditDialog = () => {
@@ -57,6 +57,10 @@ const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
             <Grid item>
                 <EditProfileDialog open={editDialogOpen} handleClose={closeEditDialog} />
                 <Button variant="contained" onClick={openEditDialog}>Edit</Button>
+            </Grid>
+
+            <Grid item>
+                <ProfileId id={profile?.principal.toText() || "<<id>>"}/>
             </Grid>
 
             <Grid item>

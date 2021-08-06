@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
-import PostComponent from '../Post';
 import { loadDefaultFeed } from '../../services/video_backend';
 import { Post } from '../../interfaces/video_interface';
 import VideoElem from './VideoElem';
@@ -25,7 +24,8 @@ const VideoList = () => {
         {posts && posts.length > 0 ? (
           <>
             {posts.map((post, index) => (
-              <VideoElem key={index} post={post} />
+              <VideoElem
+               key={index} post={post} />
             ))}
           </>
         ) : (
