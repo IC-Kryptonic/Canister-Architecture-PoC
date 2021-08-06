@@ -40,6 +40,22 @@ async function loadProfile(): Promise<Profile> {
     }
 }
 
+async function updateProfile(profile: Profile) {
+    const principal = (await getAuthenticatedIdentity()).getPrincipal();
+
+    profile.principal = principal;
+
+    await videoBackend.createProfile(profile);
+}
+
+async function getProfile(principal: Principal): Promise<Profile> {
+    let profile = await videoBackend.getProfile(principal) as Array<Profile>;
+
+    return profile[0];
+}
+
 export {
-    loadProfile
+    loadProfile, 
+    updateProfile,
+    getProfile
 }

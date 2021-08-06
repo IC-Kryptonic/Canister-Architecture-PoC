@@ -3,26 +3,33 @@ import { Grid, Button, CircularProgress } from '@material-ui/core';
 import { postStyles } from '../styles/post_styles';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+
+import { Principal } from "@dfinity/principal";
+
 import { trimString } from '../utils/texts';
 import { loadVideo } from '../services/video_backend';
+import { getProfile } from '../services/profile_service';
 import { Post } from '../interfaces/video_interface';
-
-const defaultAvatar =
-  'https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg';
 
 interface PostProps {
   post: Post;
 }
 
 const Post = ({ post }: PostProps) => {
+  
   const classes = postStyles();
   const [video, setVideo] = useState(null);
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     async function queryVideo() {
       try {
         const loadedVideo = await loadVideo(post);
         setVideo(loadedVideo);
+        const loadedProfile = await getProfile(Principal.from(post.owner));
+        setProfile(loadedProfile);
+        console.info(loadedProfile);
       } catch (error) {
         console.error('Error loading video', error);
       }
@@ -37,16 +44,12 @@ const Post = ({ post }: PostProps) => {
           <Grid item>
             <Grid container>
               <Grid item>
-                <img
-                  className={classes.userProfile}
-                  src={defaultAvatar}
-                  width={'100%'}
-                />
+               <AccountCircle className={classes.userProfile}/>
               </Grid>
               <Grid item>
                 <Grid container spacing={1}>
                   <Grid item>
-                    <strong>{'<<username>>'}</strong>
+                    <strong>{profile?.name || '<<username>>'}</strong>
                   </Grid>
                   <Grid item className={classes.lightText}>
                     {post?.video_id

@@ -38,7 +38,9 @@ const Profile = () => {
     handleProfile();
   }, []);
 
-
+  const reloadProfile = () => {
+    handleProfile();
+  }
 
   return (
     <>
@@ -48,19 +50,21 @@ const Profile = () => {
         direction="row"
         justify="center"
         alignItems="center"
-        spacing={3}
+        spacing={0}
         className={classes.grid_wrapper}
       >
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <Paper className={classes.paper}>
-            <ProfileInfo profile={profile} identity={identity}/>
+            <ProfileInfo profile={profile} identity={identity} reloadProfile={reloadProfile} />
           </Paper>
         </Grid>
-        <Grid item xs={6}>
+        {/*
+        <Grid item xs={9}>
           <Paper className={classes.paper}>
             <VideoList />
           </Paper>
         </Grid>
+        */}
       </Grid>
     </>
   );

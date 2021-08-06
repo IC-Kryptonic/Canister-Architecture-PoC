@@ -1,28 +1,45 @@
-import React from "react";
-import { Box, Grid, Paper, makeStyles } from "@material-ui/core"
+import React, { useState } from "react";
+import { Box, Grid, Paper, makeStyles, Button } from "@material-ui/core"
 import { Profile } from "../../interfaces/profile_interface";
 import { Identity } from '@dfinity/agent';
 
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import ProfileIcon from "./ProfileIcon";
+import EditProfileDialog from "./EditProfileDialog";
 
 interface ProfileProps {
     profile: Profile;
     identity: Identity;
+    reloadProfile: () => void;
 }
 
 const headerStyles = makeStyles({
     profile_logo: {
         width: 100,
         height: 100,
+    },
+    paper: {
     }
 });
 
-const ProfileInfo = ({ profile, identity }: ProfileProps) => {
+const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
 
     const classes = headerStyles();
 
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+
     let profileId = profile ? profile.principal.toText() : "123456";
     let profileName = profile ? profile.name : "Unknown";
+
+    const openEditDialog = () => {
+        setEditDialogOpen(true);
+    };
+
+    const closeEditDialog = (reloadNeccesary: boolean) => {
+        if(reloadNeccesary) {
+            reloadProfile();
+        }
+        setEditDialogOpen(false);
+    }
 
     return (
         <Grid container
@@ -32,26 +49,37 @@ const ProfileInfo = ({ profile, identity }: ProfileProps) => {
             spacing={2}
         >
             <Grid item>
-                <Paper>
-                    <AccountCircle className={classes.profile_logo} />
+                <Paper className={classes.paper}>
+                    <ProfileIcon />
                 </Paper>
             </Grid>
 
             <Grid item>
-                <Paper>
-                    {profileId}
-                </Paper>
+                <EditProfileDialog open={editDialogOpen} handleClose={closeEditDialog} />
+                <Button variant="contained" onClick={openEditDialog}>Edit</Button>
             </Grid>
 
             <Grid item>
-                <Paper>
+                <Paper className={classes.paper}>
                     {profileName}
                 </Paper>
             </Grid>
 
             <Grid item>
-                <Paper>
-                    Description box
+                <Paper className={classes.paper}>
+                    Bio
+                </Paper>
+            </Grid>
+
+            <Grid item>
+                <Paper className={classes.paper}>
+                    Links
+                </Paper>
+            </Grid>
+
+            <Grid item>
+                <Paper className={classes.paper}>
+                    Joined ...
                 </Paper>
             </Grid>
 
