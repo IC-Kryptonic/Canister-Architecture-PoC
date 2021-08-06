@@ -1,6 +1,6 @@
 import React, {ChangeEvent, useState} from "react";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, TextField, Button } from "@material-ui/core";
-import { Profile } from "../../interfaces/profile_interface";
+import { ProfileUpdate } from "../../interfaces/profile_interface";
 
 import { updateProfile } from '../../services/profile_service';
 
@@ -32,10 +32,9 @@ export default function RegisterDialog(props: RegisterDialogProps) {
 
     const handleEdit = async () => {
         // TODO
-        let profileUpdate: Profile = {
-            principal: null,
+        let profileUpdate: ProfileUpdate = {
             name: username,
-            likes: []
+            bio: "Enter bio here... :)"
         };
         await updateProfile(profileUpdate);
         props.handleClose(true);

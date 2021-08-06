@@ -40,9 +40,17 @@ type Video_Info = record {
 };
 
 type Profile = record {
-        "principal": principal;
-        "name": text;
-        "likes": vec Video_Id;
+    "principal": principal;
+    "name": text;
+    "bio": text;
+    "likes": vec Video_Id;
+    "follows": vec principal;
+    "followers": vec principal;
+};
+
+type Profile_Update = record {
+    "name": text;
+    "bio": text;
 };
 
 type Feed = vec Video_Info;
@@ -62,7 +70,8 @@ service : {
 
     "getProfile": (principal) -> (opt Profile) query;
     "getCurrentProfile": () -> (opt Profile) query;
-    "createProfile": (Profile) -> () oneway;
+    "createProfile": () -> () oneway;
+    "updateProfile": (Profile_Update) -> () oneway;
     "likeVideo": (Video_Id) -> () oneway;
     "getLikeAmount": (Video_Id) -> (nat64) query;
 }

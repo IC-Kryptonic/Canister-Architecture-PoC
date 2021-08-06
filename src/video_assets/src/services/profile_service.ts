@@ -4,7 +4,7 @@ import {
     idlFactory as video_idl,
     canisterId as backendVideoId,
 } from 'dfx-generated/backend';
-import { Profile } from '../interfaces/profile_interface';
+import { Profile, ProfileUpdate } from '../interfaces/profile_interface';
 import { Post, Video_Data } from '../interfaces/video_interface';
 
 import { getAuthenticatedIdentity } from './auth_services';
@@ -23,29 +23,20 @@ async function loadProfile(): Promise<Profile> {
 
     let profileList = (await videoBackend.getCurrentProfile()) as Array<Profile>;
 
-    console.info(profileList);
+    //console.info(profileList);
 
     if(!profileList.length || profileList.length == 0) {
         console.info(`Profile for ${principal} does not exist! Creating new one`);
-        let newProfile: Profile = {
-            principal: principal,
-            name: principal.toText(),
-            likes: []
-        };
-        await videoBackend.createProfile(newProfile);
+        await videoBackend.createProfile();
 
-        return newProfile;
-    } else {
-        return profileList[0];
+        profileList = (await videoBackend.getCurrentProfile()) as Array<Profile>;
     }
+
+    return profileList[0];
 }
 
-async function updateProfile(profile: Profile) {
-    const principal = (await getAuthenticatedIdentity()).getPrincipal();
-
-    profile.principal = principal;
-
-    await videoBackend.createProfile(profile);
+async function updateProfile(update: ProfileUpdate) {
+    await videoBackend.updateProfile(update);
 }
 
 async function getProfile(principal: Principal): Promise<Profile> {

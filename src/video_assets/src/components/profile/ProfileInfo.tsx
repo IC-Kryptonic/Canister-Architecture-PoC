@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Grid, Paper, makeStyles, Button } from "@material-ui/core"
+import { Box, Grid, Paper, makeStyles, Button, Typography } from "@material-ui/core"
 import { Profile } from "../../interfaces/profile_interface";
 import { Identity } from '@dfinity/agent';
 
@@ -19,6 +19,9 @@ const headerStyles = makeStyles({
         height: 100,
     },
     paper: {
+    },
+    wrapper: {
+        padding: "20px"
     }
 });
 
@@ -28,14 +31,12 @@ const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
 
     const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-    let profileName = profile ? profile.name : "Unknown";
-
     const openEditDialog = () => {
         setEditDialogOpen(true);
     };
 
     const closeEditDialog = (reloadNeccesary: boolean) => {
-        if(reloadNeccesary) {
+        if (reloadNeccesary) {
             reloadProfile();
         }
         setEditDialogOpen(false);
@@ -44,9 +45,10 @@ const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
     return (
         <Grid container
             direction="column"
-            justify="center"
-            alignItems="center"
+            justify="flex-start"
+            alignItems="flex-start"
             spacing={2}
+            className={classes.wrapper}
         >
             <Grid item>
                 <Paper className={classes.paper}>
@@ -60,13 +62,13 @@ const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
             </Grid>
 
             <Grid item>
-                <ProfileId id={profile?.principal.toText() || "<<id>>"}/>
+                <ProfileId id={profile?.principal.toText() || "<<id>>"} />
             </Grid>
 
             <Grid item>
-                <Paper className={classes.paper}>
-                    {profileName}
-                </Paper>
+                <Typography variant="h5" align="center">
+                    <b>{profile?.name || "<<name>>"}</b>
+                </Typography>
             </Grid>
 
             <Grid item>
