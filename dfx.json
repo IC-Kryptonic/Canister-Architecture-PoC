@@ -1,6 +1,19 @@
 {
   "canisters": {
+    "bucket": {
+      "build": "cargo build --target wasm32-unknown-unknown --package  bucket --release",
+      "candid": "src/video_dht/bucket/bucket.did",
+      "wasm": "target/wasm32-unknown-unknown/release/bucket.wasm",
+      "type": "custom"
+    },
+    "video_dht": {
+      "build": "cargo build --target wasm32-unknown-unknown --package  video_dht --release",
+      "candid": "src/video_dht/video_dht.did",
+      "wasm": "target/wasm32-unknown-unknown/release/video_dht.wasm",
+      "type": "custom"
+    },
     "backend": {
+      "dependencies": ["video_dht"],
       "build": "cargo build --target wasm32-unknown-unknown --package  backend --release",
       "candid": "src/backend/backend.did",
       "wasm": "target/wasm32-unknown-unknown/release/backend.wasm",

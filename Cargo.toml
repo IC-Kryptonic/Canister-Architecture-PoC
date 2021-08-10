@@ -1,4 +1,6 @@
 [workspace]
 members = [
   "src/backend",
+  "src/video_dht",
+  "src/video_dht/bucket",
 ]
