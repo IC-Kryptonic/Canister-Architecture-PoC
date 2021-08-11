@@ -21,6 +21,7 @@ dfx canister call backend storeVideo '("video1", variant {inCanister = record { 
 dfx canister call backend loadVideo '("video1", variant {inCanister = 0 : nat64})'
 dfx canister call backend getDefaultFeed '(10)'
 dfx canister call backend searchVideo '("toast")'
+dfx canister call backend searchFeed '("dog")'
 dfx canister call backend reset
 
 dfx canister call backend getProfile '(principal "aaaaa-aa")'
