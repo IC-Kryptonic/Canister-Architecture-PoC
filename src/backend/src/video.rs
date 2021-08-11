@@ -99,6 +99,18 @@ pub fn get_creator_feed(creator: Principal) -> Feed{
         .collect()
 }
 
+///This function retrieves all the videos owned by the specified [Principal].
+#[query(name = "getOwnerFeed")]
+pub fn get_owner_feed(owner: Principal) -> Feed{
+    let video_store = storage::get::<VideoInfoStore>();
+
+    video_store
+        .values()
+        .filter(|&video| video.owner == owner)
+        .cloned()
+        .collect()
+}
+
 ///This function searches for the specified [String] in names, descriptions and keywords of videos
 ///and return the first one found. It ignores case.
 ///If no video can be found it returns [None] Otherwise it returns the wrapped video.

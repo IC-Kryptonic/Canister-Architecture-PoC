@@ -25,6 +25,7 @@ dfx canister call backend loadVideo '("video1", variant {inCanister = 0 : nat64}
 dfx canister call backend getDefaultFeed '(10)'
 dfx canister call backend searchVideo '("toast")'
 dfx canister call backend getCreatorFeed '(principal "aaaaa-aa")'
+dfx canister call backend getOwnerFeed '(principal "aaaaa-aa")'
 dfx canister call backend reset
 
 dfx canister call backend getProfile '(principal "aaaaa-aa")'

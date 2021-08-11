@@ -57,6 +57,7 @@ service : {
     "getDefaultFeed": (nat64) -> (Feed) query;
     "searchVideo": (text) -> (opt Video_Info) query;
     "getCreatorFeed": (principal) -> (Feed) query;
+    "getOwnerFeed": (principal) -> (Feed) query;
 
     "getProfile": (principal) -> (opt Profile) query;
     "getCurrentProfile": () -> (opt Profile) query;
