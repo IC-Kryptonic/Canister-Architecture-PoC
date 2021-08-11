@@ -32,6 +32,7 @@ type Load_Info = variant {
 type Video_Info = record {
     "video_id": opt Video_Id;
     "owner": principal;
+    "creator": principal;
     "name": text;
     "description": text;
     "keywords": vec text;
@@ -55,6 +56,7 @@ service : {
     "loadVideo": (Video_Id, Load_Info) -> (opt Video_Data) query;
     "getDefaultFeed": (nat64) -> (Feed) query;
     "searchVideo": (text) -> (opt Video_Info) query;
+    "getCreatorFeed": (principal) -> (Feed) query;
 
     "getProfile": (principal) -> (opt Profile) query;
     "getCurrentProfile": () -> (opt Profile) query;
