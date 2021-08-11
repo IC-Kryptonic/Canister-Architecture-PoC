@@ -32,6 +32,7 @@ dfx canister call backend getProfile '(principal "aaaaa-aa")'
 dfx canister call backend getCurrentProfile
 dfx canister call backend createProfile '(record {"principal" = principal "aaaaa-aa"; name = "testuser" ; likes = vec {}})'
 dfx canister call backend likeVideo '("videoId")'
+dfx canister call backend getLikeAmount '("videoId")'
 
 
 dfx canister call video_dht createVideo '("id", 1)'

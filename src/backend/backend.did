@@ -63,4 +63,5 @@ service : {
     "getCurrentProfile": () -> (opt Profile) query;
     "createProfile": (Profile) -> () oneway;
     "likeVideo": (Video_Id) -> () oneway;
+    "getLikeAmount": (Video_Id) -> (nat64) query;
 }
