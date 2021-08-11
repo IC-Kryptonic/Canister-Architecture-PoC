@@ -107,6 +107,33 @@ pub fn search_video(to_search: String) -> Option<&'static VideoInfo> {
     None
 }
 
+///This function searches for the specified [String] in names, descriptions and keywords of videos
+///and return a feed of the found videos. It ignores case.
+#[query(name = "searchFeed")]
+pub fn search_feed(to_search: String) -> Vec<&'static VideoInfo> {
+    let to_search = to_search.to_lowercase();
+    let video_store = storage::get::<VideoInfoStore>();
+
+    let mut found_videos = Vec::new();
+
+    for (_, v) in video_store.iter() {
+        if v.name.to_lowercase().contains(&to_search) || v.description.to_lowercase().contains(&to_search) {
+            found_videos.push(v);
+            continue;
+        }
+
+        for word in v.keywords.iter() {
+            if word.to_lowercase() == to_search {
+                found_videos.push(v);
+                continue;
+            }
+        }
+    }
+
+    return found_videos;
+}
+
+
 ///This function generates a id based on the information of the Video and a timestamp.
 fn generate_video_id(info: &VideoInfo) -> VideoId{
     let time = if cfg!(target_arch = "wasm32"){
