@@ -56,6 +56,7 @@ service : {
     "loadVideo": (Video_Id, Load_Info) -> (opt Video_Data) query;
     "getDefaultFeed": (nat64) -> (Feed) query;
     "searchVideo": (text) -> (opt Video_Info) query;
+    "searchFeed": (text) -> (Feed) query;
     "getCreatorFeed": (principal) -> (Feed) query;
     "getOwnerFeed": (principal) -> (Feed) query;
 
