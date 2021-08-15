@@ -128,6 +128,7 @@ async function uploadVideo(
     video_id: [],
     name: videoName,
     owner: Principal.fromUint8Array(new Uint8Array([])),
+    creator: Principal.fromUint8Array(new Uint8Array([])),
     description: videoDescription,
     keywords: [],
     storage_type: { simpleDistMap : [chunkCount, []]},

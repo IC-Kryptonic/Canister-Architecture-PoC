@@ -62,6 +62,24 @@ pub fn like_video(video_id: VideoId){
         .insert(video_id);
 }
 
+///Retrieves the amount of likes for a specific video
+#[query(name = "getLikeAmount")]
+pub fn get_like_amount(video_id: VideoId) -> usize{
+    let profile_store = storage::get_mut::<ProfileStore>();
+
+    let mut count = 0;
+
+    profile_store
+        .values()
+        .for_each(|profile| {
+            if profile.likes.contains(&video_id){
+                count += 1;
+            }
+        });
+
+    return count;
+}
+
 ///Function for getting the Principal who called the canister
 fn get_caller_principal() -> Principal{
     if cfg!(target_arch = "wasm32"){

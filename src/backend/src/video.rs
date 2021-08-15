@@ -14,6 +14,7 @@ pub type Feed = Vec<VideoInfo>;
 pub struct VideoInfo{
     pub video_id: Option<VideoId>,
     pub owner: Principal,
+    pub creator: Principal,
     pub name: String,
     pub description: String,
     pub keywords: Vec<String>,
@@ -46,11 +47,12 @@ pub async fn create_video(mut video: VideoInfo) -> &'static VideoInfo{
 
     video.video_id = Some(id.clone());
 
-    video.owner = if cfg!(target_arch = "wasm32"){
+    video.creator = if cfg!(target_arch = "wasm32"){
         ic_cdk::caller()
     } else {
         Principal::from_slice(&[])
     };
+    video.owner = video.creator.clone();
 
     video_storage::create_video(&mut video).await;
 
@@ -72,7 +74,7 @@ pub fn load_video(video_id: VideoId, load_info: video_storage::LoadInfo) -> Opti
     video_storage::load_video(video_id, load_info)
 }
 
-///This funtion retrieves the specified number of [VideoInfo] and returns them as a [Feed].
+///This function retrieves the specified number of [VideoInfo] and returns them as a [Feed].
 #[query(name = "getDefaultFeed")]
 pub fn get_default_feed(num: usize) -> Feed{
     let video_store = storage::get::<VideoInfoStore>();
@@ -81,6 +83,30 @@ pub fn get_default_feed(num: usize) -> Feed{
         .values()
         .cloned()
         .take(num)
+        .collect()
+}
+
+///This function retrieves all the videos created by the specified [Principal].
+#[query(name = "getCreatorFeed")]
+pub fn get_creator_feed(creator: Principal) -> Feed{
+    let video_store = storage::get::<VideoInfoStore>();
+
+    video_store
+        .values()
+        .filter(|&video| video.creator == creator)
+        .cloned()
+        .collect()
+}
+
+///This function retrieves all the videos owned by the specified [Principal].
+#[query(name = "getOwnerFeed")]
+pub fn get_owner_feed(owner: Principal) -> Feed{
+    let video_store = storage::get::<VideoInfoStore>();
+
+    video_store
+        .values()
+        .filter(|&video| video.owner == owner)
+        .cloned()
         .collect()
 }
 
