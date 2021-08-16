@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, Paper, makeStyles } from '@material-ui/core';
+import React from 'react';
+import { Grid, Paper } from '@material-ui/core';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,15 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import { Post } from '../../interfaces/video_interface';
-import VideoElem from './VideoElem';
 import VideoTableRow from './VideoTableRow';
-
-const videoStyles = makeStyles({
-  profile_logo: {
-      width: 100,
-      height: 100,
-  }
-});
 
 interface VideoBoxProps {
   posts: Array<Post>

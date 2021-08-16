@@ -4,15 +4,6 @@ import { postStyles } from '../../styles/post_styles';
 import { loadVideo } from '../../services/video_backend';
 import { Post } from '../../interfaces/video_interface';
 
-const videoStyles = makeStyles({
-  video_elem: {
-      borderRadius: "10px",
-      padding: "5px",
-      color: "white",
-      backgroundColor: "black"
-  }
-});
-
 interface PostProps {
   post: Post;
 }

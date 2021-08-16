@@ -5,7 +5,6 @@ import {
     canisterId as backendVideoId,
 } from 'dfx-generated/backend';
 import { Profile, ProfileUpdate } from '../interfaces/profile_interface';
-import { Post, Video_Data } from '../interfaces/video_interface';
 
 import { getAuthenticatedIdentity } from './auth_services';
 
