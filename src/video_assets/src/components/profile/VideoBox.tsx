@@ -10,6 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 
 import { Post } from '../../interfaces/video_interface';
 import VideoElem from './VideoElem';
+import VideoTableRow from './VideoTableRow';
 
 const videoStyles = makeStyles({
   profile_logo: {
@@ -40,20 +41,7 @@ const VideoBox = ({ posts }: VideoBoxProps) => {
               </TableHead>
               <TableBody>
                 {posts.map((post, index) => (
-                  <TableRow key={index}>
-                    <TableCell component="th" scope="row">
-                      <VideoElem key={index} post={post} />
-                    </TableCell>
-                    <TableCell>
-                      {Math.floor(Math.random() * 1000)}
-                    </TableCell>
-                    <TableCell>
-                      {Math.floor(Math.random() * 100)}
-                    </TableCell>
-                    <TableCell>
-                      {Math.floor(Math.random() * 10)}€
-                    </TableCell>
-                  </TableRow>
+                  <VideoTableRow index={index} post={post} />
                 ))}
               </TableBody>
             </Table>

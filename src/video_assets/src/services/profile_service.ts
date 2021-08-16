@@ -54,6 +54,12 @@ async function getProfileLikes(postList: Array<String>) {
     return likesNr;
 }
 
+async function getVideoLikes(videoId: String) {
+    let likes = Number(await videoBackend.getLikeAmount(videoId));
+    return likes;
+}
+
+
 async function likeVideo(videoId: String) {
     await videoBackend.likeVideo(videoId);   
 } 
@@ -63,5 +69,6 @@ export {
     updateProfile,
     getProfile,
     getProfileLikes,
-    likeVideo
+    likeVideo,
+    getVideoLikes
 }

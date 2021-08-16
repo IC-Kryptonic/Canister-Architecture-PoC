@@ -105,7 +105,9 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
             }
           </Grid>
           <Grid item>
-            <VisibilityIcon />
+            <IconButton className={classes.bottomButton}>
+              <VisibilityIcon />
+            </IconButton>
           </Grid>
         </Grid>
       </Grid>
