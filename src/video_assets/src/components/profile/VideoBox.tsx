@@ -8,7 +8,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-import { loadDefaultFeed } from '../../services/video_backend';
 import { Post } from '../../interfaces/video_interface';
 import VideoElem from './VideoElem';
 
@@ -19,20 +18,11 @@ const videoStyles = makeStyles({
   }
 });
 
-const VideoBox = () => {
-  const [posts, setPosts] = useState<Array<Post>>([]);
+interface VideoBoxProps {
+  posts: Array<Post>
+}
 
-  useEffect(() => {
-    async function queryFeed() {
-      try {
-        const res = await loadDefaultFeed(10);
-        setPosts(res);
-      } catch (error) {
-        console.error('Error querying feed', error);
-      }
-    }
-    queryFeed();
-  }, []);
+const VideoBox = ({ posts }: VideoBoxProps) => {
 
   return (
     <Grid container justify="center">
@@ -70,7 +60,7 @@ const VideoBox = () => {
           </TableContainer>
         </>
       ) : (
-        <span>In deinem Feed gibt es noch keine Videos :)</span>
+        <span>Du hast noch keine Videos :)</span>
       )}
     </Grid>);
 };

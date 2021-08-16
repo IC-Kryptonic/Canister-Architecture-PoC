@@ -25,7 +25,7 @@ async function loadProfile(): Promise<Profile> {
 
     //console.info(profileList);
 
-    if(!profileList.length || profileList.length == 0) {
+    if (!profileList.length || profileList.length == 0) {
         console.info(`Profile for ${principal} does not exist! Creating new one`);
         await videoBackend.createProfile();
 
@@ -45,8 +45,23 @@ async function getProfile(principal: Principal): Promise<Profile> {
     return profile[0];
 }
 
+async function getProfileLikes(postList: Array<String>) {
+    let likesNr = 0;
+    for(const post of postList) {
+        let likes = Number(await videoBackend.getLikeAmount(post));
+        likesNr += likes;
+    }
+    return likesNr;
+}
+
+async function likeVideo(videoId: String) {
+    await videoBackend.likeVideo(videoId);   
+} 
+
 export {
-    loadProfile, 
+    loadProfile,
     updateProfile,
-    getProfile
+    getProfile,
+    getProfileLikes,
+    likeVideo
 }

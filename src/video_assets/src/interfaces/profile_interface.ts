@@ -4,7 +4,7 @@ export interface Profile {
     principal: Principal,
     name: string,
     bio: string,
-    likes: Object
+    likes: Array<String>
     follows: Object,
     followers: Object,
 }

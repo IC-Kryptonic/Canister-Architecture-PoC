@@ -3,6 +3,7 @@ import { Box, Paper, makeStyles } from '@material-ui/core';
 import { Identity } from '@dfinity/agent';
 import Header from '../components/Header';
 import { loadProfile } from '../services/profile_service';
+import { loadOwnerFeed } from '../services/video_backend';
 
 import { Profile } from '../interfaces/profile_interface';
 import ProfileInfo from '../components/profile/ProfileInfo';
@@ -35,6 +36,7 @@ const Profile = () => {
 
   const [identity, setIdentity] = useState<Identity | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [posts, setPosts] = useState([]);
 
   const handleProfile = async () => {
     let identity = await getAuthenticatedIdentity();
@@ -42,6 +44,9 @@ const Profile = () => {
 
     let profile = await loadProfile();
     setProfile(profile);
+
+    let posts = await loadOwnerFeed(identity.getPrincipal());
+    setPosts(posts);
   }
 
   useEffect(() => {
@@ -57,10 +62,10 @@ const Profile = () => {
       <Header />
       <Box className={classes.content_wrapper}>
         <Box className={classes.paper}>
-          <ProfileInfo profile={profile} identity={identity} reloadProfile={reloadProfile} />
+          <ProfileInfo profile={profile} identity={identity} reloadProfile={reloadProfile} posts={posts}/>
         </Box>
         <Box className={classes.right_wrapper}>
-          <VideoBox />
+          <VideoBox posts={posts} />
         </Box>
       </Box>
     </>

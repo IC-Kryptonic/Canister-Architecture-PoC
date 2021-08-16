@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Button, CircularProgress } from '@material-ui/core';
+import { Grid, Button, CircularProgress, IconButton } from '@material-ui/core';
 import { postStyles } from '../styles/post_styles';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 
@@ -11,16 +12,19 @@ import { trimString } from '../utils/texts';
 import { loadVideo } from '../services/video_backend';
 import { getProfile } from '../services/profile_service';
 import { Post } from '../interfaces/video_interface';
+import { Profile } from '../interfaces/profile_interface';
 
 interface PostProps {
   post: Post;
+  like: Boolean;
+  likeVideo: (id: String) => void;
 }
 
-const Post = ({ post }: PostProps) => {
-  
+const Post = ({ post, like, likeVideo }: PostProps) => {
+
   const classes = postStyles();
   const [video, setVideo] = useState(null);
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     async function queryVideo() {
@@ -36,6 +40,11 @@ const Post = ({ post }: PostProps) => {
     }
     queryVideo();
   }, [post]);
+
+  const likeButtonHandler = async (videoId: String) => {
+    likeVideo(videoId);
+  }
+
   return (
     <Grid container justify="center">
       <Grid container className={classes.postContainer}>
@@ -44,7 +53,7 @@ const Post = ({ post }: PostProps) => {
           <Grid item>
             <Grid container>
               <Grid item>
-               <AccountCircle className={classes.userProfile}/>
+                <AccountCircle className={classes.userProfile} />
               </Grid>
               <Grid item>
                 <Grid container spacing={1}>
@@ -83,14 +92,24 @@ const Post = ({ post }: PostProps) => {
         {/* Post footer with likes and views */}
         <Grid container spacing={1}>
           <Grid item>
-            <FavoriteBorderIcon />
+            {
+              like ? (
+                <IconButton className={classes.bottomButton}>
+                  <FavoriteIcon />
+                </IconButton>
+              ) : (
+                <IconButton className={classes.bottomButton} onClick={() => likeButtonHandler(post.video_id[0])}>
+                  <FavoriteBorderIcon />
+                </IconButton>
+              )
+            }
           </Grid>
           <Grid item>
             <VisibilityIcon />
           </Grid>
         </Grid>
       </Grid>
-    </Grid>
+    </Grid >
   );
 };
 

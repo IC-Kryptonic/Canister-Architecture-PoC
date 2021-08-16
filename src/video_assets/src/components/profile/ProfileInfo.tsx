@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Grid, Paper, makeStyles, Button, Typography } from "@material-ui/core"
 import { Profile } from "../../interfaces/profile_interface";
+import { Post } from '../../interfaces/video_interface';
+import { getProfileLikes } from '../../services/profile_service';
+
 import { Identity } from '@dfinity/agent';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 
 import ProfileIcon from "./ProfileIcon";
 import ProfileId from "./ProfileId";
@@ -11,6 +15,7 @@ import BioBox from "./BioBox";
 interface ProfileProps {
     profile: Profile;
     identity: Identity;
+    posts: Array<Post>;
     reloadProfile: () => void;
 }
 
@@ -23,14 +28,31 @@ const headerStyles = makeStyles({
     },
     wrapper: {
         padding: "20px"
+    },
+    profile_likes: {
+        width: 100,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignContent: "center"
     }
 });
 
-const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
+const ProfileInfo = ({ profile, identity, posts, reloadProfile }: ProfileProps) => {
 
     const classes = headerStyles();
 
     const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [totalLikes, setTotalLikes] = useState(0);
+
+    const handleProfileLikes = async (postList: Array<String>) => {
+        let likes = await getProfileLikes(postList);
+        setTotalLikes(likes);
+    }
+
+    useEffect(() => {
+        handleProfileLikes(posts.map(post => post.video_id[0]));
+    }, [posts]);
 
     const openEditDialog = () => {
         setEditDialogOpen(true);
@@ -46,11 +68,16 @@ const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
     return (
         <Grid container
             direction="column"
-            justify="flex-start"
-            alignItems="flex-start"
+            justify="center"
+            alignItems="center"
             spacing={2}
             className={classes.wrapper}
         >
+            <Grid item>
+                <EditProfileDialog open={editDialogOpen} handleClose={closeEditDialog} />
+                <Button variant="contained" onClick={openEditDialog}>Edit</Button>
+            </Grid>
+
             <Grid item>
                 <Paper className={classes.paper}>
                     <ProfileIcon />
@@ -58,8 +85,10 @@ const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
             </Grid>
 
             <Grid item>
-                <EditProfileDialog open={editDialogOpen} handleClose={closeEditDialog} />
-                <Button variant="contained" onClick={openEditDialog}>Edit</Button>
+                <Box className={classes.profile_likes}>
+                    <FavoriteBorderIcon />
+                    <Typography variant="body1">{totalLikes}</Typography>
+                </Box>
             </Grid>
 
             <Grid item>
@@ -74,24 +103,6 @@ const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
 
             <Grid item>
                 <BioBox bio={profile?.bio || "<<bio>>"} />
-            </Grid>
-
-            <Grid item>
-                <Paper className={classes.paper}>
-                    Links:
-                    <br/>
-                    instagram.com
-                    <br/>
-                    youtube.com
-                    <br/>
-                    tiktok.com
-                </Paper>
-            </Grid>
-
-            <Grid item>
-                <Paper className={classes.paper}>
-                    Joined ...
-                </Paper>
             </Grid>
 
         </Grid>

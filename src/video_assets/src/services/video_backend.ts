@@ -20,6 +20,12 @@ async function loadDefaultFeed(count: number): Promise<Array<Post>> {
   return (await videoBackend.getDefaultFeed(count)) as Array<Post>;
 }
 
+async function loadOwnerFeed(principal: Principal): Promise<Array<Post>> {
+  // Backend call always returns an empty list => currently substituted by getDefaultFeed
+  //return (await videoBackend.getOwnerFeed(principal)) as Array<Post>;
+  return (await videoBackend.getDefaultFeed(10)) as Array<Post>;
+}
+
 async function loadVideo(videoInfo: Post): Promise<string> {
   const { video_id, storage_type } = videoInfo;
   let video_id_unpacked: string = video_id[0];
@@ -165,4 +171,4 @@ async function uploadVideo(
   console.debug('upload finished', `timestamp: ${Date.now()}`);
 }
 
-export { loadDefaultFeed, loadVideo, uploadVideo };
+export { loadDefaultFeed, loadVideo, uploadVideo, loadOwnerFeed };

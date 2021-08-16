@@ -48,6 +48,10 @@ const postStyles = makeStyles({
   lightText: {
     color: 'rgb(163, 162, 162)',
   },
+  bottomButton: {
+    width: 50,
+    height: 50
+  }
 });
 
 export { postStyles };
