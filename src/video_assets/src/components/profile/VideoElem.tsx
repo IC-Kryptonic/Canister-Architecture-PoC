@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Button, CircularProgress } from '@material-ui/core';
+import { Grid, Button, CircularProgress, Typography, makeStyles } from '@material-ui/core';
 import { postStyles } from '../../styles/post_styles';
 import { loadVideo } from '../../services/video_backend';
 import { Post } from '../../interfaces/video_interface';
+
+const videoStyles = makeStyles({
+  video_elem: {
+      borderRadius: "10px",
+      padding: "5px",
+      color: "white",
+      backgroundColor: "black"
+  }
+});
 
 interface PostProps {
   post: Post;
@@ -28,19 +37,23 @@ const VideoElem = ({ post }: PostProps) => {
     }
     queryVideo();
   }, [post]);
+
   return (
-    <Grid container justify="center">
-      <Grid container className={classes.postContainer}>
-        {/* Post body with video */}
-        <Grid container justify="center">
-          {video ? (
-            <video controls className={classes.video}>
-              <source src={video} type="video/mp4" />
-            </video>
-          ) : (
-            <CircularProgress className={classes.loadingSpinner} />
-          )}
-        </Grid>
+    <Grid
+      container
+      direction="row"
+      justify="flex-start"
+      alignItems="center"
+    >
+      <Grid item>
+        <Typography>{post.name}</Typography>
+        {video ? (
+          <video controls className={classes.video}>
+            <source src={video} type="video/mp4" />
+          </video>
+        ) : (
+          <CircularProgress className={classes.loadingSpinner} />
+        )}
       </Grid>
     </Grid>
   );

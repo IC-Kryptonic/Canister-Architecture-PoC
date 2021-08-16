@@ -1,5 +1,5 @@
-import React, {ChangeEvent, useState} from "react";
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, TextField, Button } from "@material-ui/core";
+import React, { ChangeEvent, useState } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, TextField, Button, CircularProgress } from "@material-ui/core";
 import { ProfileUpdate } from "../../interfaces/profile_interface";
 
 import { updateProfile } from '../../services/profile_service';
@@ -11,18 +11,19 @@ interface RegisterDialogProps {
 
 export default function RegisterDialog(props: RegisterDialogProps) {
 
-    const[username, setUsername] = useState("");
-    const[email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [bio, setBio] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
-        if(username !==  event.target.value) {
+        if (username !== event.target.value) {
             setUsername(event.target.value);
         }
     }
 
-    const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
-        if(email !== event.target.value) {
-            setEmail(event.target.value)
+    const handleBioChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (bio !== event.target.value) {
+            setBio(event.target.value)
         }
     }
 
@@ -31,12 +32,14 @@ export default function RegisterDialog(props: RegisterDialogProps) {
     }
 
     const handleEdit = async () => {
-        // TODO
+        // TODO Perform check for valid parameters
         let profileUpdate: ProfileUpdate = {
             name: username,
-            bio: "Enter bio here... :)"
+            bio: bio
         };
+        setLoading(true);
         await updateProfile(profileUpdate);
+        setLoading(false);
         props.handleClose(true);
     }
 
@@ -54,30 +57,39 @@ export default function RegisterDialog(props: RegisterDialogProps) {
                     id="username"
                     label="Username"
                     type="username"
+                    variant="outlined"
                     defaultValue={username}
                     fullWidth
                     onChange={handleUsernameChange}
                 />
-                {/** 
-                 * <TextField
-                    autoFocus
+                <TextField
+                    id="bio"
+                    label="Bio"
                     margin="dense"
-                    id="email" 
-                    label="E-Mail"
-                    type="text"
-                    defaultValue={email}
+                    multiline
+                    rows={4}
+                    defaultValue={bio}
+                    variant="outlined"
                     fullWidth
-                    onChange={handleEmailChange}
+                    onChange={handleBioChange}
                 />
-                */}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} color="primary">
-                    Cancel
-                </Button>
-                <Button onClick={handleEdit} color="primary">
-                    Edit
-                </Button>
+                {
+                    loading ? (
+                        <CircularProgress />
+                    ) : (
+                        <>
+                            <Button onClick={handleEdit} color="primary">
+                                Edit
+                            </Button>
+                            <Button onClick={handleCancel} color="primary">
+                                Cancel
+                            </Button>
+                        </>
+                    )
+                }
+
             </DialogActions>
         </Dialog>
     );

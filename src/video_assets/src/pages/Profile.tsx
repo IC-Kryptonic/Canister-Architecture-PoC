@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Paper, makeStyles } from '@material-ui/core';
+import { Box, Paper, makeStyles } from '@material-ui/core';
 import { Identity } from '@dfinity/agent';
 import Header from '../components/Header';
 import { loadProfile } from '../services/profile_service';
@@ -7,15 +7,25 @@ import { loadProfile } from '../services/profile_service';
 import { Profile } from '../interfaces/profile_interface';
 import ProfileInfo from '../components/profile/ProfileInfo';
 import { getAuthenticatedIdentity } from '../services/auth_services';
-import VideoList from '../components/profile/VideoList';
+import VideoBox from '../components/profile/VideoBox';
 
 const profileStyles = makeStyles({
-  grid_wrapper: {
+  content_wrapper: {
+    display: "flex",
+    flexWrap: "wrap",
+    margin: 40
+  },
+  left_wrapper: {
     margin: 20
   },
+  right_wrapper: {
+    marign: 50,
+    minWidth: 600,
+    maxWidth: 800
+  },
   paper: {
-    minWidth: 400,
-    minHeight: 800
+    margin: 50,
+    maxWidth: 500,
   }
 });
 
@@ -45,27 +55,14 @@ const Profile = () => {
   return (
     <>
       <Header />
-      <Grid
-        container
-        direction="row"
-        justify="center"
-        alignItems="center"
-        spacing={0}
-        className={classes.grid_wrapper}
-      >
-        <Grid item xs={3}>
-          <Paper className={classes.paper}>
-            <ProfileInfo profile={profile} identity={identity} reloadProfile={reloadProfile} />
-          </Paper>
-        </Grid>
-        {/*
-        <Grid item xs={9}>
-          <Paper className={classes.paper}>
-            <VideoList />
-          </Paper>
-        </Grid>
-        */}
-      </Grid>
+      <Box className={classes.content_wrapper}>
+        <Box className={classes.paper}>
+          <ProfileInfo profile={profile} identity={identity} reloadProfile={reloadProfile} />
+        </Box>
+        <Box className={classes.right_wrapper}>
+          <VideoBox />
+        </Box>
+      </Box>
     </>
   );
 };

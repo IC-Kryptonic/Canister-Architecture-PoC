@@ -6,6 +6,7 @@ import { Identity } from '@dfinity/agent';
 import ProfileIcon from "./ProfileIcon";
 import ProfileId from "./ProfileId";
 import EditProfileDialog from "./EditProfileDialog";
+import BioBox from "./BioBox";
 
 interface ProfileProps {
     profile: Profile;
@@ -72,14 +73,18 @@ const ProfileInfo = ({ profile, identity, reloadProfile }: ProfileProps) => {
             </Grid>
 
             <Grid item>
-                <Paper className={classes.paper}>
-                    Bio
-                </Paper>
+                <BioBox bio={profile?.bio || "<<bio>>"} />
             </Grid>
 
             <Grid item>
                 <Paper className={classes.paper}>
-                    Links
+                    Links:
+                    <br/>
+                    instagram.com
+                    <br/>
+                    youtube.com
+                    <br/>
+                    tiktok.com
                 </Paper>
             </Grid>
 

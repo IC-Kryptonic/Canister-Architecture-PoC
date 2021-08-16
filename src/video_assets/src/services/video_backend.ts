@@ -21,7 +21,7 @@ async function loadDefaultFeed(count: number): Promise<Array<Post>> {
 }
 
 async function loadVideo(videoInfo: Post): Promise<string> {
-  const { video_id, storage_type} = videoInfo;
+  const { video_id, storage_type } = videoInfo;
   let video_id_unpacked: string = video_id[0];
 
   let dht_info = storage_type as SimpleDHT_Storage_Type;
@@ -76,8 +76,8 @@ function _processAndUploadChunk(
 
 
   let chunk = {
-    "data" : data,
-    "num" : chunkNum,
+    "data": data,
+    "num": chunkNum,
   };
   let videoData = {
     inCanister: chunk
@@ -132,14 +132,9 @@ async function uploadVideo(
     creator: Principal.anonymous(),
     description: videoDescription,
     keywords: [],
-    storage_type: { simpleDistMap : [chunkCount, []]},
-  }
-
-  const returnVideo = (await videoBackend.createVideo(
-      videoInfo
-  )) as Video_Info;
-
-  console.debug('videoId:', returnVideo.video_id, `timestamp: ${Date.now()}`);
+    storage_type: { inCanister: chunkCount },
+  })) as string;
+  console.debug('videoId:', id, `timestamp: ${Date.now()}`);
 
   const videoBuffer = (await video?.arrayBuffer()) || new ArrayBuffer(0);
   const putChunkPromises = [];

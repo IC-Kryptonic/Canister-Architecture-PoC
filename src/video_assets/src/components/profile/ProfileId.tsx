@@ -41,7 +41,7 @@ const ProfileId = (props: IdProps) => {
             </Grid>
             <Grid item>
                 <Box className={classes.principal_box}>
-                    {props.id}
+                    {props.id} 
                 </Box>
             </Grid>
         </Grid>
