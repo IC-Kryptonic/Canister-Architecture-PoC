@@ -3,5 +3,5 @@ members = [
   "src/backend",
   "src/video_dht",
   "src/video_dht/bucket",
-  "src/canister_tests"
+  "src/canister_tests",
 ]
