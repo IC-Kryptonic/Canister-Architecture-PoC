@@ -1,7 +1,10 @@
 use ic_cdk_macros::*;
 use ic_cdk::storage;
 
+use sha2::{Sha256, Digest};
+
 use std::collections::HashMap;
+use std::convert::TryInto;
 
 pub type VideoId = String;
 pub type ChunkNum = usize;
@@ -48,4 +51,43 @@ pub async fn get_chunk(id: VideoId, chunk_num: ChunkNum) -> Option<&'static Chun
         }
         None => None,
     }
+}
+
+///Retrieve sha256 hash of a video
+#[query(name = "getHash")]
+pub async fn get_hash(id: VideoId) -> Option<[u8; 256/8]>{
+    let mut hasher = Sha256::new();
+
+    if !is_fully_uploaded(&id){
+        return None;
+    }
+
+    let video_storage = storage::get::<VideoStore>();
+
+    match video_storage.get(&id){
+        Some(chunks) => {
+            for chunk in chunks{
+                hasher.update(&chunk);
+            }
+        }
+        None => return None,
+    }
+
+    return Some(hasher.finalize().as_slice().try_into().unwrap());
+}
+
+fn is_fully_uploaded(id: &VideoId) -> bool {
+    let video_storage = storage::get::<VideoStore>();
+
+    match video_storage.get(id){
+        Some(chunks) => {
+            for chunk in chunks{
+                if chunk.is_empty(){
+                    return false;
+                }
+            }
+        }
+        None => return false,
+    }
+    return true
 }
