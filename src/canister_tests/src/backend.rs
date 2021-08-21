@@ -4,6 +4,7 @@ use ic_cdk::export::candid::{CandidType, Deserialize};
 use ic_cdk::export::candid::{Encode, Decode};
 
 use crate::util;
+use crate::util::default_waiter;
 
 
 pub type VideoId = String;
@@ -36,26 +37,14 @@ pub struct VideoInfo{
 }
 
 
-pub async fn test_backend() -> bool{
-    let transport = ic_agent::agent::http_transport::ReqwestHttpReplicaV2Transport::create("http://127.0.0.1:8000").expect("Could not create transport object");
-
-    let agent = Agent::builder()
-        .with_transport(transport)
-        .build()
-        .expect("Could not build agent");
-
+pub async fn test_backend(agent: Agent) -> bool{
     let princ = util::get_canister_principal_by_name("backend".to_string());
-
-
-    agent.fetch_root_key().await.unwrap();
 
     if !test_create_video(agent, princ).await{
         return false;
     }
 
-
     println!("All backend tests successful ✅");
-
     return true;
 }
 
@@ -73,10 +62,7 @@ async fn test_create_video(agent: Agent, princ: Principal) -> bool{
         storage_type,
     };
 
-    let waiter = garcon::Delay::builder()
-        .throttle(std::time::Duration::from_millis(500))
-        .timeout(std::time::Duration::from_secs(30))
-        .build();
+    let waiter = default_waiter();
 
     let response = agent.update(&princ, "createVideo")
         .with_arg(&Encode!(&video_info).expect("Could not encode"))
