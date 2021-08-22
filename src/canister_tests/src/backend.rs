@@ -9,12 +9,12 @@ use crate::util::Actor;
 pub type VideoId = String;
 pub type ChunkNum = usize;
 
-#[derive(Clone, CandidType, Deserialize)]
+#[derive(Clone, CandidType, Deserialize, Debug)]
 pub struct IPFSData{
     data: String,
 }
 
-#[derive(CandidType, Deserialize)]
+#[derive(CandidType, Deserialize, Debug)]
 pub enum StorageType{
     #[serde(rename = "inCanister")]
     InCanister(ChunkNum),
@@ -22,6 +22,26 @@ pub enum StorageType{
     SimpleDistMap(ChunkNum, Option<Principal>),
     #[serde(rename = "ipfs")]
     IPFS(IPFSData),
+}
+
+impl PartialEq for StorageType{
+    fn eq(&self, other: &Self) -> bool {
+        return match self{
+            StorageType::InCanister(chunks) => {
+                if let StorageType::InCanister(other_chunks) = other {
+                    other_chunks == chunks
+                } else{
+                    false
+                }
+            },
+            StorageType::SimpleDistMap(_chunks, _bucket) => unimplemented!(),
+            StorageType::IPFS(_data) => unimplemented!(),
+        }
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
 }
 
 #[derive(CandidType, Deserialize)]
@@ -66,7 +86,7 @@ async fn test_create_video(actor: &Actor<'_>) -> bool{
 
     let response = actor.update_call("createVideo", args).await;
 
-    let result = match response {
+    let result_video = match response {
         Ok(result) => Decode!(result.as_slice(), VideoInfo).expect("Could not deduce video info from result"),
         Err(err) => {
             println!("Api Call error: {:?}", err);
@@ -74,7 +94,12 @@ async fn test_create_video(actor: &Actor<'_>) -> bool{
         },
     };
 
-    println!("Video: {:?}", result.video_id.clone().unwrap());
+    assert!(result_video.video_id.is_some());
+    assert_eq!(result_video.owner, result_video.creator);
+    assert_eq!(video_info.name, result_video.name);
+    assert_eq!(video_info.description, result_video.description);
+    assert_eq!(video_info.keywords, result_video.keywords);
+    assert_eq!(video_info.storage_type, result_video.storage_type);
 
-    return result.video_id.is_some();
+    return true;
 }

@@ -3,7 +3,7 @@ use ic_agent::export::Principal;
 use ic_agent::{Agent, AgentError};
 
 pub struct Actor<'a> {
-    agent: &'a Agent,
+    pub agent: &'a Agent,
     principal: Principal,
 }
 
