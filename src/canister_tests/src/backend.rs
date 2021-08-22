@@ -3,8 +3,7 @@ use ic_agent::export::Principal;
 use ic_cdk::export::candid::{CandidType, Deserialize};
 use ic_cdk::export::candid::{Encode, Decode};
 
-use crate::util;
-use crate::util::default_waiter;
+use crate::util::Actor;
 
 
 pub type VideoId = String;
@@ -37,10 +36,11 @@ pub struct VideoInfo{
 }
 
 
-pub async fn test_backend(agent: Agent) -> bool{
-    let princ = util::get_canister_principal_by_name("backend".to_string());
+pub async fn test_backend(agent: &Agent) -> bool{
 
-    if !test_create_video(agent, princ).await{
+    let actor = Actor::from_name(agent, "backend");
+
+    if !test_create_video(&actor).await{
         return false;
     }
 
@@ -48,7 +48,7 @@ pub async fn test_backend(agent: Agent) -> bool{
     return true;
 }
 
-async fn test_create_video(agent: Agent, princ: Principal) -> bool{
+async fn test_create_video(actor: &Actor<'_>) -> bool{
 
     let storage_type = StorageType::InCanister(1);
 
@@ -62,13 +62,9 @@ async fn test_create_video(agent: Agent, princ: Principal) -> bool{
         storage_type,
     };
 
-    let waiter = default_waiter();
+    let args = Encode!(&video_info).expect("Could not encode args");
 
-    let response = agent.update(&princ, "createVideo")
-        .with_arg(&Encode!(&video_info).expect("Could not encode"))
-        .call_and_wait(waiter)
-        .await;
-
+    let response = actor.update_call("createVideo", args).await;
 
     let result = match response {
         Ok(result) => Decode!(result.as_slice(), VideoInfo).expect("Could not deduce video info from result"),
@@ -77,7 +73,6 @@ async fn test_create_video(agent: Agent, princ: Principal) -> bool{
             return false;
         },
     };
-
 
     println!("Video: {:?}", result.video_id.clone().unwrap());
 

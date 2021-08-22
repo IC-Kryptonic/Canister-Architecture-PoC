@@ -1,8 +1,37 @@
 use std::process::Command;
 use ic_agent::export::Principal;
-use ic_agent::Agent;
+use ic_agent::{Agent, AgentError};
 
-pub fn get_canister_principal_by_name(name: String) -> Principal{
+pub struct Actor<'a> {
+    agent: &'a Agent,
+    principal: Principal,
+}
+
+impl Actor<'_>{
+    pub fn from_name<'a>(agent: &'a Agent, name: &str) -> Actor<'a>{
+        let principal = get_canister_principal_by_name(name);
+        Actor{
+            agent,
+            principal,
+        }
+    }
+
+    pub async fn update_call(&self, method_name: &str, arg: Vec<u8>) -> Result<Vec<u8>, AgentError> {
+        return self.agent.update(&self.principal, method_name)
+            .with_arg(arg)
+            .call_and_wait(default_waiter())
+            .await;
+    }
+
+    pub async fn query_call(&self, method_name: &str, arg: Vec<u8>) -> Result<Vec<u8>, AgentError> {
+        return self.agent.query(&self.principal, method_name)
+            .with_arg(arg)
+            .call()
+            .await;
+    }
+}
+
+pub fn get_canister_principal_by_name(name: &str) -> Principal{
     let out = Command::new("dfx")
         .arg("canister")
         .arg("id")
