@@ -1,7 +1,6 @@
 use std::process::Command;
 use ic_agent::export::Principal;
 use ic_agent::{Agent, AgentError};
-use std::env;
 
 pub struct Actor {
     pub agent: Agent,
@@ -9,13 +8,16 @@ pub struct Actor {
 }
 
 impl Actor{
-    pub fn from_name(agent: Agent, name: &str) -> Actor{
+    pub async fn from_name(name: &str) -> Actor{
+        let agent = build_agent().await;
+
         let principal = get_canister_principal_by_name(name);
         Actor{
             agent,
             principal,
         }
     }
+
 
     pub async fn update_call(&self, method_name: &str, arg: Vec<u8>) -> Result<Vec<u8>, AgentError> {
 

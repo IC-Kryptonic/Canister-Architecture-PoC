@@ -1,11 +1,9 @@
-use ic_agent::{Agent};
 use ic_agent::export::Principal;
 use ic_cdk::export::candid::{CandidType, Deserialize};
 use ic_cdk::export::candid::{Encode, Decode};
 
 use crate::util::Actor;
 use std::convert::TryInto;
-use crate::util;
 
 pub type VideoId = String;
 pub type ChunkNum = usize;
@@ -82,15 +80,10 @@ pub type WrappedVideoInfo = Option<VideoInfo>;
 
 const TEST_STORAGE_TYPE: StorageType = StorageType::SimpleDistMap(1, None);
 
-async fn create_actor_from_name(name: &str) -> Actor{
-    let agent = util::build_agent().await;
-    return Actor::from_name(agent, name);
-}
-
 #[tokio::test]
 async fn test_create_and_get_video_info() -> Result<(), String>{
 
-    let actor = create_actor_from_name("backend").await;
+    let actor = Actor::from_name("backend").await;
 
     let test_video_info = create_test_video();
 
@@ -128,7 +121,7 @@ async fn test_create_and_get_video_info() -> Result<(), String>{
 #[tokio::test]
 async fn test_create_video() -> Result<(), String>{
 
-    let actor = create_actor_from_name("backend").await;
+    let actor = Actor::from_name("backend").await;
 
     let test_video_info = create_test_video();
 
@@ -156,7 +149,7 @@ async fn test_create_video() -> Result<(), String>{
 #[tokio::test]
 async fn test_store_video() -> Result<(), String>{
 
-    let actor = create_actor_from_name("backend").await;
+    let actor = Actor::from_name("backend").await;
 
     let test_video_info = create_test_video();
 
@@ -197,7 +190,7 @@ async fn test_store_video() -> Result<(), String>{
 #[tokio::test]
 async fn test_bucket_store_new_video() -> Result<(), String>{
 
-    let actor = create_actor_from_name("backend").await;
+    let actor = Actor::from_name("backend").await;
 
     let test_video_info = create_test_video();
 
