@@ -1,14 +1,15 @@
 use std::process::Command;
 use ic_agent::export::Principal;
 use ic_agent::{Agent, AgentError};
+use std::env;
 
-pub struct Actor<'a> {
-    pub agent: &'a Agent,
+pub struct Actor {
+    pub agent: Agent,
     pub(crate) principal: Principal,
 }
 
-impl Actor<'_>{
-    pub fn from_name<'a>(agent: &'a Agent, name: &str) -> Actor<'a>{
+impl Actor{
+    pub fn from_name(agent: Agent, name: &str) -> Actor{
         let principal = get_canister_principal_by_name(name);
         Actor{
             agent,
@@ -33,6 +34,7 @@ impl Actor<'_>{
 
 pub fn get_canister_principal_by_name(name: &str) -> Principal{
     let out = Command::new("dfx")
+        .current_dir("../../")//tests happen in the directory src/"project"
         .arg("canister")
         .arg("id")
         .arg(name)
