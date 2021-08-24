@@ -4,7 +4,7 @@ use ic_agent::{Agent, AgentError};
 
 pub struct Actor<'a> {
     pub agent: &'a Agent,
-    principal: Principal,
+    pub(crate) principal: Principal,
 }
 
 impl Actor<'_>{
@@ -17,17 +17,17 @@ impl Actor<'_>{
     }
 
     pub async fn update_call(&self, method_name: &str, arg: Vec<u8>) -> Result<Vec<u8>, AgentError> {
-        return self.agent.update(&self.principal, method_name)
+
+        self.agent.update(&self.principal, method_name)
             .with_arg(arg)
-            .call_and_wait(default_waiter())
-            .await;
+            .call_and_wait(default_waiter()).await
     }
 
     pub async fn query_call(&self, method_name: &str, arg: Vec<u8>) -> Result<Vec<u8>, AgentError> {
-        return self.agent.query(&self.principal, method_name)
+
+        self.agent.query(&self.principal, method_name)
             .with_arg(arg)
-            .call()
-            .await;
+            .call().await
     }
 }
 
