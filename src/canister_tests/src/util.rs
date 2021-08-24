@@ -18,7 +18,6 @@ impl Actor{
         }
     }
 
-
     pub async fn update_call(&self, method_name: &str, arg: Vec<u8>) -> Result<Vec<u8>, AgentError> {
 
         self.agent.update(&self.principal, method_name)
@@ -31,6 +30,28 @@ impl Actor{
         self.agent.query(&self.principal, method_name)
             .with_arg(arg)
             .call().await
+    }
+}
+
+pub fn check_ok(res: Result<Vec<u8>, AgentError>) -> Vec<u8>{
+    match res{
+        Ok(vec) => {
+            vec
+        },
+        Err(_err) => {
+            panic!("Canister call was not successful")
+        },
+    }
+}
+
+pub fn check_err(res: Result<Vec<u8>, AgentError>) -> AgentError{
+    match res{
+        Ok(_vec) => {
+            panic!("Canister call was successful")
+        },
+        Err(err) => {
+            err
+        },
     }
 }
 

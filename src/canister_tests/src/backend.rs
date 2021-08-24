@@ -1,8 +1,10 @@
 use ic_agent::export::Principal;
+use ic_agent::AgentError;
 use ic_cdk::export::candid::{CandidType, Deserialize};
 use ic_cdk::export::candid::{Encode, Decode};
 
 use crate::util::Actor;
+use crate::util;
 use std::convert::TryInto;
 
 pub type VideoId = String;
@@ -91,23 +93,18 @@ async fn test_create_and_get_video_info() -> Result<(), String>{
 
     let create_response = actor.update_call("createVideo", create_args).await;
 
-    let result_id = match create_response {
-        Ok(result) => Decode!(result.as_slice(), VideoInfo).expect("Could not deduce video info from result").video_id.expect("Video Id was not send back"),
-        Err(err) => {
-            return Err(format!("Api Call error: {:?}", err));
-        },
-    };
+    let raw_result = util::check_ok(create_response);
+    let result = Decode!(raw_result.as_slice(), VideoInfo).expect("Could not decode video info from result");
+
+    let result_id = result.video_id.expect("Video id not in result");
 
     let get_arg = Encode!(&result_id).expect("Could not encode video_id");
 
     let get_response = actor.query_call("getVideoInfo", get_arg).await;
 
-    let get_result = match get_response {
-        Ok(result) => Decode!(result.as_slice(), WrappedVideoInfo).expect("Could not deduce video info from result").expect("Video was not in canister"),
-        Err(err) => {
-            return Err(format!("Api Call error: {:?}", err));
-        },
-    };
+    let raw_get_result = util::check_ok(get_response);
+
+    let get_result = Decode!(raw_get_result.as_slice(), WrappedVideoInfo).expect("Could not deduce video info from result").expect("Video was not in canister");
 
     assert_eq!(result_id, get_result.video_id.expect("Video Id not in get_result"));
     assert_eq!(test_video_info.storage_type, get_result.storage_type);
@@ -129,12 +126,8 @@ async fn test_create_video() -> Result<(), String>{
 
     let response = actor.update_call("createVideo", arg).await;
 
-    let result_video = match response {
-        Ok(result) => Decode!(result.as_slice(), VideoInfo).expect("Could not deduce video info from result"),
-        Err(err) => {
-            return Err(format!("Api Call error: {:?}", err));
-        },
-    };
+    let raw_result = util::check_ok(response);
+    let result_video = Decode!(raw_result.as_slice(), VideoInfo).expect("Could not decode video info from result");
 
     assert!(result_video.video_id.is_some());
     assert_eq!(result_video.owner, result_video.creator);
@@ -157,13 +150,8 @@ async fn test_store_video() -> Result<(), String>{
 
     let create_response = actor.update_call("createVideo", create_args).await;
 
-    let result = match create_response {
-        Ok(result) => Decode!(result.as_slice(), VideoInfo).expect("Could not deduce video info from result"),
-        Err(err) => {
-            return Err(format!("Api Call error: {:?}", err));
-
-        },
-    };
+    let raw_result = util::check_ok(create_response);
+    let result = Decode!(raw_result.as_slice(), VideoInfo).expect("Could not decode video info from result");
 
     let result_id = result.video_id.expect("Video id not in result");
 
@@ -176,15 +164,10 @@ async fn test_store_video() -> Result<(), String>{
 
     let store_response = actor.update_call("storeVideo", store_args).await;
 
-    return match store_response {
-        Ok(vec) => {
-            Decode!(vec.as_slice(), ()).expect("Could not decode store result correctly");
-            Ok(())
-        },
-        Err(err) => {
-            Err(format!("Api Call error: {:?}", err))
-        },
-    };
+    let raw_result = util::check_ok(store_response);
+    Decode!(raw_result.as_slice(), ()).expect("Could not decode store result correctly");
+
+    Ok(())
 }
 
 #[tokio::test]
@@ -198,12 +181,8 @@ async fn test_bucket_store_new_video() -> Result<(), String>{
 
     let create_response = actor.update_call("createVideo", create_args).await;
 
-    let result = match create_response {
-        Ok(result) => Decode!(result.as_slice(), VideoInfo).expect("Could not deduce video info from result"),
-        Err(err) => {
-            return Err(format!("Api Call error: {:?}", err));
-        },
-    };
+    let raw_result = util::check_ok(create_response);
+    let result = Decode!(raw_result.as_slice(), VideoInfo).expect("Could not decode video info from result");
 
     let result_id = result.video_id.expect("Video id not in result");
     let bucket = if let StorageType::SimpleDistMap(_chunk, may_bucket) = result.storage_type{
@@ -222,15 +201,34 @@ async fn test_bucket_store_new_video() -> Result<(), String>{
 
     let store_response = bucket_actor.update_call("insertChunk", store_arg).await;
 
-    return match store_response {
-        Ok(vec) => {
-            Decode!(vec.as_slice(), ()).expect("Could not decode store result correctly");
-            Ok(())
-        },
-        Err(err) => {
-            Err(format!("Api Call error: {:?}", err))
-        },
-    };
+
+    let raw_result = util::check_ok(store_response);
+    Decode!(raw_result.as_slice(), ()).expect("Could not decode store result correctly");
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_nonsense_video_creation() -> Result<(), String>{
+
+    let actor = Actor::from_name("backend").await;
+
+    let nonsense_test_video_info = [0xCA, 0xFF, 0xEE];
+
+    let create_args = Encode!(&nonsense_test_video_info).expect("Could not encode video_info");
+
+    let create_response = actor.update_call("createVideo", create_args).await;
+
+    let error = util::check_err(create_response);
+
+    if matches!(error, AgentError::ReplicaError{
+        reject_code: 5,
+        reject_message: _,
+    }){
+        Ok(())
+    } else{
+        Err(format!("{:?}", error))
+    }
 }
 
 
