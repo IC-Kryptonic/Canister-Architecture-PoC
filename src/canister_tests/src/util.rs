@@ -1,6 +1,14 @@
 use std::process::Command;
 use ic_agent::export::Principal;
 use ic_agent::{Agent, AgentError};
+use ic_agent::identity::BasicIdentity;
+
+use ring::{
+    rand,
+    signature::Ed25519KeyPair,
+};
+
+
 
 pub struct Actor {
     pub agent: Agent,
@@ -75,6 +83,7 @@ pub async fn build_agent() -> Agent{
 
     let agent = Agent::builder()
         .with_transport(transport)
+        .with_identity(generate_random_identity())
         .build()
         .expect("Could not build agent");
 
@@ -88,4 +97,11 @@ pub fn default_waiter() -> garcon::Delay{
         .throttle(std::time::Duration::from_millis(500))
         .timeout(std::time::Duration::from_secs(30))
         .build()
+}
+
+fn generate_random_identity() -> BasicIdentity{
+    let rng = rand::SystemRandom::new();
+    let pkcs8_bytes = Ed25519KeyPair::generate_pkcs8(&rng).expect("Could not create pkcs8 bytes from rng");
+    let key_pair = Ed25519KeyPair::from_pkcs8(pkcs8_bytes.as_ref()).expect("Could not derive key pair from pkcs8");
+    BasicIdentity::from_key_pair(key_pair)
 }
