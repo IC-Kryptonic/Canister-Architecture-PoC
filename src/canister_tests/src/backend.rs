@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod backend_tests {
     use ic_agent::export::Principal;
-    use ic_agent::AgentError;
+    use ic_agent::{AgentError, Identity};
     use ic_cdk::export::candid::{CandidType, Deserialize};
     use ic_cdk::export::candid::{Encode, Decode};
 
@@ -120,7 +120,9 @@ mod backend_tests {
 
     #[tokio::test]
     async fn test_create_and_get_video_info() -> Result<(), String> {
-        let actor = Actor::from_name("backend").await;
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let my_principal = identity.sender().expect("Could not deduce principal from identity");
+        let actor = Actor::from_name("backend", identity).await;
 
         let test_video_info = create_test_video(StorageType::InCanister(1));
 
@@ -146,13 +148,16 @@ mod backend_tests {
         assert_eq!(test_video_info.keywords, get_result.keywords);
         assert_eq!(test_video_info.description, get_result.description);
         assert_eq!(test_video_info.name, get_result.name);
+        assert_eq!(my_principal, get_result.creator);
+        assert_eq!(my_principal, get_result.owner);
 
         Ok(())
     }
 
     #[tokio::test]
     async fn test_create_video() -> Result<(), String> {
-        let actor = Actor::from_name("backend").await;
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let actor = Actor::from_name("backend", identity).await;
 
         let test_video_info = create_test_video(StorageType::InCanister(1));
 
@@ -175,7 +180,8 @@ mod backend_tests {
 
     #[tokio::test]
     async fn test_store_video() -> Result<(), String> {
-        let actor = Actor::from_name("backend").await;
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let actor = Actor::from_name("backend", identity).await;
 
         let test_video_info = create_test_video(StorageType::InCanister(1));
 
@@ -208,7 +214,8 @@ mod backend_tests {
     async fn test_store_and_load_video() -> Result<(), String> {
 
         //Setup
-        let actor = Actor::from_name("backend").await;
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let actor = Actor::from_name("backend", identity).await;
 
         let test_video_info = create_test_video(StorageType::InCanister(1));
 
@@ -252,7 +259,8 @@ mod backend_tests {
 
     #[tokio::test]
     async fn test_bucket_store_new_video() -> Result<(), String> {
-        let actor = Actor::from_name("backend").await;
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let actor = Actor::from_name("backend", identity).await;
 
         let test_video_info = create_test_video(StorageType::SimpleDistMap(1, None));
 
@@ -290,7 +298,8 @@ mod backend_tests {
 
     #[tokio::test]
     async fn test_nonsense_video_creation() -> Result<(), String> {
-        let actor = Actor::from_name("backend").await;
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let actor = Actor::from_name("backend", identity).await;
 
         let nonsense_test_video_info = [0xCA, 0xFF, 0xEE];
 

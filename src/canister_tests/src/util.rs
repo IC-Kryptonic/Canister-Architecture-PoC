@@ -1,6 +1,6 @@
 use std::process::Command;
 use ic_agent::export::Principal;
-use ic_agent::{Agent, AgentError};
+use ic_agent::{Agent, AgentError, Identity};
 use ic_agent::identity::BasicIdentity;
 
 use ring::{
@@ -8,16 +8,16 @@ use ring::{
     signature::Ed25519KeyPair,
 };
 
-
+pub const PEKCS8_BYTES: [u8; 85] = [48, 83, 2, 1, 1, 48, 5, 6, 3, 43, 101, 112, 4, 34, 4, 32, 191, 133, 145, 54, 228, 183, 112, 79, 70, 178, 129, 153, 221, 135, 191, 151, 140, 28, 79, 129, 8, 121, 196, 103, 206, 171, 198, 115, 12, 227, 83, 115, 161, 35, 3, 33, 0, 209, 138, 9, 205, 215, 209, 20, 65, 189, 217, 76, 125, 206, 173, 161, 240, 103, 100, 153, 82, 222, 213, 24, 58, 22, 65, 36, 190, 209, 191, 173, 122];
 
 pub struct Actor {
     pub agent: Agent,
-    pub(crate) principal: Principal,
+    pub principal: Principal,
 }
 
 impl Actor{
-    pub async fn from_name(name: &str) -> Actor{
-        let agent = build_agent().await;
+    pub async fn from_name(name: &str, agent_identity: BasicIdentity) -> Actor{
+        let agent = build_agent(agent_identity).await;
 
         let principal = get_canister_principal_by_name(name);
         Actor{
@@ -78,12 +78,12 @@ pub fn get_canister_principal_by_name(name: &str) -> Principal{
     return Principal::from_text(str.clone()).expect(&*format!("Could not deduce principal from text {}", str))
 }
 
-pub async fn build_agent() -> Agent{
+pub async fn build_agent(identity: BasicIdentity) -> Agent{
     let transport = ic_agent::agent::http_transport::ReqwestHttpReplicaV2Transport::create("http://127.0.0.1:8000").expect("Could not create transport object");
 
     let agent = Agent::builder()
         .with_transport(transport)
-        .with_identity(generate_random_identity())
+        .with_identity(identity)
         .build()
         .expect("Could not build agent");
 
@@ -99,9 +99,14 @@ pub fn default_waiter() -> garcon::Delay{
         .build()
 }
 
-fn generate_random_identity() -> BasicIdentity{
+pub fn generate_random_identity() -> BasicIdentity{
     let rng = rand::SystemRandom::new();
     let pkcs8_bytes = Ed25519KeyPair::generate_pkcs8(&rng).expect("Could not create pkcs8 bytes from rng");
     let key_pair = Ed25519KeyPair::from_pkcs8(pkcs8_bytes.as_ref()).expect("Could not derive key pair from pkcs8");
+    BasicIdentity::from_key_pair(key_pair)
+}
+
+pub fn generate_pkcs8_identity(bytes: &[u8]) -> BasicIdentity{
+    let key_pair = Ed25519KeyPair::from_pkcs8(bytes).expect("Could not derive key pair from pkcs8");
     BasicIdentity::from_key_pair(key_pair)
 }
