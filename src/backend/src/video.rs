@@ -36,10 +36,8 @@ pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
 ///It returns all the meta information for the video.
 #[update(name = "createVideo")]
 pub async fn create_video(mut video: VideoInfo) -> &'static VideoInfo{
-    ic_cdk::api::print("Getting Video Info Storage");
     let info_store = storage::get_mut::<VideoInfoStore>();
 
-    ic_cdk::api::print("Generating id");
     let mut counter = 0u64;
     let id = loop{
         let generated = generate_video_id(&video, counter);
@@ -60,12 +58,9 @@ pub async fn create_video(mut video: VideoInfo) -> &'static VideoInfo{
     };
     video.owner = video.creator.clone();
 
-    ic_cdk::api::print("Creating video in raw storage");
     video_storage::create_video(&mut video).await;
 
-    ic_cdk::api::print("Inserting video in info store");
     info_store.insert(id.clone(), video);
-    ic_cdk::api::print("returning new videoinfo");
     return &info_store[&id];
 }
 
@@ -180,7 +175,5 @@ fn generate_video_id(info: &VideoInfo, counter: u64) -> VideoId{
     let name = info.name.clone();
 
     let video_id = format!("{}{}", name, time);
-
-    ic_cdk::api::print(&format!("Generated id: {}", video_id));
     return video_id;
 }
