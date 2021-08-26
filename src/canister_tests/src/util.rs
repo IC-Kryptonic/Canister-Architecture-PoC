@@ -38,8 +38,8 @@ pub fn check_ok(res: Result<Vec<u8>, AgentError>) -> Vec<u8>{
         Ok(vec) => {
             vec
         },
-        Err(_err) => {
-            panic!("Canister call was not successful")
+        Err(err) => {
+            panic!("Canister call was not successful {:?}", err)
         },
     }
 }

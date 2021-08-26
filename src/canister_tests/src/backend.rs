@@ -16,12 +16,18 @@ pub struct Chunk{
     num: ChunkNum,
 }
 
+impl PartialEq for Chunk{
+    fn eq(&self, other: &Self) -> bool {
+        self.data == other.data && self.num == other.num
+    }
+}
+
 #[derive(Clone, CandidType, Deserialize, Debug)]
 pub struct IPFSData{
     data: String,
 }
 
-#[derive(CandidType, Deserialize, Debug)]
+#[derive(CandidType, Deserialize, Debug, Clone)]
 pub enum StorageType{
     #[serde(rename = "inCanister")]
     InCanister(ChunkNum),
@@ -39,6 +45,16 @@ pub enum VideoData{
     SimpleDistMap(Principal),
     #[serde(rename = "ipfs")]
     IPFS(IPFSData),
+}
+
+#[derive(CandidType, Deserialize)]
+pub enum LoadInfo{
+    #[serde(rename = "inCanister")]
+    InCanister(ChunkNum),
+    #[serde(rename = "simpleDistMap")]
+    SimpleDistMap,
+    #[serde(rename = "ipfs")]
+    IPFS,
 }
 
 impl PartialEq for StorageType{
@@ -61,9 +77,27 @@ impl PartialEq for StorageType{
             StorageType::IPFS(_data) => unimplemented!(),
         }
     }
+}
 
-    fn ne(&self, other: &Self) -> bool {
-        !self.eq(other)
+impl PartialEq for VideoData{
+    fn eq(&self, other: &Self) -> bool {
+        return match self{
+            VideoData::InCanister(chunk) => {
+                if let VideoData::InCanister(other_chunk) = other {
+                    other_chunk == chunk
+                } else{
+                    false
+                }
+            },
+            VideoData::SimpleDistMap(bucket) => {
+                if let VideoData::SimpleDistMap(other_bucket ) = other {
+                    bucket == other_bucket
+                } else{
+                    false
+                }
+            },
+            VideoData::IPFS(_data) => unimplemented!(),
+        }
     }
 }
 
@@ -80,14 +114,13 @@ pub struct VideoInfo{
 
 pub type WrappedVideoInfo = Option<VideoInfo>;
 
-const TEST_STORAGE_TYPE: StorageType = StorageType::SimpleDistMap(1, None);
 
 #[tokio::test]
 async fn test_create_and_get_video_info() -> Result<(), String>{
 
     let actor = Actor::from_name("backend").await;
 
-    let test_video_info = create_test_video();
+    let test_video_info = create_test_video(StorageType::InCanister(1));
 
     let create_args = Encode!(&test_video_info).expect("Could not encode video_info");
 
@@ -120,7 +153,7 @@ async fn test_create_video() -> Result<(), String>{
 
     let actor = Actor::from_name("backend").await;
 
-    let test_video_info = create_test_video();
+    let test_video_info = create_test_video(StorageType::InCanister(1));
 
     let arg = Encode!(&test_video_info).expect("Could not encode args");
 
@@ -144,7 +177,7 @@ async fn test_store_video() -> Result<(), String>{
 
     let actor = Actor::from_name("backend").await;
 
-    let test_video_info = create_test_video();
+    let test_video_info = create_test_video(StorageType::InCanister(1));
 
     let create_args = Encode!(&test_video_info).expect("Could not encode video_info");
 
@@ -170,12 +203,59 @@ async fn test_store_video() -> Result<(), String>{
     Ok(())
 }
 
+
+#[tokio::test]
+async fn test_store_and_load_video() -> Result<(), String>{
+
+    //Setup
+    let actor = Actor::from_name("backend").await;
+
+    let test_video_info = create_test_video(StorageType::InCanister(1));
+
+    let create_args = Encode!(&test_video_info).expect("Could not encode video_info");
+
+    let create_response = actor.update_call("createVideo", create_args).await;
+
+    let raw_result = util::check_ok(create_response);
+    let result = Decode!(raw_result.as_slice(), VideoInfo).expect("Could not decode video info from result");
+
+    let result_id = result.video_id.expect("Video id not in result");
+
+    let video_data = VideoData::InCanister(Chunk {
+        data: [0xCA, 0xFF, 0xEE].try_into().expect("Could not convert array"),
+        num: 0
+    });
+
+    let store_args = Encode!(&result_id, &video_data).expect("store args could not be encoded");
+
+    let store_response = actor.update_call("storeVideo", store_args).await;
+
+    let raw_result = util::check_ok(store_response);
+    Decode!(raw_result.as_slice(), ()).expect("Could not decode store result correctly");
+
+
+    //Act
+    let load_args = Encode!(&result_id, &LoadInfo::InCanister(0)).expect("Could not encode load args");
+
+    let load_response = actor.query_call("loadVideo", load_args).await;
+
+    let raw_result = util::check_ok(load_response);
+    let result = Decode!(raw_result.as_slice(), Option<VideoData>).expect("Could not decode load result correctly");
+
+    //Test
+    let result_video_data = result.expect("Video data is not in canister");
+    assert_eq!(result_video_data, video_data);
+
+    Ok(())
+}
+
+
 #[tokio::test]
 async fn test_bucket_store_new_video() -> Result<(), String>{
 
     let actor = Actor::from_name("backend").await;
 
-    let test_video_info = create_test_video();
+    let test_video_info = create_test_video(StorageType::SimpleDistMap(1, None));
 
     let create_args = Encode!(&test_video_info).expect("Could not encode video_info");
 
@@ -208,6 +288,7 @@ async fn test_bucket_store_new_video() -> Result<(), String>{
     Ok(())
 }
 
+
 #[tokio::test]
 async fn test_nonsense_video_creation() -> Result<(), String>{
 
@@ -232,7 +313,7 @@ async fn test_nonsense_video_creation() -> Result<(), String>{
 }
 
 
-fn create_test_video() -> VideoInfo{
+fn create_test_video(storage_type: StorageType) -> VideoInfo{
     VideoInfo{
         video_id: None,
         owner: Principal::from_slice(&[]),
@@ -240,6 +321,6 @@ fn create_test_video() -> VideoInfo{
         name: String::from("testing_name"),
         description: String::from("testing_desc"),
         keywords: vec!["testing_keyword1".to_string(), "testing_keyword2".to_string()],
-        storage_type: TEST_STORAGE_TYPE,
+        storage_type,
     }
 }
