@@ -1,16 +1,17 @@
 import {Actor, ActorSubclass, HttpAgent} from '@dfinity/agent';
 import {Principal} from '@dfinity/principal';
-import {canisterId as backendVideoId, idlFactory as video_idl} from 'dfx-generated/backend';
+import {idlFactory as video_idl} from 'dfx-generated/backend';
 import {idlFactory as bucket_idl} from 'dfx-generated/bucket';
+import canisterIds from "../../../../.dfx/local/canister_ids.json"
 
 import {Post, SimpleDHT_Storage_Type} from '../interfaces/video_interface';
-import {Video_Info} from "../../../../.dfx/local/canisters/backend/backend";
-import {Chunk} from "../../../../.dfx/local/canisters/bucket/bucket";
+import {Video_Info} from "../../../../.dfx/local/canisters/backend/backend.did";
+import {Chunk} from "../../../../.dfx/local/canisters/bucket/bucket.did";
 
 const agent = new HttpAgent();
 const videoBackend = Actor.createActor(video_idl, {
   agent,
-  canisterId: backendVideoId,
+  canisterId: Principal.fromText(canisterIds.backend.local),
 });
 
 const maxChunkSize = 1024 * 500; // 500kb
@@ -127,8 +128,8 @@ async function uploadVideo(
   let videoInfo: Video_Info = {
     video_id: [],
     name: videoName,
-    owner: Principal.fromUint8Array(new Uint8Array([])),
-    creator: Principal.fromUint8Array(new Uint8Array([])),
+    owner: Principal.anonymous(),
+    creator: Principal.anonymous(),
     description: videoDescription,
     keywords: [],
     storage_type: { simpleDistMap : [chunkCount, []]},
