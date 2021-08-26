@@ -36,12 +36,18 @@ pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
 ///It returns all the meta information for the video.
 #[update(name = "createVideo")]
 pub async fn create_video(mut video: VideoInfo) -> &'static VideoInfo{
+    ic_cdk::api::print("Getting Video Info Storage");
     let info_store = storage::get_mut::<VideoInfoStore>();
-    
+
+    ic_cdk::api::print("Generating id");
+    let mut counter = 0u64;
     let id = loop{
-        let generated = generate_video_id(&video);
+        let generated = generate_video_id(&video, counter);
         if !info_store.contains_key(&generated){
             break generated;
+        } else{
+            counter += 1;
+            continue;
         }
     };
 
@@ -54,9 +60,12 @@ pub async fn create_video(mut video: VideoInfo) -> &'static VideoInfo{
     };
     video.owner = video.creator.clone();
 
+    ic_cdk::api::print("Creating video in raw storage");
     video_storage::create_video(&mut video).await;
 
+    ic_cdk::api::print("Inserting video in info store");
     info_store.insert(id.clone(), video);
+    ic_cdk::api::print("returning new videoinfo");
     return &info_store[&id];
 }
 
@@ -161,15 +170,17 @@ pub fn search_feed(to_search: String) -> Vec<&'static VideoInfo> {
 
 
 ///This function generates a id based on the information of the Video and a timestamp.
-fn generate_video_id(info: &VideoInfo) -> VideoId{
+fn generate_video_id(info: &VideoInfo, counter: u64) -> VideoId{
     let time = if cfg!(target_arch = "wasm32"){
-        ic_cdk::api::time() as u64
+        (ic_cdk::api::time() as u64) + counter
     } else {
-        std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() //for testing when not in canister 
+        std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() //for testing when not in canister
     };
-
 
     let name = info.name.clone();
 
-    return format!("{}{}", name, time);
+    let video_id = format!("{}{}", name, time);
+
+    ic_cdk::api::print(&format!("Generated id: {}", video_id));
+    return video_id;
 }
