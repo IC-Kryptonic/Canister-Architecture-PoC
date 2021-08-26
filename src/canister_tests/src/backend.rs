@@ -259,8 +259,7 @@ mod backend_tests {
 
     #[tokio::test]
     async fn test_bucket_store_new_video() -> Result<(), String> {
-        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
-        let actor = Actor::from_name("backend", identity).await;
+        let actor = Actor::from_name("backend", util::generate_random_identity()).await;
 
         let test_video_info = create_test_video(StorageType::SimpleDistMap(1, None));
 

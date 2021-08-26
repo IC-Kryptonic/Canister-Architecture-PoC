@@ -1,6 +1,6 @@
 use std::process::Command;
 use ic_agent::export::Principal;
-use ic_agent::{Agent, AgentError, Identity};
+use ic_agent::{Agent, AgentError};
 use ic_agent::identity::BasicIdentity;
 
 use ring::{
