@@ -6,6 +6,7 @@ import { Post } from "../../interfaces/video_interface";
 import { loadVideo } from '../../services/video_backend';
 
 import FavoriteIcon from '@material-ui/icons/Favorite';
+import OnHoverVideoPlayer from "./OnHoverVideoPlayer";
 
 interface GridPostInterface {
    post: Post
@@ -42,19 +43,22 @@ function GridPost({ post }: GridPostInterface) {
 
     return (
         <div onClick={handleOpenPostModal} className={classes.gridPostContainer}>
+            {/* TODO: Find a way to integrate or remove 
             <div className={classes.gridPostOverlay}>
                 <div className={classes.gridPostInfo}>
                     <FavoriteIcon />
                     <Typography>{likesCount}</Typography>
                 </div>
-            </div>
+            </div> */}
             {video ? (
-                <video controls className={classes.video}>
-                    <source src={video} type="video/mp4" />
-                </video>
+                // <video controls className={classes.video}>
+                //     <source src={video} type="video/mp4" />
+                // </video>
+                <OnHoverVideoPlayer video={video} />
             ) : (
                 <CircularProgress className={classes.loadingSpinner} />
             )}
+            <Typography>{post.name}</Typography>
         </div>
     );
 }

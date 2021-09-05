@@ -7,7 +7,7 @@ import Auth from './pages/Auth';
 import Feed from './pages/Feed';
 import Upload from './pages/Upload';
 import Profile from './pages/Profile';
-import ProfilePage from './pages/ProfileV2';
+import ProfilePage from './pages/ProfilePage';
 
 export const AppRouter = () => {
   return (
