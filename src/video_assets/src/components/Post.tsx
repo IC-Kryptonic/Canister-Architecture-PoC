@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import { Grid, Button, CircularProgress, IconButton } from '@material-ui/core';
 import { postStyles } from '../styles/post_styles';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
@@ -53,12 +54,16 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
           <Grid item>
             <Grid container>
               <Grid item>
-                <AccountCircle className={classes.userProfile} />
+                <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit'}} >
+                  <AccountCircle className={classes.userProfile} />
+                </Link>
               </Grid>
               <Grid item>
                 <Grid container spacing={1}>
                   <Grid item>
-                    <strong>{profile?.name || '<<username>>'}</strong>
+                    <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit'}} >
+                      <strong>{profile?.name || '<<username>>'}</strong>
+                    </Link>
                   </Grid>
                   <Grid item className={classes.lightText}>
                     {post?.video_id

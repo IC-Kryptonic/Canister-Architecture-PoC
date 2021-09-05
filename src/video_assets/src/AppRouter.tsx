@@ -16,6 +16,7 @@ export const AppRouter = () => {
         <Switch>
           <ProtectedRoute exact path="/upload" component={Upload} />
           <ProtectedRoute exact path="/feed" component={Feed} />
+          <ProtectedRoute exact path="/profile/:id" component={ProfilePage} />
           <ProtectedRoute exact path="/profile" component={ProfilePage} />
           <Route exact path="/login" component={Auth} />
           <Redirect from="/" to="/feed" />

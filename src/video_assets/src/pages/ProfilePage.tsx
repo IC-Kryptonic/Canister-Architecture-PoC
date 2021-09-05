@@ -4,7 +4,7 @@ import Layout from "../components/shared/Layout";
 import LoadingScreen from "../components/shared/LoadingScreen";
 import ProfilePicture from "../components/profile/ProfilePicture";
 import { Profile } from '../interfaces/profile_interface';
-import { loadProfile } from '../services/profile_service';
+import { loadProfile, getProfile } from '../services/profile_service';
 import { getAuthenticatedIdentity } from '../services/auth_services';
 import {
   Hidden,
@@ -12,32 +12,26 @@ import {
   CardContent,
   Button,
   Typography,
-  Dialog,
-  Zoom,
   Divider,
-  DialogTitle,
-  Avatar,
 } from "@material-ui/core";
-import { Link, useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SettingsIcon from '@material-ui/icons/Settings';
 import ProfileTabs from "../components/profile/ProfileTabs";
 import EditProfileDialog from "../components/profile/EditProfileDialog";
+import { Principal } from "@dfinity/principal";
 //import ProfileTabs from "../components/profile/ProfileTabs";
 //import { AuthContext } from "../auth";
 //import LoadingScreen from "../components/shared/LoadingScreen";
 // import { UserContext } from "../App";
 
-function ProfilePage() {
+interface ProfilePagePathParam {
+  id: string
+}
 
-  //const { username } = useParams();
-  //const { currentUserId } = React.useContext(UserContext);
-  //const classes = useProfilePageStyles();
+function ProfilePage() {
   //const [showOptionsMenu, setOptionsMenu] = React.useState(false);
 
-  /*
-  const [user] = data.users;
-  
- 
+  /* 
   function handleOptionsMenuClick() {
     setOptionsMenu(true);
   }
@@ -47,17 +41,44 @@ function ProfilePage() {
   }
 */
   const classes = useProfilePageStyles();
-
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
+  const [profileFound, setProfileFound] = useState(true);
+
+  let { id }: ProfilePagePathParam = useParams();
 
   // Define update hook
   const handleProfile = async () => {
-    // TODO: Add path variable to which profile is loaded
-    let profile = await loadProfile();
-    setProfile(profile);
+    let identity = await getAuthenticatedIdentity();
+    let principal = identity.getPrincipal().toText();
+    // If there is no id load our profile or if the id is our profile
+    if (!id || id && principal === id) {
+      let profile = await loadProfile();
+      setProfile(profile);
+      setIsOwner(true);
+      setProfileFound(true);
+    } else {
+      // Try to find user based on id
+      try {
+        let principal = Principal.fromText(id);
+        let profile = await getProfile(principal);
+
+        if (!profile) {
+          setProfileFound(false);
+        }
+  
+        setProfile(profile);
+        setIsOwner(false);
+        setProfileFound(true);
+
+      } catch(error) {
+        console.log(error);
+        setProfileFound(false);
+      }
+    }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     handleProfile();
   }, []);
 
@@ -66,10 +87,12 @@ function ProfilePage() {
     handleProfile();
   }
 
+  if (!profileFound) return <> Could not find profile </>;
+
   // if profile is still loading
   if (!profile) return <LoadingScreen />;
 
-  const isOwner = true;
+
   function handleOptionsMenuClick() {
 
   }
