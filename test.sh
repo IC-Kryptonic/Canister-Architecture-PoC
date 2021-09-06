@@ -3,9 +3,6 @@
 set -e
 echo "Running testing script..."
 
-#echo "Starting video backend integration tests"
-#cargo test -- --test-threads=1
-
 echo "Starting replica"
 dfx start --background --clean --no-artificial-delay
 
@@ -13,6 +10,9 @@ echo "Compiling and optimizing bucket code"
 ./bucket_creation.sh
 echo "Deploying backend and dht canister"
 dfx deploy backend
+
+echo "Starting canister tests"
+cargo test --color=always --bin=canister_tests -- --test-threads=1 --show-output
 
 set -x
 

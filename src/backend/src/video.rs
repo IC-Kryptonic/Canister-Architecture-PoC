@@ -37,11 +37,15 @@ pub fn get_video_info(id: VideoId) -> Option<VideoInfo> {
 #[update(name = "createVideo")]
 pub async fn create_video(mut video: VideoInfo) -> &'static VideoInfo{
     let info_store = storage::get_mut::<VideoInfoStore>();
-    
+
+    let mut counter = 0u64;
     let id = loop{
-        let generated = generate_video_id(&video);
+        let generated = generate_video_id(&video, counter);
         if !info_store.contains_key(&generated){
             break generated;
+        } else{
+            counter += 1;
+            continue;
         }
     };
 
@@ -161,15 +165,15 @@ pub fn search_feed(to_search: String) -> Vec<&'static VideoInfo> {
 
 
 ///This function generates a id based on the information of the Video and a timestamp.
-fn generate_video_id(info: &VideoInfo) -> VideoId{
+fn generate_video_id(info: &VideoInfo, counter: u64) -> VideoId{
     let time = if cfg!(target_arch = "wasm32"){
-        ic_cdk::api::time() as u64
+        (ic_cdk::api::time() as u64) + counter
     } else {
-        std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() //for testing when not in canister 
+        std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() //for testing when not in canister
     };
-
 
     let name = info.name.clone();
 
-    return format!("{}{}", name, time);
+    let video_id = format!("{}{}", name, time);
+    return video_id;
 }
