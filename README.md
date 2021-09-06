@@ -36,7 +36,7 @@ Install the DFINITY SDK:
 
 ```
 
-DFX_VERSION=0.7.1 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
+DFX_VERSION=0.8.0 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
 
 ```
 

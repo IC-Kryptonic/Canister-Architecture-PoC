@@ -1,12 +1,12 @@
 import {Principal} from "@dfinity/principal";
-import {Chunk_Num} from "../../../../.dfx/local/canisters/backend/backend";
+import {Chunk_Num} from "../../../../.dfx/local/canisters/backend/backend.did";
 
 export interface Post {
   chunk_count: number;
   description: string;
   keywords: Array<string>;
   name: string;
-  owner: Object;
+  owner: Principal;
   video_id: string;
   storage_type: InCanister_Storage_Type | SimpleDHT_Storage_Type;
 };

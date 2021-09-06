@@ -10,5 +10,5 @@ crate-type = ["cdylib", "lib"]
 [dependencies]
 ic-cdk = "0.3.1"
 ic-cdk-macros = "0.3.1"
-ic-types = "0.2.1"
+ic-types = "0.2.2"
 serde = "1.0.126"
