@@ -97,3 +97,34 @@ export const OnHoverVideoPlayerStyles = {
     width: 256
   }
 };
+
+export const useSearchStyles = makeStyles((theme) => ({
+  form: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  button: {
+    marginTop: theme.spacing(0),
+    marginBottom: theme.spacing(1),
+    width: 40,
+    height: 20,
+    border: "1px solid black",
+    borderRadius: 0
+  },
+  input: {
+    marginTop: theme.spacing(0),
+    marginBottom: theme.spacing(1),
+    width: 300,
+    height: 20,
+    fontSize: '15px',
+  },
+  // @media screen and (max-width: 750px) {
+  //   input#search,
+  //   button {
+  //     display: none;
+  //   }
+  // }
+}));

@@ -20,6 +20,10 @@ async function loadDefaultFeed(count: number): Promise<Array<Post>> {
   return (await videoBackend.getDefaultFeed(count)) as Array<Post>;
 }
 
+async function loadSearchFeed(query: string): Promise<Array<Post>> {
+  return (await videoBackend.searchFeed(query)) as Array<Post>;
+}
+
 async function loadOwnerFeed(principal: Principal): Promise<Array<Post>> {
   // Backend call always returns an empty list => currently substituted by getDefaultFeed
   //return (await videoBackend.getOwnerFeed(principal)) as Array<Post>;
@@ -171,4 +175,4 @@ async function uploadVideo(
   console.debug('upload finished', `timestamp: ${Date.now()}`);
 }
 
-export { loadDefaultFeed, loadVideo, uploadVideo, loadOwnerFeed };
+export { loadDefaultFeed, loadVideo, uploadVideo, loadOwnerFeed, loadSearchFeed };

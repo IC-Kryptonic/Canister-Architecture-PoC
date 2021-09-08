@@ -7,6 +7,8 @@ import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import history from './History';
 
+import Search from './shared/Search';
+
 const headerStyles = makeStyles({
   logo_wrapper: {
     padding: 10,
@@ -40,6 +42,9 @@ const Header = () => {
     <Grid container justify="space-between" alignItems="center">
       <Grid item className={classes.logo_wrapper}>
         <img className={classes.logo} src={logo} alt="logo" />
+      </Grid>
+      <Grid item>
+        <Search/>
       </Grid>
       <Grid item>
         <Grid container direction="row" alignItems="center">
