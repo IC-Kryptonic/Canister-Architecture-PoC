@@ -224,7 +224,7 @@ function ProfileNameSection({ profile, isOwner, handleOptionsMenuClick, reloadPr
           {isOwner ? (
             <>
               <Button variant="outlined" style={{ width: "100%" }} onClick={() => setEditProfileDialogOpen(true)} >
-                Edit Profile
+                <Typography variant="caption">Edit Profile</Typography>
               </Button>
               <div
                 onClick={handleOptionsMenuClick}
@@ -234,7 +234,7 @@ function ProfileNameSection({ profile, isOwner, handleOptionsMenuClick, reloadPr
               </div>
             </>
           ) : (
-            <><SettingsIcon /></>
+            <></>
           )}
         </section>
       </Hidden>
@@ -258,7 +258,7 @@ function ProfileNameSection({ profile, isOwner, handleOptionsMenuClick, reloadPr
               Edit Profile
             </Button>
           ) : (
-            <SettingsIcon />
+            <></>
           )}
         </section>
       </Hidden>
