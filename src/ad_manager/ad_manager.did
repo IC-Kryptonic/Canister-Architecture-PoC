@@ -8,5 +8,5 @@ type Ad_Info = record {
 
 service : {
     "getRandomAdPrincipal": () -> (opt principal) query;
-    "createAd" (Ad_Info) -> (Ad_Info);
+    "createAd": (Ad_Info) -> (Ad_Info);
 }
