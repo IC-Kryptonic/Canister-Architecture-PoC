@@ -1,0 +1,9 @@
+@startuml
+alt like
+    Frontend ->> ProfileBackend: addLike(videoPrincipal)
+    Frontend ->> VideoCanister: addLike(likerPrincipal)
+else comment
+    Frontend ->> ProfileBackend: addCommented(videoPrincipal)
+    Frontend ->> VideoBackend: addComment(commenterPrincipal, comment)
+end
+@enduml

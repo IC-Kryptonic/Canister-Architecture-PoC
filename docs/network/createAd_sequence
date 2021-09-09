@@ -7,9 +7,6 @@ loop chunkNum times
     Frontend ->> VideoCanister: insertChunk(chunk)
 end
 
-Frontend -> TokenManager: createToken(tokenInfo)
-TokenManager ->> Token: createToken(tokenInfo)
-TokenManager ->> VideoCanister: setOwner(principal)
-TokenManager --> Frontend: createToken: tokenInfo
+Frontend ->> AdManager: addAd(adPrincipal)
 
 @enduml

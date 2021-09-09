@@ -1,14 +1,20 @@
 @startuml
-alt via Backend
-    Frontend -> Backend: getVideoInfo(videoId)
-    Backend -> Frontend: getVideoInfo: videoInfo
-else via DHT
-    Frontend -> DHT: getBucketPrincipal(videoId)
-    DHT -> Frontend: getVideoInfo: bucketPrincipal
+
+Frontend -> ProfileBackend: getAdPrincipal(userPrincipal)
+ProfileBackend -> AdManager: getAdForUser(user)
+AdManager --> ProfileBackend: getAdForUser: adPrincipal
+ProfileBackend --> Frontend: getAdPrincipal: adPrincipal
+
+Frontend -> AdCanister: getAdInfo()
+AdCanister --> Frontend: getAdInfo: adInfo
+
+loop adChunkNum times
+    Frontend -> AdCanister: getAdChunk(#)
+    Frontend <-- AdCanister: getAdChunk: Chunk
 end
 
 loop chunkNum times
-    Frontend -> Bucket: getChunk(videoId)
-    Frontend <- Bucket: getChunk: Chunk
+    Frontend -> VideoBucket: getChunk(#)
+    Frontend <-- VideoBucket: getChunk: Chunk
 end
 @enduml

@@ -1,0 +1,11 @@
+@startuml
+alt random
+    Frontend -> VideoBackend: getRandomFeed()
+    VideoBackend --> Frontend: getRandomFeed: feed
+else user
+    Frontend -> VideoBackend: getUserFeed(userPrincipal)
+    VideoBackend -> ProfileBackend: getFeedInfo(userPrincipal)
+    VideoBackend <-- ProfileBackend: getFeedInfo: feedInfo
+    Frontend <-- VideoBackend: getUserFeed: feed
+end
+@enduml
