@@ -4,5 +4,6 @@ members = [
   "src/video_dht",
   "src/video_dht/bucket",
   "src/canister_tests",
-  "src/ad_manager"
+  "src/ad_manager",
+  "src/ad_manager/ad_canister"
 ]
