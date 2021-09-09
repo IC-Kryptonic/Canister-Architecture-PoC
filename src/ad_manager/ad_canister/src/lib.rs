@@ -29,12 +29,14 @@ pub async fn create_ad(ad_info: &mut AdInfo){
 ///Inserts a new chunk
 #[update(name = "insertChunk")]
 pub async fn insert_chunk(chunk_num: ChunkNum, chunk: Chunk){
-    unimplemented!()
+    let mut chunks = storage::get_mut::<Chunks>();
+
+    chunks[chunk_num] = chunk;
 }
 
 
 ///Retrieve a chunk
 #[query(name = "getChunk")]
 pub async fn get_chunk(chunk_num: ChunkNum) -> Option<&'static Chunk>{
-   unimplemented!()
+    storage::get::<Chunk>().get(chunk_num)
 }
