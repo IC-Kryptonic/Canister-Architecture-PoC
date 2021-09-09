@@ -17,8 +17,13 @@ pub struct AdInfo{
 
 ///Creates a new ad video in the bucket
 #[update(name = "createAd")]
-pub async fn create_ad(){
-    unimplemented!()
+pub async fn create_ad(ad_info: &mut AdInfo){
+    let mut chunk_store = storage::get_mut::<Chunks>();
+    let mut empty_chunks: Chunks = vec![Vec::new(); ad_info.chunk_num];
+    chunk_store.append(&mut empty_chunks);
+
+    let ad_info_store = storage::get_mut::<AdInfo>();
+    std::mem::swap(ad_info_store, ad_info);
 }
 
 ///Inserts a new chunk
@@ -30,6 +35,6 @@ pub async fn insert_chunk(chunk_num: ChunkNum, chunk: Chunk){
 
 ///Retrieve a chunk
 #[query(name = "getChunk")]
-pub async fn get_chunk(id: VideoId, chunk_num: ChunkNum) -> Option<&'static Chunk>{
+pub async fn get_chunk(chunk_num: ChunkNum) -> Option<&'static Chunk>{
    unimplemented!()
 }
