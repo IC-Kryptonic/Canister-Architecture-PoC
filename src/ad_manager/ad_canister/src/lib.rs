@@ -1,6 +1,6 @@
 use ic_cdk_macros::*;
 use ic_cdk::storage;
-use ic_cdk::export::Principal;
+use ic_cdk::export::candid::{CandidType, Deserialize, Principal};
 
 pub type VideoId = String;
 pub type ChunkNum = usize;

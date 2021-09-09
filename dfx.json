@@ -6,6 +6,12 @@
       "wasm": "target/wasm32-unknown-unknown/release/bucket.wasm",
       "type": "custom"
     },
+    "ad_canister": {
+      "build": "cargo build --target wasm32-unknown-unknown --package  ad_canister --release",
+      "candid": "src/ad_manager/ad_canister/ad_canister.did",
+      "wasm": "target/wasm32-unknown-unknown/release/ad_canister.wasm",
+      "type": "custom"
+    },
     "ad_manager": {
       "build": "cargo build --target wasm32-unknown-unknown --package  ad_manager --release",
       "candid": "src/ad_manager/ad_manager.did",
@@ -26,7 +32,7 @@
       "type": "custom"
     },
     "video_assets": {
-      "dependencies": ["backend"],
+      "dependencies": ["backend", "ad_manager"],
       "frontend": {
         "entrypoint": "src/video_assets/src/index.html"
       },

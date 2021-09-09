@@ -3,7 +3,7 @@ use ic_cdk_macros::*;
 use ic_cdk::storage;
 use ic_cdk::api::call;
 
-static BUCKET_CODE: &[u8;  include_bytes!("../../../target/wasm32-unknown-unknown/release/bucket_opt.wasm").len()] = include_bytes!("../../../target/wasm32-unknown-unknown/release/bucket_opt.wasm");
+static BUCKET_CODE: &[u8;  include_bytes!("../../../target/wasm32-unknown-unknown/release/ad_canister_opt.wasm").len()] = include_bytes!("../../../target/wasm32-unknown-unknown/release/ad_canister_opt.wasm");
 
 pub type ChunkNum = usize;
 pub type AdStore = Vec<Principal>;
