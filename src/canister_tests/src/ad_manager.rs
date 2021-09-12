@@ -117,4 +117,44 @@ mod ad_manager_tests {
 
         Ok(())
     }
+
+    #[tokio::test]
+    async fn test_retrieve_chunk() -> Result<(), String>{
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let actor = Actor::from_name("ad_manager", identity).await;
+
+        let test_ad_info = create_test_ad();
+
+        let arg = Encode!(&test_ad_info).expect("Could not encode test_ad info");
+
+        let response = actor.update_call("createAd", arg).await;
+
+        let raw_result = util::check_ok(response);
+
+        let result_ad = Decode!(raw_result.as_slice(), AdInfo).expect("Could not decode result ad");
+
+        let ad_canister = result_ad.canister.expect("No canister principal in result ad");
+        let ad_data: [u8; 3] = [0xCA, 0xFF, 0xEE];
+        let chunk_num: u64 = 0;
+        let data_arg = Encode!(&chunk_num, &ad_data).expect("Could not encode ad_data");
+
+        let ad_actor = Actor{
+            agent: actor.agent,
+            principal: ad_canister,
+        };
+
+        let res = ad_actor.update_call("insertChunk", data_arg).await;
+        util::check_ok(res);
+
+
+        let chunk_arg = Encode!(&0usize).expect("Could not encode 0usize, something is terribly off :)");
+        let chunk_res_raw = ad_actor.query_call("getChunk", chunk_arg).await;
+        let chunk_raw = util::check_ok(chunk_res_raw);
+        let chunk_res = Decode!(&chunk_raw, Option<Chunk>).expect("Could not decode chunk");
+        let chunk = chunk_res.expect("Chunk was not in canister or it returned None on accident");
+
+        assert_eq!(ad_data, chunk.as_slice());
+
+        Ok(())
+    }
 }
