@@ -54,8 +54,15 @@ pub async fn create_ad(mut ad_info: AdInfo) -> AdInfo{
 }
 
 #[query(name = "getRandomAdPrincipal")]
-pub async fn get_random_ad_principal(){
+pub async fn get_random_ad_principal() -> Option<Principal>{
+    let ads = storage::get::<AdStore>();
 
+    return if ads.is_empty(){
+        None
+    } else {
+        let i = ic_cdk::api::time() as usize % ads.len();   //rand crate not supported even with js enabled for wasm, so we use time to generate random values
+        Some(ads[i])
+    }
 }
 
 async fn create_canister() -> Principal {
