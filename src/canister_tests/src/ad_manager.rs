@@ -157,4 +157,29 @@ mod ad_manager_tests {
 
         Ok(())
     }
+
+    #[tokio::test]
+    async fn test_get_some_random_ad() -> Result<(), String>{
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let actor = Actor::from_name("ad_manager", identity).await;
+
+        let test_ad_info = create_test_ad();
+
+        let arg = Encode!(&test_ad_info).expect("Could not encode test_ad info");
+
+        let response = actor.update_call("createAd", arg).await;
+
+        util::check_ok(response);
+
+        let arg = Encode!(&()).expect("Could not encode empty argument");
+        let rand_res = actor.query_call("getRandomAdPrincipal", arg).await;
+        let rand_raw = util::check_ok(rand_res);
+
+        let rand_princ_res = Decode!(&rand_raw, Option<Principal>).expect("Could not decode optional principal");
+
+        assert!(rand_princ_res.is_some());
+
+        Ok(())
+    }
+
 }
