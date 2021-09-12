@@ -7,9 +7,10 @@ pub type ChunkNum = usize;
 pub type Chunk = Vec<u8>;
 pub type Chunks = Vec<Chunk>;
 
-#[derive(CandidType, Deserialize, Clone)]
+#[derive(CandidType, Deserialize)]
 pub struct AdInfo{
     owner: Principal,
+    canister: Option<Principal>,
     name: String,
     chunk_num: ChunkNum,
 }
@@ -18,6 +19,7 @@ impl Default for AdInfo {
     fn default() -> Self {
         return AdInfo{
             owner: Principal::anonymous(),
+            canister: None,
             name: String::from(""),
             chunk_num: 0
         }
@@ -49,4 +51,10 @@ pub async fn insert_chunk(chunk_num: ChunkNum, chunk: Chunk){
 #[query(name = "getChunk")]
 pub async fn get_chunk(chunk_num: ChunkNum) -> Option<&'static Chunk>{
     storage::get::<Chunks>().get(chunk_num)
+}
+
+///Retrieve Info about ad
+#[query(name = "getInfo")]
+pub async fn get_info() -> &'static AdInfo{
+    storage::get::<AdInfo>()
 }

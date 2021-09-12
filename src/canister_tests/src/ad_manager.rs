@@ -81,4 +81,40 @@ mod ad_manager_tests {
 
         Ok(())
     }
+
+    #[tokio::test]
+    async fn test_retrieve_ad_info() -> Result<(), String>{
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let actor = Actor::from_name("ad_manager", identity).await;
+
+        let test_ad_info = create_test_ad();
+
+        let arg = Encode!(&test_ad_info).expect("Could not encode test_ad info");
+
+        let response = actor.update_call("createAd", arg).await;
+
+        let raw_result = util::check_ok(response);
+
+        let result_ad = Decode!(raw_result.as_slice(), AdInfo).expect("Could not decode result ad");
+
+        let ad_canister = result_ad.canister.expect("No canister principal in result ad");
+        let empty_arg = Encode!().expect("Could not encode empty");
+
+        let ad_actor = Actor{
+            agent: actor.agent,
+            principal: ad_canister,
+        };
+
+        let raw_result_info = ad_actor.query_call("getInfo", empty_arg).await;
+
+        let raw_info = util::check_ok(raw_result_info);
+        let result_info = Decode!(raw_info.as_slice(), AdInfo).expect("Could not deocde result_info");
+
+        assert_eq!(result_info.chunk_num, result_ad.chunk_num);
+        assert_eq!(result_info.name, result_ad.name);
+        assert_eq!(result_info.owner, result_ad.owner);
+        assert_eq!(result_info.canister.expect("no canister in result info"), ad_actor.principal);
+
+        Ok(())
+    }
 }

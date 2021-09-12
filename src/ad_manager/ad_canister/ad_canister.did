@@ -12,4 +12,5 @@ service : {
     "createAd": (Ad_Info) -> () oneway;
     "insertChunk": (Chunk_Num, Chunk) -> () oneway;
     "getChunk": (Chunk_Num) -> (opt Chunk) query;
+    "getInfo": () -> (Ad_Info) query;
 }
