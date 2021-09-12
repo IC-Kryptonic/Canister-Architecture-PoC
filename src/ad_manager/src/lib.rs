@@ -41,10 +41,10 @@ pub struct AdInfo{
 
 #[update(name = "createAd")]
 pub async fn create_ad(mut ad_info: AdInfo) -> AdInfo{
-    let canister = create_canister().await;
+    ad_info.owner = ic_cdk::caller(); //Has to happen before creating a canister, since caller can't be determined anymore in reply callback mode
 
+    let canister = create_canister().await;
     ad_info.canister = Some(canister.clone());
-    ad_info.owner = ic_cdk::caller();
 
     install_ad(canister.clone(), &ad_info).await;
 
