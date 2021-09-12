@@ -19,10 +19,6 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import ProfileTabs from "../components/profile/ProfileTabs";
 import EditProfileDialog from "../components/profile/EditProfileDialog";
 import { Principal } from "@dfinity/principal";
-//import ProfileTabs from "../components/profile/ProfileTabs";
-//import { AuthContext } from "../auth";
-//import LoadingScreen from "../components/shared/LoadingScreen";
-// import { UserContext } from "../App";
 
 interface ProfilePagePathParam {
   id: string
@@ -347,11 +343,6 @@ function NameBioSection({ profile }: ProfilePropInterface) {
     <section className={classes.section}>
       <Typography className={classes.typography}>{profile.principal.toText()}</Typography>
       <Typography>{profile.bio}</Typography>
-      {/* <a href={user.website} target="_blank" rel="noopener noreferrer">
-        <Typography color="secondary" className={classes.typography}>
-          {user.website}
-        </Typography>
-      </a> */}
     </section>
   );
 }
