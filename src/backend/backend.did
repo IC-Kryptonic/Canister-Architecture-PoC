@@ -74,4 +74,6 @@ service : {
     "updateProfile": (Profile_Update) -> () oneway;
     "likeVideo": (Video_Id) -> () oneway;
     "getLikeAmount": (Video_Id) -> (nat64) query;
+    "followProfile": (principal) -> () oneway;
+    "unfollowProfile": (principal) -> () oneway;
 }

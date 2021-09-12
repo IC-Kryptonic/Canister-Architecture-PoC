@@ -5,8 +5,8 @@ export interface Profile {
     name: string,
     bio: string,
     likes: Array<String>
-    follows: Object,
-    followers: Object,
+    follows: Principal[],
+    followers: Principal[],
 }
 
 export interface ProfileUpdate {

@@ -58,10 +58,17 @@ async function getVideoLikes(videoId: String) {
     return likes;
 }
 
-
 async function likeVideo(videoId: String) {
     await videoBackend.likeVideo(videoId);   
 } 
+
+async function followProfile(principal: Principal) {
+    await videoBackend.followProfile(principal);
+}
+
+async function unfollowProfile(principal: Principal) {
+    await videoBackend.unfollowProfile(principal);
+}
 
 export {
     loadProfile,
@@ -69,5 +76,7 @@ export {
     getProfile,
     getProfileLikes,
     likeVideo,
-    getVideoLikes
+    getVideoLikes,
+    followProfile,
+    unfollowProfile
 }

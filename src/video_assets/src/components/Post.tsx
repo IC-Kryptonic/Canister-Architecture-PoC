@@ -11,7 +11,7 @@ import { Principal } from "@dfinity/principal";
 
 import { trimString } from '../utils/texts';
 import { loadVideo } from '../services/video_backend';
-import { getProfile } from '../services/profile_service';
+import { getProfile, followProfile, unfollowProfile } from '../services/profile_service';
 import { Post } from '../interfaces/video_interface';
 import { Profile } from '../interfaces/profile_interface';
 
@@ -46,6 +46,18 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
     likeVideo(videoId);
   }
 
+  const followHandler = async () => {
+    if(profile) {
+      followProfile(Principal.from(profile.principal));
+    }
+  }
+
+  const unfollowHandler = async () => {
+    if(profile) {
+      unfollowProfile(Principal.from(profile.principal));
+    }
+  }
+
   return (
     <Grid container justify="center">
       <Grid container className={classes.postContainer}>
@@ -54,14 +66,14 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
           <Grid item>
             <Grid container>
               <Grid item>
-                <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit'}} >
+                <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
                   <AccountCircle className={classes.userProfile} />
                 </Link>
               </Grid>
               <Grid item>
                 <Grid container spacing={1}>
                   <Grid item>
-                    <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit'}} >
+                    <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
                       <strong>{profile?.name || '<<username>>'}</strong>
                     </Link>
                   </Grid>
@@ -81,7 +93,7 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
             </Grid>
           </Grid>
           <Grid item>
-            <Button className={classes.followButton}>Follow</Button>
+            <Button className={classes.followButton} onClick={followHandler}>Follow</Button>
           </Grid>
         </Grid>
         {/* Post body with video */}

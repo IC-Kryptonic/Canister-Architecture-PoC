@@ -98,20 +98,56 @@ pub fn like_video(video_id: VideoId) {
         .insert(video_id);
 }
 
+#[update(name = "followProfile")]
+pub fn follow_profile(principal: Principal) {
+    let profile_store = storage::get_mut::<ProfileStore>();
+
+    let caller = get_caller_principal();
+
+    profile_store
+        .get_mut(&principal)
+        .unwrap()
+        .followers
+        .insert(caller);
+
+    profile_store
+        .get_mut(&caller)
+        .unwrap()
+        .follows
+        .insert(principal);
+}
+
+#[update(name = "unfollowProfile")]
+pub fn unfollow_profile(principal: Principal) {
+    let profile_store = storage::get_mut::<ProfileStore>();
+
+    let caller = get_caller_principal();
+
+    profile_store
+        .get_mut(&principal)
+        .unwrap()
+        .followers
+        .remove(&caller);
+
+    profile_store
+        .get_mut(&caller)
+        .unwrap()
+        .follows
+        .remove(&principal);
+}
+
 ///Retrieves the amount of likes for a specific video
 #[query(name = "getLikeAmount")]
-pub fn get_like_amount(video_id: VideoId) -> usize{
+pub fn get_like_amount(video_id: VideoId) -> usize {
     let profile_store = storage::get_mut::<ProfileStore>();
 
     let mut count = 0;
 
-    profile_store
-        .values()
-        .for_each(|profile| {
-            if profile.likes.contains(&video_id){
-                count += 1;
-            }
-        });
+    profile_store.values().for_each(|profile| {
+        if profile.likes.contains(&video_id) {
+            count += 1;
+        }
+    });
 
     return count;
 }

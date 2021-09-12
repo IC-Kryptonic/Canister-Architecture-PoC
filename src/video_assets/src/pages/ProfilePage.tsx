@@ -51,30 +51,34 @@ function ProfilePage() {
   const handleProfile = async () => {
     let identity = await getAuthenticatedIdentity();
     let principal = identity.getPrincipal().toText();
+
+    // Try to parse principal from id
+    let principalProfile;
+    if (id) {
+      try {
+        principalProfile = Principal.fromText(id);
+      } catch (error) {
+        console.log(error);
+        setProfileFound(false);
+      }
+    }
     // If there is no id load our profile or if the id is our profile
-    if (!id || id && principal === id) {
+    if (!id || principal === principalProfile.toText()) {
       let profile = await loadProfile();
       setProfile(profile);
       setIsOwner(true);
       setProfileFound(true);
     } else {
       // Try to find user based on id
-      try {
-        let principal = Principal.fromText(id);
-        let profile = await getProfile(principal);
+      let profile = await getProfile(principalProfile);
 
-        if (!profile) {
-          setProfileFound(false);
-        }
-  
-        setProfile(profile);
-        setIsOwner(false);
-        setProfileFound(true);
-
-      } catch(error) {
-        console.log(error);
+      if (!profile) {
         setProfileFound(false);
       }
+
+      setProfile(profile);
+      setIsOwner(false);
+      setProfileFound(true);
     }
   }
 
@@ -280,7 +284,9 @@ interface ProfilePropInterface {
 
 function PostCountSection({ profile }: ProfilePropInterface) {
   const classes = useProfilePageStyles();
-  const options = ["posts", "followers", "following"];
+  const options = ["posts", "followers", "follows"];
+
+
 
   return (
     <>
@@ -288,20 +294,42 @@ function PostCountSection({ profile }: ProfilePropInterface) {
         <Divider />
       </Hidden>
       <section className={classes.followingSection}>
-        {options.map((option) => (
-          <div key={option} className={classes.followingText}>
-            <Typography className={classes.followingCount}>
-              {/* {user[`${option}_aggregate`].aggregate.count} */}
-              1
-            </Typography>
-            <Hidden xsDown>
-              <Typography>{option}</Typography>
-            </Hidden>
-            <Hidden smUp>
-              <Typography color="textSecondary">{option}</Typography>
-            </Hidden>
-          </div>
-        ))}
+        <div key={"posts"} className={classes.followingText}>
+          <Typography className={classes.followingCount}>
+            {/* {user[`${option}_aggregate`].aggregate.count} */}
+            {1}
+          </Typography>
+          <Hidden xsDown>
+            <Typography>followers</Typography>
+          </Hidden>
+          <Hidden smUp>
+            <Typography color="textSecondary">followers</Typography>
+          </Hidden>
+        </div>
+        <div key={"followers"} className={classes.followingText}>
+          <Typography className={classes.followingCount}>
+            {/* {user[`${option}_aggregate`].aggregate.count} */}
+            {profile.followers.length}
+          </Typography>
+          <Hidden xsDown>
+            <Typography>followers</Typography>
+          </Hidden>
+          <Hidden smUp>
+            <Typography color="textSecondary">followers</Typography>
+          </Hidden>
+        </div>
+        <div key={"follows"} className={classes.followingText}>
+          <Typography className={classes.followingCount}>
+            {/* {user[`${option}_aggregate`].aggregate.count} */}
+            {profile.followers.length}
+          </Typography>
+          <Hidden xsDown>
+            <Typography>follows</Typography>
+          </Hidden>
+          <Hidden smUp>
+            <Typography color="textSecondary">follows</Typography>
+          </Hidden>
+        </div>
       </section>
       <Hidden smUp>
         <Divider />
@@ -317,7 +345,7 @@ function NameBioSection({ profile }: ProfilePropInterface) {
 
   return (
     <section className={classes.section}>
-      <Typography className={classes.typography}>{profile.name}</Typography>
+      <Typography className={classes.typography}>{profile.principal.toText()}</Typography>
       <Typography>{profile.bio}</Typography>
       {/* <a href={user.website} target="_blank" rel="noopener noreferrer">
         <Typography color="secondary" className={classes.typography}>
