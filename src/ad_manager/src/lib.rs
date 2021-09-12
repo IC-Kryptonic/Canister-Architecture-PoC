@@ -44,6 +44,7 @@ pub async fn create_ad(mut ad_info: AdInfo) -> AdInfo{
     let canister = create_canister().await;
 
     ad_info.canister = Some(canister.clone());
+    ad_info.owner = ic_cdk::caller();
 
     install_ad(canister.clone(), &ad_info).await;
 
