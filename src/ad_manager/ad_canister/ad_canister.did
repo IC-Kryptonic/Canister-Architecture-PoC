@@ -3,6 +3,7 @@ type Chunk = blob;
 
 type Ad_Info = record {
     "owner": principal;
+    "canister": opt principal;
     "name": text;
     "chunk_num": Chunk_Num;
 };
