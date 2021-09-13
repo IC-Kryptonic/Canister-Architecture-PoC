@@ -1,10 +1,8 @@
-import React from "react";
-import { Grid, Button } from "@material-ui/core";
-import { headerStyles } from "../styles/header_styles";
-import logo from "../assets/images/kryptonic_logo.png";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import DynamicFeedIcon from "@material-ui/icons/DynamicFeed";
-import history from "./History";
+import React from 'react';
+import { Grid, Button } from '@material-ui/core';
+import { headerStyles } from '../../styles/header_styles';
+import logo from '../../assets/images/kryptonic_logo.png';
+import history from '../History';
 
 const MarketplaceHeader = () => {
   const classes = headerStyles();
@@ -27,15 +25,13 @@ const MarketplaceHeader = () => {
         <Grid item xs="auto">
           <Grid container alignItems="center">
             <Grid item>
-              <Button onClick={() => onClickLink("/")}>Markets</Button>
+              <Button onClick={() => onClickLink('/')}>Markets</Button>
             </Grid>
             <Grid item>
-              <Button onClick={() => onClickLink("/dashboard")}>
-                My Dashboard
-              </Button>
+              <Button onClick={() => onClickLink('/dashboard')}>Dashboard</Button>
             </Grid>
             <Grid item>
-              <Button onClick={() => onClickLink("/offers")}>Sell</Button>
+              <Button onClick={() => onClickLink('/offers')}>Sell</Button>
             </Grid>
             <Grid item>
               <img
