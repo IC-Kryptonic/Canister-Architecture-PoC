@@ -12,3 +12,5 @@ declare module '@material-ui/icons*';
 
 declare module 'dfx-generated/backend';
 declare module 'dfx-generated/bucket';
+declare module 'dfx-generated/ad_manager';
+declare module 'dfx-generated/ad_canister';
