@@ -223,4 +223,4 @@ async function uploadVideo(
   console.debug('upload finished', `timestamp: ${Date.now()}`);
 }
 
-export { loadDefaultFeed, loadVideo, uploadVideo };
+export { loadDefaultFeed, loadVideo, uploadVideo, loadRandomAd };
