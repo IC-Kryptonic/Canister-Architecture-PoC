@@ -9,6 +9,7 @@ import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCar
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
 import { VideoToken } from '../../interfaces/token_interface';
 import { mockVideoTokens } from '../../mocks/marketplace/videos';
+import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 
 const CardTableRow = ({ videoToken }: { videoToken: VideoToken }) => {
   const classes = marketplaceHomeStyles();
@@ -124,6 +125,7 @@ const MarketplaceHome = () => {
           })}
         </Grid>
       </Grid>
+      <MarketplaceFooter />
     </>
   );
 };
