@@ -1,37 +1,46 @@
-import { Button, Card, Grid, Paper } from '@material-ui/core';
+import { Box, Button, Card, Divider, Grid, Paper, Typography } from '@material-ui/core';
 import React from 'react';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import PublicIcon from '@material-ui/icons/Public';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCard';
-import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
+import { marketplaceDashboardStyles } from '../../styles/marketplace/marketplace_dashboard_styles';
 import { VideoToken } from '../../interfaces/token_interface';
 import { mockVideoTokens } from '../../mocks/marketplace/videos';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
+import MarketplaceChart from '../../components/marketplace/MarketplaceChart';
+import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import { PieChart } from 'react-minimal-pie-chart';
 import { marketplaceStatStyles } from '../../styles/marketplace/marketplace_stat_styles';
+import {
+  TwitterShareButton,
+  WhatsappShareButton,
+  RedditShareButton,
+  TwitterIcon,
+  WhatsappIcon,
+  RedditIcon,
+} from 'react-share';
 
 const MarketplaceDashboard = () => {
-  const classes = marketplaceHomeStyles();
+  const classes = marketplaceDashboardStyles();
   const statClasses = marketplaceStatStyles();
   return (
     <>
       <div className={classes.background} />
       <MarketplaceHeader />
       <Grid container justify="center">
+        <Grid container justify="center" style={{ marginTop: 20, fontSize: 32 }}>
+          Your weekly overview
+        </Grid>
         <Grid container justify="center" spacing={2} className={classes.cards}>
           <Grid item>
             <Grid item>
-              <MarketplaceStatCard
-                title="Video Views (last week)"
-                value="1,464,434"
-                icon={VisibilityIcon}
-              />
+              <MarketplaceStatCard title="Video Views" value="1,464,434" icon={VisibilityIcon} />
             </Grid>
             <Grid item>
               <MarketplaceStatCard
-                title="Earned Revenue (last week)"
+                title="Earned Revenue"
                 value="$ 19,096"
                 icon={MonetizationOnIcon}
               />
@@ -59,6 +68,73 @@ const MarketplaceDashboard = () => {
               </Grid>
             </Card>
           </Grid>
+        </Grid>
+        <Grid container justify="center" style={{ marginTop: 30, fontSize: 32 }}>
+          Your video shares
+        </Grid>
+        <Grid container justify="space-around" spacing={2} className={classes.cards}>
+          {mockVideoTokens.map((videoToken: VideoToken) => {
+            return (
+              <>
+                <Grid item xs={8}>
+                  <Card style={{ marginBottom: 20, height: 300, width: '100%' }}>
+                    <Grid container>
+                      <Grid item xs="auto">
+                        <iframe
+                          height="300"
+                          src={videoToken.link}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title="Embedded youtube"
+                        />
+                      </Grid>
+                      <Grid item xs={7} style={{ padding: 15 }}>
+                        <Grid item xs={12} className={classes.factTitle}>
+                          Title:
+                        </Grid>
+                        <Grid item xs={12} className={classes.factValue}>
+                          {videoToken.name}
+                        </Grid>
+                        <Grid item xs={12} className={classes.factTitle}>
+                          Creator:
+                        </Grid>
+                        <Grid item xs={12} className={classes.factValue}>
+                          {videoToken.creator}
+                        </Grid>
+                        <Grid item xs={12} className={classes.factTitle}>
+                          Shares (owned shares / existing shares):
+                        </Grid>
+                        <Grid item xs={12} className={classes.factValue}>
+                          {`${videoToken.ownedShares} / ${videoToken.availableShares}`}
+                        </Grid>
+                        <Grid item xs={12} className={classes.factTitle}>
+                          Show your friends:
+                        </Grid>
+                        <Grid container item xs={12} justify="flex-start" style={{ padding: 15 }}>
+                          <TwitterShareButton
+                            url={'https://twitter.com'}
+                            hashtags={['hashtag1', 'hashtag2']}
+                          >
+                            <TwitterIcon size={32} round />
+                          </TwitterShareButton>
+                          <WhatsappShareButton url={'https://whatsapp.com'}>
+                            <WhatsappIcon size={32} round />
+                          </WhatsappShareButton>
+                          <RedditShareButton url={'https://reddit.com'}>
+                            <RedditIcon size={32} round />
+                          </RedditShareButton>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Card>
+                </Grid>
+                <Grid item xs={3}>
+                  <MarketplaceChart width={350} height={300} />
+                </Grid>
+              </>
+            );
+          })}
         </Grid>
       </Grid>
       <MarketplaceFooter />

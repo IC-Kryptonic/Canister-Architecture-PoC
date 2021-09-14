@@ -11,25 +11,13 @@ const marketplaceDashboardStyles = makeStyles({
     zIndex: -1,
   },
   cards: { maxWidth: 1280, marginTop: '2%' },
-  table: { width: '100%', maxWidth: 1280, marginTop: '4%' },
-  tableContent: { width: '100%', maxWidth: 1280, marginTop: 15 },
-  thumbnail: { height: 80 },
-  tableRow: {
-    marginBottom: 5,
+  factTitle: {
+    color: 'grey',
+    fontWeight: 300,
   },
-  videoCell: {
-    paddingLeft: 5,
-    width: '27%',
-    fontSize: '0.9rem',
-  },
-  tableCell: {
-    width: '12.0%',
-    fontSize: '0.9rem',
-  },
-  buttonCell: {
-    paddingRight: 15,
-    width: '13%',
-    fontSize: '0.9rem',
+  factValue: {
+    fontWeight: 400,
+    marginBottom: 15,
   },
 });
 

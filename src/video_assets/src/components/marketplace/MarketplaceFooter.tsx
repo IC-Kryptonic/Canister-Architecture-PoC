@@ -9,7 +9,7 @@ const MarketplaceFooter = () => {
       </Grid>
       <Grid item xs={12} />
       <Grid item style={{ paddingTop: 15 }}>
-        Copyright © 2021 Cryptonik
+        Copyright © 2021 Kryptonic
       </Grid>
     </Grid>
   );

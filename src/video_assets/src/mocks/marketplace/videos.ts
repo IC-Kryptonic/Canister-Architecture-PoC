@@ -16,7 +16,9 @@ export const mockVideoTokens: Array<VideoToken> = [
     viewsLastWeek: '50,000',
     priceChangeLastWeek: '+ 1.32%',
     thumbnail: RonaldoThumbnail,
-    link: 'https://www.youtube.com/watch?v=Ahnby2vUlxM&ab_channel=ManchesterUnited',
+    link: 'https://www.youtube.com/embed/Ahnby2vUlxM',
+    availableShares: 100,
+    ownedShares: 27,
   },
   {
     id: '2',
@@ -28,7 +30,9 @@ export const mockVideoTokens: Array<VideoToken> = [
     viewsLastWeek: '50,000',
     priceChangeLastWeek: '+ 1.32%',
     thumbnail: LissabonThumbnail,
-    link: 'https://www.youtube.com/watch?v=n3YCrNhC1ak&ab_channel=VSPORTS-LigaPortugalBwin',
+    link: 'https://www.youtube.com/embed/n3YCrNhC1ak',
+    availableShares: 20,
+    ownedShares: 2,
   },
   {
     id: '3',
@@ -40,7 +44,9 @@ export const mockVideoTokens: Array<VideoToken> = [
     viewsLastWeek: '50,000',
     priceChangeLastWeek: '+ 1.32%',
     thumbnail: LisaThumbnail,
-    link: 'https://www.youtube.com/watch?v=awkkyBH2zEo',
+    link: 'https://www.youtube.com/embed/awkkyBH2zEo',
+    availableShares: 30,
+    ownedShares: 12,
   },
   {
     id: '4',
@@ -52,7 +58,9 @@ export const mockVideoTokens: Array<VideoToken> = [
     viewsLastWeek: '50,000',
     priceChangeLastWeek: '+ 1.32%',
     thumbnail: AgostoThumbnail,
-    link: 'https://www.youtube.com/watch?v=llvKcrvHt3w&ab_channel=DiogoBataguas',
+    link: 'https://www.youtube.com/embed/llvKcrvHt3w',
+    availableShares: 46,
+    ownedShares: 42,
   },
   {
     id: '5',
@@ -64,6 +72,8 @@ export const mockVideoTokens: Array<VideoToken> = [
     viewsLastWeek: '50,000',
     priceChangeLastWeek: '+ 1.32%',
     thumbnail: PortoThumbnail,
-    link: 'https://www.youtube.com/watch?v=NmAPsC2zRPo&ab_channel=VSPORTS-LigaPortugalBwin',
+    link: 'https://www.youtube.com/embed/NmAPsC2zRPo',
+    availableShares: 100,
+    ownedShares: 3,
   },
 ];
