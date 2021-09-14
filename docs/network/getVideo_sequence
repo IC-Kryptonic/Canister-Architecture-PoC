@@ -1,0 +1,9 @@
+@startuml
+Frontend -> VideoCanister: getInfo()
+Frontend <-- VideoCanister: getInfo: videoInfo
+
+loop chunkNum times
+    Frontend -> VideoCanister: getChunk(#)
+    Frontend <-- VideoCanister: getChunk: chunk
+end
+@enduml
