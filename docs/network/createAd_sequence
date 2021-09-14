@@ -1,5 +1,5 @@
 @startuml
-Frontend -> VideoBackend: createVideo(videoInfo)
+Frontend -> VideoBackend: createVideo(videoInfo, isAd)
 VideoBackend ->> VideoCanister: createVideo(videoInfo)
 Frontend <-- VideoBackend: createVideo: videoInfo
 

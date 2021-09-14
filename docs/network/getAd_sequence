@@ -1,0 +1,23 @@
+@startuml
+
+alt targeted
+    Frontend -> AdManager: getAdPrincipalForUser(userPrincipal)
+    ProfileBackend <- AdManager: getUserInfo(userPrincipal)
+    AdManager <-- ProfileBackend: getUserInfo: userInfo
+    AdManager --> Frontend: getAdPrincipalForUser: adPrincipal
+
+else random
+    Frontend -> AdManager: getRandomAdPrincipal()
+    AdManager -> Frontend: getRandomAdPrincipal: adPrincipal
+
+end
+
+Frontend -> AdCanister: getAdInfo()
+AdCanister --> Frontend: getAdInfo: adInfo
+
+loop adChunkNum times
+    Frontend -> AdCanister: getAdChunk(#)
+    Frontend <-- AdCanister: getAdChunk: chunk
+end
+
+@enduml
