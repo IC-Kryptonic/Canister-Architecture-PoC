@@ -9,6 +9,7 @@ export const mockVideoTokens: Array<VideoToken> = [
   {
     id: '1',
     name: 'Ronaldo strikes as United hit Newcastle for four | Highlights | Manchester United 4-1 Newcastle',
+    creator: 'Manchester United',
     marketCap: '$ 253,343',
     sharePrice: '$ 25',
     revenueLastWeek: '$ 7043',
@@ -20,6 +21,7 @@ export const mockVideoTokens: Array<VideoToken> = [
   {
     id: '2',
     name: 'Highlights | Resumo: Santa Clara 0-5 Benfica (Liga 21/22 #5)',
+    creator: 'VSPORTS - Liga Portugal Bwin',
     marketCap: '$ 253,343',
     sharePrice: '$ 25',
     revenueLastWeek: '$ 7043',
@@ -31,6 +33,7 @@ export const mockVideoTokens: Array<VideoToken> = [
   {
     id: '3',
     name: "LISA - 'LALISA' M/V",
+    creator: 'BLACKPINK',
     marketCap: '$ 253,343',
     sharePrice: '$ 25',
     revenueLastWeek: '$ 7043',
@@ -42,6 +45,7 @@ export const mockVideoTokens: Array<VideoToken> = [
   {
     id: '4',
     name: 'RELATÓRIO DB - AGOSTO 2021',
+    creator: 'Diogo Bataguas',
     marketCap: '$ 253,343',
     sharePrice: '$ 25',
     revenueLastWeek: '$ 7043',
@@ -53,6 +57,7 @@ export const mockVideoTokens: Array<VideoToken> = [
   {
     id: '5',
     name: 'Highlights | Resumo: Sporting 1-1 FC Porto (Liga 21/22 #5)',
+    creator: 'VSPORTS - Liga Portugal Bwin',
     marketCap: '$ 253,343',
     sharePrice: '$ 25',
     revenueLastWeek: '$ 7043',

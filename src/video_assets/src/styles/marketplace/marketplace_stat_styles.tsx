@@ -2,6 +2,8 @@ import { makeStyles } from '@material-ui/core';
 
 const marketplaceStatStyles = makeStyles({
   card: {
+    marginTop: 10,
+    marginBottom: 10,
     padding: 10,
     width: 220,
   },
