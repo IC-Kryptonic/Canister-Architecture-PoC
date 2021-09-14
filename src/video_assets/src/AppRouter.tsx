@@ -10,6 +10,8 @@ import ProfilePage from './pages/ProfilePage';
 import WatchVideo from './pages/WatchVideo';
 import MarketplaceHome from './pages/marketplace/MarketplaceHome';
 import MarketplaceDashboard from './pages/marketplace/MarketplaceDashboard';
+import MarketplaceBuy from './pages/marketplace/MarketplaceBuy';
+import MarketplaceSell from './pages/marketplace/MarketplaceSell';
 
 export const AppRouter = () => {
   return (
@@ -24,8 +26,8 @@ export const AppRouter = () => {
           <Route exact path="/marketplace" component={MarketplaceHome} />
           <Route exact path="/marketplace/markets" component={MarketplaceHome} />
           <Route exact path="/marketplace/dashboard" component={MarketplaceDashboard} />
-          <Route exact path="/marketplace/buy" component={MarketplaceHome} />
-          <Route exact path="/marketplace/sell" component={MarketplaceHome} />
+          <Route exact path="/marketplace/buy" component={MarketplaceBuy} />
+          <Route exact path="/marketplace/sell" component={MarketplaceSell} />
           <Route exact path="/login" component={Auth} />
           <Redirect from="/" to="/feed" />
         </Switch>

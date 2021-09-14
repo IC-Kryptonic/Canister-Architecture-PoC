@@ -47,14 +47,18 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
         </Grid>
         <Grid item className={classes.buttonCell}>
           <Grid container justify="center" spacing={1}>
-            <Grid item xs={12}>
-              <Button variant="contained" color="primary">
-                Buy
-              </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <Button variant="contained">Sell</Button>
-            </Grid>
+            {(props.rowType === RowType.BUY || props.rowType === RowType.MARKETS) && (
+              <Grid item xs={12}>
+                <Button variant="contained" color="primary">
+                  Buy
+                </Button>
+              </Grid>
+            )}
+            {(props.rowType === RowType.SELL || props.rowType === RowType.MARKETS) && (
+              <Grid item xs={12}>
+                <Button variant="contained">Sell</Button>
+              </Grid>
+            )}
           </Grid>
         </Grid>
       </Grid>
