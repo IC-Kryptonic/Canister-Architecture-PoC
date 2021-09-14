@@ -78,11 +78,9 @@ const MarketplaceHeader = () => {
         <Grid item xs="auto">
           <Grid container alignItems="center">
             <Grid item>
-              <img
-                className="personal"
-                src="https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg"
-                alt="avatar"
-              />
+              <Button variant="contained" color="primary">
+                Sign in
+              </Button>
             </Grid>
           </Grid>
         </Grid>
