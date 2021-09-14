@@ -4,12 +4,13 @@ import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import PublicIcon from '@material-ui/icons/Public';
-import RonaldoThumbnail from '../../assets/images/thumbnail_ronaldo.png';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCard';
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
+import { VideoToken } from '../../interfaces/token_interface';
+import { mockVideoTokens } from '../../mocks/marketplace/videos';
 
-const CardTableRow = () => {
+const CardTableRow = ({ videoToken }: { videoToken: VideoToken }) => {
   const classes = marketplaceHomeStyles();
 
   return (
@@ -17,29 +18,40 @@ const CardTableRow = () => {
       <Grid container alignItems="center">
         <Grid item className={classes.videoCell}>
           <Grid container alignItems="center">
-            <Grid item>
-              <img src={RonaldoThumbnail} alt="thumbnail" className={classes.thumbnail} />
+            <Grid item xs={6}>
+              <img src={videoToken.thumbnail} alt="thumbnail" className={classes.thumbnail} />
             </Grid>
-            <Grid item>Name</Grid>
+            <Grid item xs={6}>
+              {videoToken.name}
+            </Grid>
           </Grid>
         </Grid>
         <Grid item className={classes.tableCell}>
-          Market Cap.
+          {videoToken.marketCap}
         </Grid>
         <Grid item className={classes.tableCell}>
-          Share Price
+          {videoToken.sharePrice}
         </Grid>
         <Grid item className={classes.tableCell}>
-          Views (last week)
+          {videoToken.viewsLastWeek}
         </Grid>
         <Grid item className={classes.tableCell}>
-          Revenues (last week)
+          {videoToken.revenueLastWeek}
         </Grid>
         <Grid item className={classes.tableCell}>
-          Price change (last week)
+          {videoToken.priceChangeLastWeek}
         </Grid>
         <Grid item className={classes.buttonCell}>
-          <Button variant="contained">Details</Button>
+          <Grid container justify="center" spacing={1}>
+            <Grid item xs={12}>
+              <Button variant="contained" color="primary">
+                Buy
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Button variant="contained">Sell</Button>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </Paper>
@@ -52,30 +64,32 @@ const MarketplaceHome = () => {
     <>
       <div className={classes.background} />
       <MarketplaceHeader />
-      <Grid container justify="center" spacing={2} className={classes.cards}>
-        <Grid item>
-          <MarketplaceStatCard
-            title="Market Capitalization"
-            value="$ 19,096,067,431.85"
-            icon={PublicIcon}
-          />
-        </Grid>
-        <Grid item>
-          <MarketplaceStatCard title="Tokenized Videos" value="15,464" icon={PlayArrowIcon} />
-        </Grid>
-        <Grid item>
-          <MarketplaceStatCard
-            title="Total Views (last week)"
-            value="13,464,434"
-            icon={VisibilityIcon}
-          />
-        </Grid>
-        <Grid item>
-          <MarketplaceStatCard
-            title="Payed Revenue (last week)"
-            value="$ 1,204,402"
-            icon={MonetizationOnIcon}
-          />
+      <Grid container justify="center">
+        <Grid container justify="center" spacing={2} className={classes.cards}>
+          <Grid item>
+            <MarketplaceStatCard
+              title="Market Capitalization"
+              value="$ 19,096,067,431.85"
+              icon={PublicIcon}
+            />
+          </Grid>
+          <Grid item>
+            <MarketplaceStatCard title="Tokenized Videos" value="15,464" icon={PlayArrowIcon} />
+          </Grid>
+          <Grid item>
+            <MarketplaceStatCard
+              title="Total Views (last week)"
+              value="13,464,434"
+              icon={VisibilityIcon}
+            />
+          </Grid>
+          <Grid item>
+            <MarketplaceStatCard
+              title="Payed Revenue (last week)"
+              value="$ 1,204,402"
+              icon={MonetizationOnIcon}
+            />
+          </Grid>
         </Grid>
       </Grid>
       <Grid container justify="center">
@@ -105,7 +119,9 @@ const MarketplaceHome = () => {
         </Grid>
         {/* table content */}
         <Grid container className={classes.tableContent}>
-          <CardTableRow />
+          {mockVideoTokens.map((videoToken) => {
+            return <CardTableRow videoToken={videoToken} />;
+          })}
         </Grid>
       </Grid>
     </>
