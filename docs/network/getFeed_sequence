@@ -13,5 +13,8 @@ else creator_feed
 else owner_feed
     Frontend -> VideoBackend: getOwnerFeed(ownerPrincipal)
     VideoBackend --> Frontend: getOwnerFeed: feed
+else search_feed
+    Frontend -> VideoBackend: getSearchFeed(searchWord)
+    VideoBackend --> Frontend: getSearchFeed: feed
 end
 @enduml
