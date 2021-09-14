@@ -172,6 +172,18 @@ If you start with a clean dfx replica, the deployment of the internet-identity c
 
 In that case, run `rm -rf .dfx` in the internet-identity repository and then deploy the canister.
 
+# Uploading Seed Videos
+
+To upload the seed video just run the seeder program
+
+```
+
+cargo run --release --bin=seeder
+
+```
+
+If you want to add additional videos to be seeded just put them in the seed_data folder before running the seeder.
+
 # Troubleshooting
 
 If you get the error `error[E0463]: can't find crate for 'core'`, following the instruction in the terminal, e.g.
