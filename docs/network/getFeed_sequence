@@ -7,5 +7,11 @@ else user
     VideoBackend -> ProfileBackend: getFeedInfo(userPrincipal)
     VideoBackend <-- ProfileBackend: getFeedInfo: feedInfo
     Frontend <-- VideoBackend: getUserFeed: feed
+else creator_feed
+    Frontend -> VideoBackend: getCreatorFeed(creatorPrincipal)
+    VideoBackend --> Frontend: getCreatorFeed: feed
+else owner_feed
+    Frontend -> VideoBackend: getOwnerFeed(ownerPrincipal)
+    VideoBackend --> Frontend: getOwnerFeed: feed
 end
 @enduml
