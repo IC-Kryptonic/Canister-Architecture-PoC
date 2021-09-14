@@ -4,7 +4,6 @@ use ic_agent::{Agent, AgentError};
 use ic_agent::identity::BasicIdentity;
 
 use ring::{
-    rand,
     signature::Ed25519KeyPair,
 };
 
@@ -32,13 +31,6 @@ impl Actor{
             .with_arg(arg)
             .call_and_wait(default_waiter()).await
     }
-
-    pub async fn query_call(&self, method_name: &str, arg: Vec<u8>) -> Result<Vec<u8>, AgentError> {
-
-        self.agent.query(&self.principal, method_name)
-            .with_arg(arg)
-            .call().await
-    }
 }
 
 pub fn check_ok(res: Result<Vec<u8>, AgentError>) -> Vec<u8>{
@@ -48,17 +40,6 @@ pub fn check_ok(res: Result<Vec<u8>, AgentError>) -> Vec<u8>{
         },
         Err(err) => {
             panic!("Canister call was not successful {:?}", err)
-        },
-    }
-}
-
-pub fn check_err(res: Result<Vec<u8>, AgentError>) -> AgentError{
-    match res{
-        Ok(_vec) => {
-            panic!("Canister call was successful")
-        },
-        Err(err) => {
-            err
         },
     }
 }
@@ -96,13 +77,6 @@ pub fn default_waiter() -> garcon::Delay{
         .throttle(std::time::Duration::from_millis(500))
         .timeout(std::time::Duration::from_secs(30))
         .build()
-}
-
-pub fn generate_random_identity() -> BasicIdentity{
-    let rng = rand::SystemRandom::new();
-    let pkcs8_bytes = Ed25519KeyPair::generate_pkcs8(&rng).expect("Could not create pkcs8 bytes from rng");
-    let key_pair = Ed25519KeyPair::from_pkcs8(pkcs8_bytes.as_ref()).expect("Could not derive key pair from pkcs8");
-    BasicIdentity::from_key_pair(key_pair)
 }
 
 pub fn generate_pkcs8_identity(bytes: &[u8]) -> BasicIdentity{
