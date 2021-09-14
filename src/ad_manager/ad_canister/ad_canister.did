@@ -1,0 +1,16 @@
+type Chunk_Num = nat64;
+type Chunk = blob;
+
+type Ad_Info = record {
+    "owner": principal;
+    "canister": opt principal;
+    "name": text;
+    "chunk_num": Chunk_Num;
+};
+
+service : {
+    "createAd": (Ad_Info) -> () oneway;
+    "insertChunk": (Chunk_Num, Chunk) -> () oneway;
+    "getChunk": (Chunk_Num) -> (opt Chunk) query;
+    "getInfo": () -> (Ad_Info) query;
+}

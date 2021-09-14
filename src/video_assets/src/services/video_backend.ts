@@ -2,17 +2,24 @@ import {Actor, ActorSubclass, HttpAgent} from '@dfinity/agent';
 import {Principal} from '@dfinity/principal';
 import {idlFactory as video_idl} from 'dfx-generated/backend';
 import {idlFactory as bucket_idl} from 'dfx-generated/bucket';
+import {idlFactory as adManager_idl} from 'dfx-generated/ad_manager'
+import {idlFactory as adCanister_idl} from 'dfx-generated/ad_canister'
 import canisterIds from "../../../../.dfx/local/canister_ids.json"
 
 import {Post, SimpleDHT_Storage_Type} from '../interfaces/video_interface';
 import {Video_Info} from "../../../../.dfx/local/canisters/backend/backend.did";
 import {Chunk} from "../../../../.dfx/local/canisters/bucket/bucket.did";
+import {Ad_Info} from "../../../../.dfx/local/canisters/ad_canister/ad_canister.did";
 
 const agent = new HttpAgent();
 const videoBackend = Actor.createActor(video_idl, {
   agent,
   canisterId: Principal.fromText(canisterIds.backend.local),
 });
+const adManager = Actor.createActor(adManager_idl, {
+  agent,
+  canisterId: Principal.fromText(canisterIds.ad_manager.local),
+})
 
 const maxChunkSize = 1024 * 500; // 500kb
 
@@ -60,6 +67,52 @@ async function loadVideo(videoInfo: Post): Promise<string> {
 
   return URL.createObjectURL(videoBlob);
 }
+
+async function loadRandomAd(): Promise<string> {
+
+  let maybe_ad_principal = await adManager.getRandomAdPrincipal() as [Principal];
+  let ad_principal = maybe_ad_principal[0];
+  if (ad_principal === undefined) {
+    console.error("No ad uploaded yet")
+    return;
+  }
+
+  const adActor = Actor.createActor(
+      adCanister_idl,
+      {
+        agent: agent,
+        canisterId: ad_principal,
+      }
+  );
+
+  let adInfo = await adActor.getInfo() as Ad_Info;
+  let chunk_count = adInfo.chunk_num;
+
+  const chunkBuffers: Uint8Array[] | Buffer[] = [];
+  const chunksAsPromises = [];
+  for (let i = 0; i < chunk_count; i++) {
+    chunksAsPromises.push(adActor.getChunk(i));
+  }
+  const nestedBytes = (await Promise.all(chunksAsPromises))
+      .map((val: Array<Chunk>) => {
+        if (val[0] === undefined) {
+          return null;
+        } else {
+          return val[0];
+        }
+      })
+      .filter((v) => v !== null);
+  nestedBytes.forEach((bytes) => {
+    const bytesAsBuffer = Buffer.from(new Uint8Array(bytes));
+    chunkBuffers.push(bytesAsBuffer);
+  });
+  const videoBlob = new Blob([Buffer.concat(chunkBuffers)], {
+    type: 'video/mp4',
+  });
+
+  return URL.createObjectURL(videoBlob);
+}
+
 
 function _processAndUploadChunk(
   videoBuffer: ArrayBuffer,
@@ -170,4 +223,4 @@ async function uploadVideo(
   console.debug('upload finished', `timestamp: ${Date.now()}`);
 }
 
-export { loadDefaultFeed, loadVideo, uploadVideo };
+export { loadDefaultFeed, loadVideo, uploadVideo, loadRandomAd };
