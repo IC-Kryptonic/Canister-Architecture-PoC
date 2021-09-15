@@ -4,9 +4,9 @@ alt targeted
     Frontend -> AdManager: get_ad_principal_for_user(user_principal)
     activate AdManager
 
-    ProfileBackend <- AdManager: get_user_info(user_principal)
+    ProfileBackend <- AdManager: get_profile(user_principal)
     activate ProfileBackend
-    AdManager <-- ProfileBackend: get_user_info: user_info
+    AdManager <-- ProfileBackend: get_profile: profile
     deactivate ProfileBackend
 
     AdManager --> Frontend: get_ad_principal_for_user: ad_principal
