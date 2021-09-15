@@ -1,9 +1,15 @@
 @startuml
-Frontend -> VideoCanister: getInfo()
-Frontend <-- VideoCanister: getInfo: videoInfo
+activate Frontend
+Frontend -> VideoCanister: get_info()
+activate VideoCanister
+Frontend <-- VideoCanister: get_info: video_info
+deactivate VideoCanister
 
 loop chunkNum times
-    Frontend -> VideoCanister: getChunk(#)
-    Frontend <-- VideoCanister: getChunk: chunk
+    Frontend -> VideoCanister: get_chunk(#)
+    activate VideoCanister
+    Frontend <-- VideoCanister: get_chunk: chunk
+    deactivate VideoCanister
 end
+deactivate Frontend
 @enduml

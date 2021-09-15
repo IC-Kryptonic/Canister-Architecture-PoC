@@ -1,20 +1,33 @@
 @startuml
+activate Frontend
 alt random
-    Frontend -> VideoBackend: getRandomFeed()
-    VideoBackend --> Frontend: getRandomFeed: feed
-else user
-    Frontend -> VideoBackend: getUserFeed(userPrincipal)
-    VideoBackend -> ProfileBackend: getFeedInfo(userPrincipal)
-    VideoBackend <-- ProfileBackend: getFeedInfo: feedInfo
-    Frontend <-- VideoBackend: getUserFeed: feed
+    Frontend -> VideoBackend: get_random_feed()
+    activate VideoBackend
+    VideoBackend --> Frontend: get_random_feed: feed
+    deactivate VideoBackend
+else user_feed
+    Frontend -> VideoBackend: get_user_feed(user_principal)
+    activate VideoBackend
+    VideoBackend -> ProfileBackend: get_feed_info(user_principal)
+    activate ProfileBackend
+    VideoBackend <-- ProfileBackend: get_feed_info: feed_info
+    deactivate ProfileBackend
+    Frontend <-- VideoBackend: get_user_feed: feed
+    deactivate VideoBackend
 else creator_feed
-    Frontend -> VideoBackend: getCreatorFeed(creatorPrincipal)
-    VideoBackend --> Frontend: getCreatorFeed: feed
+    Frontend -> VideoBackend: get_creator_feed(creator_principal)
+    activate VideoBackend
+    VideoBackend --> Frontend: get_creator_feed: feed
+    deactivate VideoBackend
 else owner_feed
-    Frontend -> VideoBackend: getOwnerFeed(ownerPrincipal)
-    VideoBackend --> Frontend: getOwnerFeed: feed
+    Frontend -> VideoBackend: get_owner_feed(owner_principal)
+    activate VideoBackend
+    VideoBackend --> Frontend: get_owner_feed: feed
+    deactivate VideoBackend
 else search_feed
-    Frontend -> VideoBackend: getSearchFeed(searchWord)
-    VideoBackend --> Frontend: getSearchFeed: feed
+    Frontend -> VideoBackend: get_search_feed(search_word)
+    activate VideoBackend
+    VideoBackend --> Frontend: get_search_feed: feed
+    deactivate VideoBackend
 end
 @enduml

@@ -1,9 +1,18 @@
 @startuml
+activate Frontend
 alt like
-    Frontend ->> ProfileBackend: addLike(videoPrincipal)
-    Frontend ->> VideoCanister: addLike(likerPrincipal)
+    Frontend ->> ProfileBackend: add_like(video_principal)
+    activate ProfileBackend
+    deactivate ProfileBackend
+    Frontend ->> VideoCanister: add_like(liker_principal)
+    activate VideoCanister
+    deactivate VideoCanister
 else comment
-    Frontend ->> ProfileBackend: addCommented(videoPrincipal)
-    Frontend ->> VideoBackend: addComment(commenterPrincipal, comment)
+    Frontend ->> ProfileBackend: add_commented(video_principal)
+    activate ProfileBackend
+    deactivate ProfileBackend
+    Frontend ->> VideoBackend: add_comment(commenter_principal, comment)
+    activate VideoBackend
+    deactivate VideoBackend
 end
 @enduml

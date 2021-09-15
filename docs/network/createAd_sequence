@@ -1,12 +1,20 @@
 @startuml
-Frontend -> VideoBackend: createVideo(videoInfo, isAd)
-VideoBackend ->> VideoCanister: createVideo(videoInfo)
-Frontend <-- VideoBackend: createVideo: videoInfo
+activate Frontend
+Frontend -> VideoBackend: create_video(video_info, is_ad)
+activate VideoBackend
+create VideoCanister
+VideoBackend ->> VideoCanister: create_video(video_info)
+Frontend <-- VideoBackend: create_video: video_info
+deactivate VideoBackend
 
-loop chunkNum times
-    Frontend ->> VideoCanister: insertChunk(chunk)
+loop chunk_num times
+    Frontend ->> VideoCanister: insert_chunk(#, chunk)
+    activate VideoCanister
+    deactivate VideoCanister
 end
 
-Frontend ->> AdManager: addAd(adPrincipal)
-
+Frontend ->> AdManager: add_ad(ad_principal)
+activate AdManager
+deactivate AdManager
+deactivate Frontend
 @enduml

@@ -1,23 +1,34 @@
 @startuml
-
+activate Frontend
 alt targeted
-    Frontend -> AdManager: getAdPrincipalForUser(userPrincipal)
-    ProfileBackend <- AdManager: getUserInfo(userPrincipal)
-    AdManager <-- ProfileBackend: getUserInfo: userInfo
-    AdManager --> Frontend: getAdPrincipalForUser: adPrincipal
+    Frontend -> AdManager: get_ad_principal_for_user(user_principal)
+    activate AdManager
+
+    ProfileBackend <- AdManager: get_user_info(user_principal)
+    activate ProfileBackend
+    AdManager <-- ProfileBackend: get_user_info: user_info
+    deactivate ProfileBackend
+
+    AdManager --> Frontend: get_ad_principal_for_user: ad_principal
+    deactivate AdManager
 
 else random
-    Frontend -> AdManager: getRandomAdPrincipal()
-    AdManager -> Frontend: getRandomAdPrincipal: adPrincipal
-
+    Frontend -> AdManager: get_random_ad_principal()
+    activate AdManager
+    AdManager --> Frontend: get_random_ad_principal: ad_principal
+    deactivate AdManager
 end
 
-Frontend -> AdCanister: getAdInfo()
-AdCanister --> Frontend: getAdInfo: adInfo
+Frontend -> VideoCanister: get_video_info()
+activate VideoCanister
+VideoCanister --> Frontend: get_video_info: video_info
+deactivate VideoCanister
 
-loop adChunkNum times
-    Frontend -> AdCanister: getAdChunk(#)
-    Frontend <-- AdCanister: getAdChunk: chunk
+loop chunk_num times
+    Frontend -> VideoCanister: get_chunk(#)
+    activate VideoCanister
+    Frontend <-- VideoCanister: get_chunk: chunk
+    deactivate VideoCanister
 end
 
 @enduml
