@@ -8,9 +8,9 @@ alt random
 else user_feed
     Frontend -> VideoBackend: get_user_feed(user_principal)
     activate VideoBackend
-    VideoBackend -> ProfileBackend: get_feed_info(user_principal)
+    VideoBackend -> ProfileBackend: get_profile(user_principal)
     activate ProfileBackend
-    VideoBackend <-- ProfileBackend: get_feed_info: feed_info
+    VideoBackend <-- ProfileBackend: get_profile: profile
     deactivate ProfileBackend
     Frontend <-- VideoBackend: get_user_feed: feed
     deactivate VideoBackend
