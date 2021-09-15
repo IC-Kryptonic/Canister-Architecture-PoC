@@ -11,8 +11,10 @@ else comment
     Frontend ->> ProfileBackend: add_commented(video_principal)
     activate ProfileBackend
     deactivate ProfileBackend
-    Frontend ->> VideoBackend: add_comment(commenter_principal, comment)
-    activate VideoBackend
-    deactivate VideoBackend
+    Frontend ->> VideoCanister: add_comment(commenter_principal, comment)
+    activate VideoCanister
+    deactivate VideoCanister
 end
 @enduml
+
+restrict comment size to avoid memory flooding
