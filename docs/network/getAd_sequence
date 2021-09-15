@@ -19,9 +19,9 @@ else random
     deactivate AdManager
 end
 
-Frontend -> VideoCanister: get_video_info()
+Frontend -> VideoCanister: get_info()
 activate VideoCanister
-VideoCanister --> Frontend: get_video_info: video_info
+VideoCanister --> Frontend: get_info: video_info
 deactivate VideoCanister
 
 loop chunk_num times
