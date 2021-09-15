@@ -1,4 +1,7 @@
 @startuml
-    Frontend -> ProfileBackend: putProfile(profileInfo)
-    ProfileBackend --> Frontend: putProfile: profileInfo
+    activate Frontend
+    Frontend -> ProfileBackend: put_profile(profile)
+    activate ProfileBackend
+    ProfileBackend --> Frontend: put_profile: profile
+    deactivate ProfileBackend
 @enduml
