@@ -1,0 +1,4 @@
+@startuml
+    Frontend -> ProfileBackend: getProfile()
+    ProfileBackend --> Frontend: getProfile: profile
+@enduml
