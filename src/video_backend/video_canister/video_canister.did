@@ -1,0 +1,11 @@
+import "../../common_types.did"
+
+service : {
+    "create_video": (VideoInfo) -> () oneway;
+    "insert_chunk": (ChunkNum, Chunk) -> () oneway;
+    "get_chunk": (ChunkNum) -> (opt Chunk) query;
+    "set_owner": (principal) -> () oneway;
+    "get_info": () -> (VideoInfo) query;
+    "add_like": (principal) -> () oneway;
+    "add_comment": (principal, text) -> () oneway;
+}

@@ -1,68 +1,11 @@
-type Video_Id = text;
-type Chunk_Num = nat64;
-type Chunk_Data = blob;
-
-type IPFS_Data = record {
-    "data": text;
-};
-
-type Chunk = record {
-    "data": Chunk_Data;
-    "num": Chunk_Num;
-};
-
-type Storage_Type = variant {
-    inCanister: Chunk_Num;
-    simpleDistMap: record{Chunk_Num; opt principal};
-    ipfs: IPFS_Data;
-};
-
-type Video_Data = variant {
-    inCanister: Chunk;
-    simpleDistMap: principal;
-    ipfs: IPFS_Data;
-};
-
-type Load_Info = variant {
-    inCanister: Chunk_Num;
-    simpleDistMap;
-    ipfs;
-};
-
-type Video_Info = record {
-    "video_id": opt Video_Id;
-    "owner": principal;
-    "creator": principal;
-    "name": text;
-    "description": text;
-    "keywords": vec text;
-    "storage_type": Storage_Type;
-};
-
-type Profile = record {
-        "principal": principal;
-        "name": text;
-        "likes": vec Video_Id;
-};
-
-type Feed = vec Video_Info;
+import "../common_types.did"
 
 service : {
-    "reset": () -> () oneway;
+    "create_video": (VideoInfo, bool) -> (VideoInfo);
 
-    "getVideoInfo": (Video_Id) -> (opt Video_Info) query;
-    "createVideo": (Video_Info) -> (Video_Info);
-    "storeVideo": (Video_Id, Video_Data) -> () oneway;
-    "loadVideo": (Video_Id, Load_Info) -> (opt Video_Data) query;
-    "getDefaultFeed": (nat64) -> (Feed) query;
-    "searchVideo": (text) -> (opt Video_Info) query;
-    "searchFeed": (text) -> (Feed) query;
-    "getCreatorFeed": (principal) -> (Feed) query;
-    "getOwnerFeed": (principal) -> (Feed) query;
-
-    "getProfile": (principal) -> (opt Profile) query;
-    "getCurrentProfile": () -> (opt Profile) query;
-    "createProfile": (Profile) -> () oneway;
-    "likeVideo": (Video_Id) -> () oneway;
-    "getLikeAmount": (Video_Id) -> (nat64) query;
+    "get_random_feed": (nat64) -> (Feed) query;
+    "get_user_feed": (nat64, principal) -> (Feed) query;
+    "get_search_feed": (nat64, text) -> (Feed) query;
+    "get_creator_feed": (nat64, principal) -> (Feed) query;
+    "get_owner_feed": (nat64, principal) -> (Feed) query;
 }

@@ -1,13 +1,7 @@
-type Chunk_Num = nat64;
-
-type Ad_Info = record {
-    "owner": principal;
-    "canister": opt principal;
-    "name": text;
-    "chunk_num": Chunk_Num;
-};
+import "../common_types.did"
 
 service : {
-    "getRandomAdPrincipal": () -> (opt principal) query;
-    "createAd": (Ad_Info) -> (Ad_Info);
+    "add_ad": (principal) -> () oneway;
+    "get_ad_principal_for_user": (principal) -> (principal) query;
+    "get_random_ad_principal": () -> (principal) query;
 }
