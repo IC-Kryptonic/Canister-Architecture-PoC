@@ -1,7 +1,7 @@
-import "../common_types.did"
+import "../../../../src/common_types.did"
 
 service : {
     "add_ad": (principal) -> () oneway;
-    "get_ad_principal_for_user": (principal) -> (principal) query;
-    "get_random_ad_principal": () -> (principal) query;
+    "get_random_ad_principal": () -> (opt principal) query;
+    "get_ad_principal_for_user": (principal) -> (opt principal) query;
 }

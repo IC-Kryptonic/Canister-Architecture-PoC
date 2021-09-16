@@ -1,108 +1,75 @@
-use ic_cdk::export::candid::{CandidType, Deserialize, Principal};
-use ic_cdk_macros::*;
+use ic_cdk::export::candid::{Principal};
+use ic_cdk_macros::{update, query};
 use ic_cdk::storage;
 use ic_cdk::api::call;
 
-static AD_CODE: &[u8;  include_bytes!("../../../target/wasm32-unknown-unknown/release/ad_canister_opt.wasm").len()] = include_bytes!("../../../target/wasm32-unknown-unknown/release/ad_canister_opt.wasm");
+use video_types::{Profile, VideoInfo};
+use std::collections::{HashMap};
 
-pub type ChunkNum = usize;
-pub type AdStore = Vec<Principal>;
+pub type AdCache = HashMap<Principal, VideoInfo>;
 
-#[derive(CandidType, Deserialize)]
-struct CreateCanisterResult {
-    canister_id: Principal,
+static PROFILE_PRINCIPAL: &str = env!("CANISTER_ID_profile_backend");
+
+#[update]
+pub async fn add_ad(video_canister: Principal){
+    let video_info = get_video_info(video_canister).await;
+
+    storage::get_mut::<AdCache>().insert(video_canister, video_info);
 }
 
-#[derive(CandidType, Deserialize)]
-enum InstallMode {
-    #[serde(rename = "install")]
-    Install,
-    #[serde(rename = "reinstall")]
-    Reinstall,
-    #[serde(rename = "upgrade")]
-    Upgrade,
-}
-
-#[derive(CandidType, Deserialize)]
-struct InstallCodeArg {
-    mode: InstallMode,
-    canister_id: Principal,
-    wasm_module: Vec<u8>,
-    arg : Vec<u8>,
-}
-
-#[derive(CandidType, Deserialize)]
-pub struct AdInfo{
-    owner: Principal,
-    canister: Option<Principal>,
-    name: String,
-    chunk_num: ChunkNum,
-}
-
-#[update(name = "createAd")]
-pub async fn create_ad(mut ad_info: AdInfo) -> AdInfo{
-    ad_info.owner = ic_cdk::caller(); //Has to happen before creating a canister, since caller can't be determined anymore in reply callback mode
-
-    let canister = create_canister().await;
-    ad_info.canister = Some(canister.clone());
-
-    install_ad(canister.clone(), &ad_info).await;
-
-    let ads = storage::get_mut::<AdStore>();
-    ads.push(canister);
-
-    return ad_info;
-}
-
-#[query(name = "getRandomAdPrincipal")]
+#[query]
 pub async fn get_random_ad_principal() -> Option<Principal>{
-    let ads = storage::get::<AdStore>();
+    let ads = storage::get::<AdCache>();
 
     return if ads.is_empty(){
         None
     } else {
         let i = ic_cdk::api::time() as usize % ads.len();   //rand crate not supported even with js enabled for wasm, so we use time to generate random values
-        Some(ads[i])
+
+        for (j, ad) in ads.keys().enumerate(){
+            if i == j{
+                return Some(ad.clone());    //Todo find something more efficient, this is horrible
+            }
+        }
+        panic!("This should not happen");
     }
 }
 
-async fn create_canister() -> Principal {
-    let manage_princ = Principal::management_canister();
-    let response: Result<(CreateCanisterResult, ), _> = call::call(manage_princ, "create_canister", ()).await;
+#[query]
+pub async fn get_ad_principal_for_user(user: Principal) -> Option<Principal>{
+    let profile = get_profile(user).await;
 
-    match response {
-        Ok(res) => return res.0.canister_id,
-        Err(err) => {
-            ic_cdk::api::trap(format!("Could not create new canister: {}", err.1).as_str());
+    let ads = storage::get::<AdCache>();
+
+    for (princ, info) in ads{
+        if profile.name == info.name{   //TODO make something less dumb
+            return Some(princ.clone());
+        }
+    }
+    return get_random_ad_principal().await;
+}
+
+async fn get_profile(princ: Principal) -> Profile{
+    let profile_princ = Principal::from_text(PROFILE_PRINCIPAL.clone()).expect("Couldn't deduce Principal from profile canister id text");
+
+    let response: Result<(Profile,), _> = call::call( profile_princ, "get_profile", (princ,)).await;
+
+    match response{
+        Ok((profile_res,)) => return profile_res,
+        Err((rej_code, msg)) => {
+            ic_cdk::api::trap(format!("Error getting profile with code {:?}, message: {}", rej_code, msg).as_str());
         }
     }
 }
 
-async fn install_ad(canister: Principal, ad_info: &AdInfo){
-    let manage_princ = Principal::management_canister();
+async fn get_video_info(video_princ: Principal) -> VideoInfo{
 
-    let install_arg = InstallCodeArg {
-        mode: InstallMode::Install,
-        canister_id: canister.clone(),
-        wasm_module: AD_CODE.to_vec(),
-        arg: vec![],
-    };
+    let response: Result<(VideoInfo,), _> = call::call( video_princ, "get_info", ()).await;
 
-    let response: Result<(), _> = call::call( manage_princ, "install_code", (install_arg,)).await;
-
-    match response {
-        Ok(_) => (),
-        Err(err) => {
-            ic_cdk::api::trap(format!("Could not install add code into canister: {}", err.1).as_str());
-        }
-    }
-
-    let response: Result<(), _> = call::call( canister, "createAd", (ad_info,)).await;
-
-    match response {
-        Ok(_) => (),
-        Err(err) => {
-            ic_cdk::api::trap(format!("Could not create add in ad canister: {}", err.1).as_str());
+    match response{
+        Ok((video_res,)) => return video_res,
+        Err((rej_code, msg)) => {
+            ic_cdk::api::trap(format!("Error getting video info with code {:?}, message: {}", rej_code, msg).as_str());
         }
     }
 }

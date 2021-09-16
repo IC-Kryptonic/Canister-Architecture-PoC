@@ -26,9 +26,9 @@ pub async fn create_video(mut video: VideoInfo, save: bool) -> VideoInfo{
 
         if save {
             let store = storage::get_mut::<VideoCache>();
-            store.insert(new_canister.clone(), video);
+            store.insert(new_canister.clone(), video.clone());
         }
-        return video.clone();
+        return video;
 
     } else {
         unimplemented!("Only canister storage implemented atm");
