@@ -104,7 +104,7 @@ pub async fn get_info() -> VideoInfo{
     let chunks = storage::get::<Chunks>();
 
     return VideoInfo{
-        owner: meta_info.owner.expect("No owner set"),
+        owner: meta_info.owner.unwrap_or(meta_info.creator),
         creator: meta_info.creator,
         name: meta_info.name.clone(),
         description: meta_info.description.clone(),
