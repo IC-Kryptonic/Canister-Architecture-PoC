@@ -11,5 +11,10 @@ loop chunkNum times
     Frontend <-- VideoCanister: get_chunk: chunk
     deactivate VideoCanister
 end
+
+Frontend ->> ProfileBackend: add_view(video_principal)
+activate ProfileBackend
+deactivate ProfileBackend
+
 deactivate Frontend
 @enduml

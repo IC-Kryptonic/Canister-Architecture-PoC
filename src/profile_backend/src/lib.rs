@@ -52,3 +52,17 @@ pub fn add_comment(video_princ: Principal){
         .comments
         .insert(video_princ);
 }
+
+///Add a video that was already viewed
+#[update(name = "add_view")]
+pub fn add_view(video_princ: Principal){
+    let profile_store = storage::get_mut::<ProfileStore>();
+
+    let caller = ic_cdk::caller();
+
+    profile_store
+        .get_mut(&caller)
+        .expect("Caller has not made a profile yet")
+        .viewed
+        .insert(video_princ);
+}

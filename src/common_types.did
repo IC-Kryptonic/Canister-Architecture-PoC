@@ -32,5 +32,6 @@ type Profile = record {
         "principal": principal;
         "name": text;
         "likes": vec principal;
-        "comments": vec Comment;
+        "comments": vec principal;
+        "viewed": vec principal;
 };

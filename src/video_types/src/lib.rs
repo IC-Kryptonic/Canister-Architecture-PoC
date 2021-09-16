@@ -15,7 +15,7 @@ pub struct IPFSData{
 #[derive(Clone, CandidType, Deserialize)]
 pub enum StorageType{
     #[serde(rename = "canister")]
-    SimpleDistMap(ChunkNum, Option<Principal>),
+    Canister(ChunkNum, Option<Principal>),
     #[serde(rename = "ipfs")]
     IPFS(IPFSData),
 }
@@ -39,6 +39,30 @@ pub struct Profile{
     pub name: String,
     pub likes: HashSet<Principal>,
     pub comments: HashSet<Principal>,
+    pub viewed: HashSet<Principal>,
 }
 
 pub const MAX_COMMENT_LENGTH: usize = 140;
+
+#[derive(CandidType, Deserialize)]
+pub struct CreateCanisterResult {
+    pub canister_id: Principal,
+}
+
+#[derive(CandidType, Deserialize)]
+pub enum InstallMode {
+    #[serde(rename = "install")]
+    Install,
+    #[serde(rename = "reinstall")]
+    Reinstall,
+    #[serde(rename = "upgrade")]
+    Upgrade,
+}
+
+#[derive(CandidType, Deserialize)]
+pub struct InstallCodeArg {
+    pub mode: InstallMode,
+    pub canister_id: Principal,
+    pub wasm_module: Vec<u8>,
+    pub arg : Vec<u8>,
+}
