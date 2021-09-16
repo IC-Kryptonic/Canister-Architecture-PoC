@@ -1,5 +1,6 @@
 type ChunkNum = nat64;
 type Chunk = blob;
+type Feed = vec principal;
 
 type IpfsData = record {
     "data": text;
@@ -21,8 +22,6 @@ type VideoInfo = record {
     "views": nat64,
     "likes": nat64,
 };
-
-type Feed = vec principal;
 
 type Profile = record {
         "principal": principal;

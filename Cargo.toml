@@ -1,5 +1,6 @@
 [workspace]
 members = [
+  "src/video_types",
   "src/video_backend",
   "src/video_dht",
   "src/video_backend/video_canister",
