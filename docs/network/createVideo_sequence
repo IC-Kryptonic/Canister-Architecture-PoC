@@ -13,7 +13,6 @@ loop chunk_num times
     deactivate VideoCanister
 end
 
-
 Frontend -> TokenManager: create_token(token_info)
 activate TokenManager
 TokenManager ->> Token: create_token(token_info)

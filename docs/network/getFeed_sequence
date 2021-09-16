@@ -19,11 +19,6 @@ else creator_feed
     activate VideoBackend
     VideoBackend --> Frontend: get_creator_feed: feed
     deactivate VideoBackend
-else owner_feed
-    Frontend -> VideoBackend: get_owner_feed(length, owner_principal)
-    activate VideoBackend
-    VideoBackend --> Frontend: get_owner_feed: feed
-    deactivate VideoBackend
 else search_feed
     Frontend -> VideoBackend: get_search_feed(length, search_word)
     activate VideoBackend

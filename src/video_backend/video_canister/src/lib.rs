@@ -37,7 +37,7 @@ impl Default for MetaInformation{
 #[init]
 pub async fn init(video_info: VideoInfo){
     let chunk_num = match video_info.storage_type{
-        StorageType::SimpleDistMap(chunk_num, _maybe_princ) => chunk_num,
+        StorageType::Canister(chunk_num, _maybe_princ) => chunk_num,
         StorageType::IPFS(_ipfs_data) => ic_cdk::trap("Video canister creation called with ipfs data"),
     };
 
@@ -110,7 +110,7 @@ pub async fn get_info() -> VideoInfo{
         description: meta_info.description.clone(),
         keywords: meta_info.keywords.clone(),
         thumbnail: meta_info.thumbnail.clone(),
-        storage_type: StorageType::SimpleDistMap(chunks.len(), Some(ic_cdk::id())),
+        storage_type: StorageType::Canister(chunks.len(), Some(ic_cdk::id())),
         views: meta_info.views,
         likes: meta_info.likes.len(),
     }
