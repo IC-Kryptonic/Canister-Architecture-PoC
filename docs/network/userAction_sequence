@@ -4,14 +4,14 @@ alt like
     Frontend ->> ProfileBackend: add_like(video_principal)
     activate ProfileBackend
     deactivate ProfileBackend
-    Frontend ->> VideoCanister: add_like(liker_principal)
+    Frontend ->> VideoCanister: add_like()
     activate VideoCanister
     deactivate VideoCanister
 else comment
     Frontend ->> ProfileBackend: add_commented(video_principal)
     activate ProfileBackend
     deactivate ProfileBackend
-    Frontend ->> VideoCanister: add_comment(commenter_principal, comment)
+    Frontend ->> VideoCanister: add_comment(comment)
     activate VideoCanister
     deactivate VideoCanister
 end

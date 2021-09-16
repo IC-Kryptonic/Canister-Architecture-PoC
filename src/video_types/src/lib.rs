@@ -5,6 +5,7 @@ pub type ChunkNum = usize;
 pub type Chunk = Vec<u8>;
 pub type Chunks = Vec<Chunk>;
 pub type Feed = Vec<Principal>;
+pub type Comment = (Principal, String);
 
 #[derive(Clone, CandidType, Deserialize)]
 pub struct IPFSData{
@@ -28,7 +29,7 @@ pub struct VideoInfo{
     pub keywords: Vec<String>,
     pub thumbnail: Vec<u8>,
     pub storage_type: StorageType,
-    pub view: usize,
+    pub views: usize,
     pub likes: usize,
 }
 
@@ -39,3 +40,4 @@ pub struct Profile{
     pub likes: HashSet<Principal>
 }
 
+pub const MAX_COMMENT_LENGTH: usize = 140;
