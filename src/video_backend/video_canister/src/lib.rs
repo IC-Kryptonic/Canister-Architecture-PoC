@@ -130,11 +130,20 @@ pub async fn add_comment(comment: String){
     storage::get_mut::<Comments>().insert(ic_cdk::caller(), comment);
 }
 
-pub async fn get_comments(amonut: usize) -> Vec<Comment>{
-    let mut comments = Vec::with_capacity(amonut);
+#[query]
+pub async fn get_comment(user: Principal) -> Option<Comment>{
+    return storage::get::<Comments>().get_key_value(&user).map(
+        |(user, string)| {
+            return (user.clone(), string.clone());
+        });
+}
+
+#[query]
+pub async fn get_comments(amount: usize) -> Vec<Comment>{
+    let mut comments = Vec::with_capacity(amount);
 
     for (i, comment) in storage::get::<Comments>().iter().enumerate(){
-        if i == amonut{
+        if i == amount {
             break;
         } else {
             comments.push((comment.0.clone(), comment.1.clone()));
