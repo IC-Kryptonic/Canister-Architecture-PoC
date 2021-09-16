@@ -2,10 +2,9 @@
 members = [
   "src/video_types",
   "src/video_backend",
-  "src/video_dht",
   "src/video_backend/video_canister",
   "src/canister_tests",
   "src/ad_manager",
-  "src/ad_manager/ad_canister",
+  "src/profile_backend",
   "src/seeder"
 ]

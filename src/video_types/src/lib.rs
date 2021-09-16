@@ -1,5 +1,5 @@
 use ic_cdk::export::candid::{{CandidType, Deserialize}, Principal};
-use std::collections::HashSet;
+use std::collections::{HashSet};
 
 pub type ChunkNum = usize;
 pub type Chunk = Vec<u8>;
@@ -37,7 +37,8 @@ pub struct VideoInfo{
 pub struct Profile{
     pub principal: Principal,
     pub name: String,
-    pub likes: HashSet<Principal>
+    pub likes: HashSet<Principal>,
+    pub comments: HashSet<Principal>,
 }
 
 pub const MAX_COMMENT_LENGTH: usize = 140;

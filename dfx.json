@@ -6,6 +6,12 @@
       "wasm": "target/wasm32-unknown-unknown/release/video_canister.wasm",
       "type": "custom"
     },
+    "profile_backend": {
+      "build": "cargo build --target wasm32-unknown-unknown --package  profile_backend --release",
+      "candid": "src/profile_backend/profile_backend.did",
+      "wasm": "target/wasm32-unknown-unknown/release/profile_backend.wasm",
+      "type": "custom"
+    },
     "ad_canister": {
       "build": "cargo build --target wasm32-unknown-unknown --package  ad_canister --release",
       "candid": "src/ad_manager/ad_canister/ad_canister.did",
@@ -24,15 +30,14 @@
       "wasm": "target/wasm32-unknown-unknown/release/video_dht.wasm",
       "type": "custom"
     },
-    "backend": {
-      "dependencies": ["video_dht"],
-      "build": "cargo build --target wasm32-unknown-unknown --package  backend --release",
-      "candid": "src/backend/backend.did",
-      "wasm": "target/wasm32-unknown-unknown/release/backend.wasm",
+    "video_backend": {
+      "build": "cargo build --target wasm32-unknown-unknown --package  video_backend --release",
+      "candid": "src/video_backend/video_backend.did",
+      "wasm": "target/wasm32-unknown-unknown/release/video_backend.wasm",
       "type": "custom"
     },
     "video_assets": {
-      "dependencies": ["backend", "ad_manager"],
+      "dependencies": ["video_backend", "ad_manager"],
       "frontend": {
         "entrypoint": "src/video_assets/src/index.html"
       },

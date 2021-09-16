@@ -1,8 +1,8 @@
-import "../common_types.did"
+import "../../../../src/common_types.did"
 
 service : {
     "get_profile": (principal) -> (opt Profile) query;
     "put_profile": (Profile) -> () oneway;
-    "add_like": (principal) -> () oneway;
+    "add_like": () -> () oneway;
     "add_comment": (principal) -> () oneway;
 }
