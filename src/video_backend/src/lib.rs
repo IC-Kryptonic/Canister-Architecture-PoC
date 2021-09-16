@@ -15,7 +15,7 @@ static PROFILE_PRINCIPAL: &str = env!("CANISTER_ID_profile_backend");
 ///Creates a new Video based on the video information of the argument.
 ///It returns all the meta information for the video.
 #[update]
-pub async fn create_video(mut video: VideoInfo, is_ad: bool) -> VideoInfo{
+pub async fn create_video(mut video: VideoInfo, save: bool) -> VideoInfo{
 
     video.creator = ic_cdk::caller();
 
@@ -24,13 +24,12 @@ pub async fn create_video(mut video: VideoInfo, is_ad: bool) -> VideoInfo{
         video.storage_type = StorageType::Canister(chunk_num, Some(new_canister.clone()));
         install_video_canister(&new_canister, &video).await;
 
-        return if !is_ad {
+        if save {
             let store = storage::get_mut::<VideoCache>();
             store.insert(new_canister.clone(), video);
-            store[&new_canister].clone()
-        } else {
-            video
         }
+        return video.clone();
+
     } else {
         unimplemented!("Only canister storage implemented atm");
     }

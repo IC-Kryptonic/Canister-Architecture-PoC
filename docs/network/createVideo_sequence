@@ -1,6 +1,6 @@
 @startuml
 activate Frontend
-Frontend -> VideoBackend: create_video(video_info, no_ad)
+Frontend -> VideoBackend: create_video(video_info, true)
 activate VideoBackend
 create VideoCanister
 VideoBackend ->> VideoCanister: create_video(video_info)
