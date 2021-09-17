@@ -53,26 +53,6 @@ const MarketplaceHeader = () => {
                 Dashboard
               </Button>
             </Grid>
-            <Grid item>
-              <Button
-                onClick={() => onClickLink('/buy')}
-                className={
-                  isRouteActive('buy') ? classes.textButtonSmallActive : classes.textButtonSmall
-                }
-              >
-                Buy
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                onClick={() => onClickLink('/sell')}
-                className={
-                  isRouteActive('sell') ? classes.textButtonSmallActive : classes.textButtonSmall
-                }
-              >
-                Sell
-              </Button>
-            </Grid>
           </Grid>
         </Grid>
         <Grid item xs="auto">
