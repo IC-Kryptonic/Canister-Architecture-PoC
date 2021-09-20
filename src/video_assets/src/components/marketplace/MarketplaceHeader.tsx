@@ -4,6 +4,7 @@ import { headerStyles } from '../../styles/header_styles';
 import logo from '../../assets/images/kryptonic_logo.png';
 import history from '../History';
 import { useLocation } from 'react-router-dom';
+import ICPButton from '../ICPButton';
 
 const MarketplaceHeader = () => {
   const classes = headerStyles();
@@ -56,13 +57,7 @@ const MarketplaceHeader = () => {
           </Grid>
         </Grid>
         <Grid item xs="auto">
-          <Grid container alignItems="center">
-            <Grid item>
-              <Button variant="contained" color="primary">
-                Sign in
-              </Button>
-            </Grid>
-          </Grid>
+          <ICPButton />
         </Grid>
       </Grid>
     </Grid>
