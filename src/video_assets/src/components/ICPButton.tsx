@@ -3,12 +3,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import InternetIdentityLogo from '../assets/images/internet_identity_logo.svg';
 import { AuthContext } from '../contexts/AuthContext';
 import { getBalanceForIdentity } from '../services/token_services';
+import history from './History';
 
 const ICPButton = () => {
   const { isAuthenticated, identity } = useContext(AuthContext);
-  const [balance, setBalance] = useState<null | number>(null);
-
-  console.log(identity);
+  const [balance, setBalance] = useState<Number | null>(null);
 
   useEffect(() => {
     async function getBalance() {
@@ -40,14 +39,14 @@ const ICPButton = () => {
           <Grid item>
             <img src={InternetIdentityLogo} alt="ii-logo" height="40px" style={{ paddingTop: 6 }} />
           </Grid>
-          <Grid item>{'0.00'}</Grid>
+          <Grid item>{balance}</Grid>
         </Grid>
       </Button>
     );
   }
 
   return (
-    <Button variant="contained" color="primary">
+    <Button variant="contained" color="primary" onClick={() => history.push('/marketplace/login')}>
       Sign in
     </Button>
   );
