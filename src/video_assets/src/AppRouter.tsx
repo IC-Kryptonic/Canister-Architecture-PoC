@@ -8,6 +8,7 @@ import Feed from './pages/Feed';
 import Upload from './pages/Upload';
 import Profile from './pages/Profile';
 import ProfilePage from './pages/ProfilePage';
+import WatchVideo from './pages/WatchVideo';
 
 export const AppRouter = () => {
   return (
@@ -16,6 +17,7 @@ export const AppRouter = () => {
         <Switch>
           <ProtectedRoute exact path="/upload" component={Upload} />
           <ProtectedRoute exact path="/feed" component={Feed} />
+          <ProtectedRoute exact path="/video/:id" component={WatchVideo} />
           <ProtectedRoute exact path="/profile/:id" component={ProfilePage} />
           <ProtectedRoute exact path="/profile" component={ProfilePage} />
           <Route exact path="/login" component={Auth} />

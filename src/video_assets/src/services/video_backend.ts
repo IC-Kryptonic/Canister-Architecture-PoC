@@ -30,6 +30,25 @@ async function loadOwnerFeed(principal: Principal): Promise<Array<Post>> {
   return (await videoBackend.getDefaultFeed(10)) as Array<Post>;
 }
 
+async function getVideoInfo(videoId: String) {
+  return (await videoBackend.getVideoInfo(videoId)) as Array<Post>;
+}
+
+interface NextVideoPayload {
+  post: Post,
+  id: number
+}
+
+async function getNextVideo(videoNumber: number): Promise<NextVideoPayload> {
+  let posts = await videoBackend.getDefaultFeed(10) as Array<Post>;
+  let number = Math.abs(videoNumber) % posts.length;
+  console.log(number);
+  return {
+    post: posts[number],
+    id: number
+  };
+}
+
 async function loadVideo(videoInfo: Post): Promise<string> {
   const { video_id, storage_type } = videoInfo;
   let video_id_unpacked: string = video_id[0];
@@ -175,4 +194,4 @@ async function uploadVideo(
   console.debug('upload finished', `timestamp: ${Date.now()}`);
 }
 
-export { loadDefaultFeed, loadVideo, uploadVideo, loadOwnerFeed, loadSearchFeed };
+export { loadDefaultFeed, loadVideo, uploadVideo, loadOwnerFeed, loadSearchFeed, getVideoInfo, getNextVideo };

@@ -10,6 +10,9 @@ import history from './History';
 import Search from './shared/Search';
 
 const headerStyles = makeStyles({
+  container: {
+    maxHeight: "15vh"
+  },
   logo_wrapper: {
     padding: 10,
     marginLeft: 20
@@ -39,7 +42,7 @@ const Header = () => {
   }
 
   return (
-    <Grid container justify="space-between" alignItems="center">
+    <Grid container justify="space-between" alignItems="center" className={classes.container}>
       <Grid item className={classes.logo_wrapper}>
         <img className={classes.logo} src={logo} alt="logo" />
       </Grid>

@@ -47,13 +47,13 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
   }
 
   const followHandler = async () => {
-    if(profile) {
+    if (profile) {
       followProfile(Principal.from(profile.principal));
     }
   }
 
   const unfollowHandler = async () => {
-    if(profile) {
+    if (profile) {
       unfollowProfile(Principal.from(profile.principal));
     }
   }
@@ -79,7 +79,11 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
                   </Grid>
                   <Grid item className={classes.lightText}>
                     {post?.video_id
-                      ? trimString(post.video_id, 15)
+                      ? (
+                        <Link to={`/video/${post.video_id}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
+                          {trimString(post.video_id, 15)}
+                        </Link>
+                      )
                       : '<<video_id>>'}
                   </Grid>
                 </Grid>

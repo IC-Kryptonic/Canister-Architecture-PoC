@@ -22,7 +22,7 @@ export const useLayoutStyles = makeStyles((theme) => ({
     display: "flex",
     margin: "0 auto",
     flexFlow: "row nowrap",
-    maxWidth: "935px !important",
+    // maxWidth: "935px !important",
   },
   children: {
     width: "100%",
