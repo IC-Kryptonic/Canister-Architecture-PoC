@@ -4,11 +4,13 @@ import { Redirect } from 'react-router-dom';
 import Header from '../../components/marketplace/MarketplaceHeader';
 import { AuthContext } from '../../contexts/AuthContext';
 import { authWithInternetIdentity } from '../../services/auth_services';
-import { Secp256k1KeyIdentity } from '@dfinity/identity';
-import { HttpAgent } from '@dfinity/agent';
+import { HttpAgent, Identity } from '@dfinity/agent';
+import { identityBronte, identityGabriela } from '../../mocks/marketplace/identities';
+import InternetIdentityButton from '../../components/IIButton';
 
 const MarketplaceAuth = () => {
-  const { isLoading, isAuthenticated, setIsLoading, setIsAuthenticated } = useContext(AuthContext);
+  const { isLoading, isAuthenticated, setIsLoading, setIsAuthenticated, setIdentity } =
+    useContext(AuthContext);
 
   if (isAuthenticated) {
     return <Redirect to="/marketplace/markets" />;
@@ -26,13 +28,13 @@ const MarketplaceAuth = () => {
     }
   };
 
-  const fakeAuthenticate = async () => {
+  const fakeAuthenticate = async (identity: Identity) => {
     setIsLoading(true);
     try {
-      const identity = Secp256k1KeyIdentity.generate();
-      console.log(new HttpAgent({ identity }));
+      setIdentity(identity);
+      setIsAuthenticated(true);
     } catch (error) {
-      console.error('Error generating Internet Identity', error);
+      console.error('Error setting fake Internet Identity', error);
     } finally {
       setIsLoading(false);
     }
@@ -61,26 +63,16 @@ const MarketplaceAuth = () => {
           <span>Or choose one of the following identities for demo purposes:</span>
         </Grid>
         <Grid item>
-          <Button
-            variant="contained"
-            color="secondary"
-            style={{ width: '200px', padding: 0 }}
-            disabled={isLoading}
-            onClick={fakeAuthenticate}
-          >
-            {isLoading ? <CircularProgress /> : 'Gabriela Huang'}
-          </Button>
+          <InternetIdentityButton
+            name={'Gabriela Hung'}
+            callback={() => fakeAuthenticate(identityGabriela)}
+          />
         </Grid>
         <Grid item>
-          <Button
-            variant="contained"
-            color="secondary"
-            style={{ width: '200px', padding: 0 }}
-            disabled={isLoading}
-            onClick={fakeAuthenticate}
-          >
-            {isLoading ? <CircularProgress /> : 'Bronte Bean'}
-          </Button>
+          <InternetIdentityButton
+            name={'Bronte Bean'}
+            callback={() => fakeAuthenticate(identityBronte)}
+          />
         </Grid>
       </Grid>
     </>
