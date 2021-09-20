@@ -10,6 +10,7 @@ import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home
 import { mockVideoTokens } from '../../mocks/marketplace/videos';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import MarketplaceCardRow, { RowType } from '../../components/marketplace/MarketplaceCardRow';
+import { VideoToken } from '../../interfaces/token_interface';
 
 const MarketplaceHome = () => {
   const classes = marketplaceHomeStyles();
@@ -72,8 +73,14 @@ const MarketplaceHome = () => {
         </Grid>
         {/* table content */}
         <Grid container className={classes.tableContent}>
-          {mockVideoTokens.map((videoToken) => {
-            return <MarketplaceCardRow videoToken={videoToken} rowType={RowType.MARKETS} />;
+          {mockVideoTokens.map((videoToken: VideoToken) => {
+            return (
+              <MarketplaceCardRow
+                videoToken={videoToken}
+                rowType={RowType.MARKETS}
+                key={videoToken.id}
+              />
+            );
           })}
         </Grid>
       </Grid>

@@ -33,7 +33,7 @@ const ICPButton = () => {
           color: 'black',
           fontWeight: 400,
         }}
-        onClick={() => {}}
+        onClick={() => history.push('/marketplace/faucet')}
       >
         <Grid container alignItems="center" justify="center">
           <Grid item>

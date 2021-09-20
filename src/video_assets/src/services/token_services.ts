@@ -44,3 +44,23 @@ export const getBalanceForIdentity = async (identity: Identity): Promise<Number>
   if ('ok' in result) return Number(result.ok);
   throw new Error(JSON.stringify(result));
 };
+
+export const receiveICPForIdentity = async (
+  amount: number,
+  identity: Identity
+): Promise<Number> => {
+  const actor = await getNativeTokenActor(identity);
+  const principal = identity.getPrincipal();
+
+  const result = (await actor.acquireFromFaucet({
+    from: { principal },
+    to: { principal },
+    token: '',
+    amount: amount,
+    memo: [],
+    notify: false,
+    subaccount: [],
+  })) as BigIntResult;
+  if ('ok' in result) return Number(result.ok);
+  throw new Error(JSON.stringify(result));
+};
