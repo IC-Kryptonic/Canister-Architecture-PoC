@@ -11,6 +11,7 @@ import ProfilePage from './pages/ProfilePage';
 import WatchVideo from './pages/WatchVideo';
 import MarketplaceHome from './pages/marketplace/MarketplaceHome';
 import MarketplaceFaucet from './pages/marketplace/MarketplaceFaucet';
+import MarketplaceSell from './pages/marketplace/MarketplaceSell';
 import MarketplaceDashboard from './pages/marketplace/MarketplaceDashboard';
 import MarketplaceAuth from './pages/marketplace/MarketplaceAuth';
 
@@ -38,6 +39,10 @@ export const AppRouter = () => {
             exact
             path="/marketplace/faucet"
             component={MarketplaceFaucet}
+          />
+          <MarketplaceProtectedRoute
+            path={['/marketplace/sell/:id', '/marketplace/sell']}
+            component={MarketplaceSell}
           />
           <Route exact path="/marketplace/login" component={MarketplaceAuth} />
           <Route exact path="/login" component={Auth} />

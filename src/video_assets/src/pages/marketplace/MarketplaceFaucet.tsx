@@ -1,7 +1,6 @@
 import { Button, Grid, TextField } from '@material-ui/core';
 import React, { useContext, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
-import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import { AuthContext } from '../../contexts/AuthContext';
 import { receiveICPForIdentity } from '../../services/token_services';
@@ -9,15 +8,14 @@ import { receiveICPForIdentity } from '../../services/token_services';
 const MarketplaceFaucet = () => {
   const { isAuthenticated, identity } = useContext(AuthContext);
 
-  const classes = marketplaceHomeStyles();
   const [amount, setAmount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const receiveICP = async () => {
     setLoading(true);
     try {
-      const result = await receiveICPForIdentity(amount, identity);
-      // trigger balance reload
+      await receiveICPForIdentity(amount, identity);
+      // TODO trigger balance reload
     } catch (error) {
       console.error('Error receiving kICP from faucet', error);
     } finally {
@@ -31,7 +29,6 @@ const MarketplaceFaucet = () => {
 
   return (
     <>
-      <div className={classes.background} />
       <MarketplaceHeader />
       <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
         Kryptonice ICP (kICP) Faucet
