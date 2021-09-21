@@ -7,7 +7,7 @@ import AgostoThumbnail from '../../assets/images/thumbnail_agosto.png';
 
 export const mockVideoTokens: Array<VideoToken> = [
   {
-    id: '1',
+    canisterId: '1',
     name: 'Ronaldo strikes as United hit Newcastle for four | Highlights | Manchester United 4-1 Newcastle',
     creator: 'Manchester United',
     marketCap: '$ 253,343',
@@ -21,7 +21,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     ownedShares: 27,
   },
   {
-    id: '2',
+    canisterId: '2',
     name: 'Highlights | Resumo: Santa Clara 0-5 Benfica (Liga 21/22 #5)',
     creator: 'VSPORTS - Liga Portugal Bwin',
     marketCap: '$ 253,343',
@@ -35,7 +35,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     ownedShares: 2,
   },
   {
-    id: '3',
+    canisterId: '3',
     name: "LISA - 'LALISA' M/V",
     creator: 'BLACKPINK',
     marketCap: '$ 253,343',
@@ -49,7 +49,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     ownedShares: 12,
   },
   {
-    id: '4',
+    canisterId: '4',
     name: 'RELATÓRIO DB - AGOSTO 2021',
     creator: 'Diogo Bataguas',
     marketCap: '$ 253,343',
@@ -63,7 +63,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     ownedShares: 42,
   },
   {
-    id: '5',
+    canisterId: '5',
     name: 'Highlights | Resumo: Sporting 1-1 FC Porto (Liga 21/22 #5)',
     creator: 'VSPORTS - Liga Portugal Bwin',
     marketCap: '$ 253,343',

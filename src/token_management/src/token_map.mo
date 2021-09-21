@@ -18,17 +18,18 @@ actor TokenMap {
 
   let tokenMap = HashMap.HashMap<Principal, HashMap.HashMap<Nat, Token>>(0, ExchangeMaps.isEqPrinc, Principal.hash);
 
-  public shared(msg) func createToken(name: Text, symbol: Text, decimals: Nat8, supply: Nat, metadata: Text) : async() {
-    let newToken = await VideoToken.video_token(name, symbol, decimals, supply, msg.caller, metadata);
-    switch(tokenMap.get(msg.caller)) {
+  public shared(msg) func createToken(owner: Text, name: Text, symbol: Text, decimals: Nat8, supply: Nat, metadata: Text) : async() {
+    let ownerPrincipal = Principal.fromText(owner);
+    let newToken = await VideoToken.video_token(name, symbol, decimals, supply, ownerPrincipal, metadata);
+    switch(tokenMap.get(ownerPrincipal)) {
       case null {
         let newMap = HashMap.HashMap<Nat, Token>(0, ExchangeMaps.isEqNat, ExchangeMaps.natToHash);
         newMap.put(0, newToken);
-        tokenMap.put(msg.caller, newMap);
+        tokenMap.put(ownerPrincipal, newMap);
       };
       case (?tokensFromPrincipal) {
         tokensFromPrincipal.put(tokensFromPrincipal.size(), newToken);
-        tokenMap.put(msg.caller, tokensFromPrincipal);
+        tokenMap.put(ownerPrincipal, tokensFromPrincipal);
       };
     };
     Debug.print("Token <" # name # "> was created successfully");
@@ -45,9 +46,10 @@ actor TokenMap {
     return result;
   };
 
-  public shared(msg) func getTokensForCreator() : async [TokenAsRecord] {
+  public shared(msg) func getTokensForCreator(creator: Text) : async [TokenAsRecord] {
+    let creatorPrincipal = Principal.fromText(creator);
     var result: [TokenAsRecord] = [];
-    switch(tokenMap.get(msg.caller)) {
+    switch(tokenMap.get(creatorPrincipal)) {
       case null {};
       case (?mapForPrincipal) {
         for(tokenForPrincipal in mapForPrincipal.entries()) {

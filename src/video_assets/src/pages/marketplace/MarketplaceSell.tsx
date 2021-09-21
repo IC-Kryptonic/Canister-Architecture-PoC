@@ -21,9 +21,9 @@ function findId(id: string | null, tokens: Array<VideoToken>): SelectOption | nu
   if (!id || tokens.length < 1) {
     return null;
   }
-  let result = tokens.find((token: VideoToken) => id === token.id);
+  let result = tokens.find((token: VideoToken) => id === token.canisterId);
   if (!result) return null;
-  return { label: result.name, value: result.id };
+  return { label: result.name, value: result.canisterId };
 }
 
 const MarketplaceFaucet = () => {
@@ -43,7 +43,7 @@ const MarketplaceFaucet = () => {
     for (let videoToken of mockVideoTokens) {
       options.push({
         label: videoToken.name,
-        value: videoToken.id,
+        value: videoToken.canisterId,
       });
     }
     setTokenOptions(options);
@@ -51,7 +51,9 @@ const MarketplaceFaucet = () => {
 
   useEffect(() => {
     if (!selectedToken) return;
-    let token = mockVideoTokens.find((element: VideoToken) => element.id === selectedToken.value);
+    let token = mockVideoTokens.find(
+      (element: VideoToken) => element.canisterId === selectedToken.value
+    );
     let amounts = Array.from({ length: token.ownedShares }, (x, i) => i + 1);
     let amountsAsOptions = amounts.map((element: number) => {
       return { label: `${element}`, value: `${element}` };

@@ -1,5 +1,5 @@
 export interface VideoToken {
-  id: string;
+  canisterId: string;
   name: string;
   creator: string;
   thumbnail: string;
@@ -11,4 +11,12 @@ export interface VideoToken {
   link: string;
   availableShares: number;
   ownedShares: number;
+}
+
+export interface VideoTokenResult {
+  canisterId: string;
+  metadata: string;
+  name: string;
+  supply: BigInt;
+  symbol: string;
 }

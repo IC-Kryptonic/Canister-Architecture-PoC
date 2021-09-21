@@ -1,5 +1,5 @@
 import { Grid } from '@material-ui/core';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -7,13 +7,31 @@ import PublicIcon from '@material-ui/icons/Public';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCard';
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
-import { mockVideoTokens } from '../../mocks/marketplace/videos';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import MarketplaceCardRow, { RowType } from '../../components/marketplace/MarketplaceCardRow';
 import { VideoToken } from '../../interfaces/token_interface';
+import { getAllTokens } from '../../services/token_services';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const MarketplaceHome = () => {
+  const { identity } = useContext(AuthContext);
   const classes = marketplaceHomeStyles();
+
+  const [videoTokens, setVideoTokens] = useState<Array<VideoToken>>([]);
+
+  useEffect(() => {
+    async function queryTokens() {
+      try {
+        const result = await getAllTokens(identity);
+        setVideoTokens(result);
+      } catch (error) {
+        console.error('error fetching video tokens');
+      }
+    }
+    queryTokens();
+  }, []);
+
+  getAllTokens(identity);
   return (
     <>
       <div className={classes.background} />
@@ -73,12 +91,12 @@ const MarketplaceHome = () => {
         </Grid>
         {/* table content */}
         <Grid container className={classes.tableContent}>
-          {mockVideoTokens.map((videoToken: VideoToken) => {
+          {videoTokens.map((videoToken: VideoToken) => {
             return (
               <MarketplaceCardRow
                 videoToken={videoToken}
                 rowType={RowType.MARKETS}
-                key={videoToken.id}
+                key={videoToken.canisterId}
               />
             );
           })}
