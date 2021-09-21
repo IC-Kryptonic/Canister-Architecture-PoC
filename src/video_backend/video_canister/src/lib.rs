@@ -131,10 +131,10 @@ pub async fn add_comment(comment: String){
 }
 
 #[query]
-pub async fn get_comment(user: Principal) -> Option<Comment>{
+pub async fn get_comment(user: Principal) -> Option<String>{
     return storage::get::<Comments>().get_key_value(&user).map(
         |(user, string)| {
-            return (user.clone(), string.clone());
+            return string.clone();
         });
 }
 
