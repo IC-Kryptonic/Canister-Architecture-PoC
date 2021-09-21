@@ -5,6 +5,7 @@ import { VideoToken } from '../interfaces/token_interface';
 import {
   getAllTokens,
   getBalanceForIdentity,
+  getShareBalanceForIdentity,
   getTokensForCreator,
 } from '../services/token_services';
 
@@ -55,6 +56,30 @@ const TokenContextState = (props: TokenContextStateProps) => {
       queryTokens();
     }
   }, [identity]);
+
+  useEffect(() => {
+    async function queryVideoBalances() {
+      setIsLoading(true);
+      let newTokensForCreator = [];
+      for (let token of videoTokensForCreator) {
+        try {
+          const balance = await getShareBalanceForIdentity(identity, token.canisterId);
+          token.ownedShares = balance;
+        } catch (error) {
+          console.error('error fetching video tokens');
+        } finally {
+          newTokensForCreator.push(token);
+        }
+      }
+      setIsLoading(false);
+      // update video tokens with share balances
+      setVideoTokensForCreator(newTokensForCreator);
+    }
+
+    if (identity) {
+      queryVideoBalances();
+    }
+  }, [videoTokensForCreator]);
 
   return (
     <TokenContext.Provider

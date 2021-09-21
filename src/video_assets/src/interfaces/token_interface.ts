@@ -9,8 +9,8 @@ export interface VideoToken {
   revenueLastWeek: string;
   priceChangeLastWeek: string;
   link: string;
-  availableShares: number;
-  ownedShares: number;
+  supply: number;
+  ownedShares?: Number;
 }
 
 export interface VideoTokenResult {

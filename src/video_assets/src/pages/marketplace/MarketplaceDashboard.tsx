@@ -107,7 +107,7 @@ const MarketplaceDashboard = () => {
                           Shares (owned shares / existing shares):
                         </Grid>
                         <Grid item xs={12} className={classes.factValue}>
-                          {`${videoToken.ownedShares} / ${videoToken.availableShares}`}
+                          {`${videoToken.ownedShares || '...'} / ${videoToken.supply}`}
                         </Grid>
                         <Grid item xs={12} className={classes.factTitle}>
                           Show your friends:

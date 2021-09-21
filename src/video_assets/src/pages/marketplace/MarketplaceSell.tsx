@@ -54,7 +54,9 @@ const MarketplaceFaucet = () => {
     let token = mockVideoTokens.find(
       (element: VideoToken) => element.canisterId === selectedToken.value
     );
-    let amounts = Array.from({ length: token.ownedShares }, (x, i) => i + 1);
+
+    // TODO hacky
+    let amounts = Array.from({ length: parseInt(token.ownedShares.toString()) }, (x, i) => i + 1);
     let amountsAsOptions = amounts.map((element: number) => {
       return { label: `${element}`, value: `${element}` };
     });

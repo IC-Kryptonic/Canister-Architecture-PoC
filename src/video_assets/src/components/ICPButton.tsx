@@ -1,5 +1,5 @@
 import { Button, Grid } from '@material-ui/core';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import InternetIdentityLogo from '../assets/images/internet_identity_logo.svg';
 import { AuthContext } from '../contexts/AuthContext';
 import { TokenContext } from '../contexts/TokenContext';

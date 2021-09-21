@@ -17,7 +17,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     priceChangeLastWeek: '+ 1.32%',
     thumbnail: RonaldoThumbnail,
     link: 'https://www.youtube.com/embed/Ahnby2vUlxM',
-    availableShares: 100,
+    supply: 100,
     ownedShares: 27,
   },
   {
@@ -31,7 +31,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     priceChangeLastWeek: '+ 1.32%',
     thumbnail: LissabonThumbnail,
     link: 'https://www.youtube.com/embed/n3YCrNhC1ak',
-    availableShares: 20,
+    supply: 20,
     ownedShares: 2,
   },
   {
@@ -45,7 +45,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     priceChangeLastWeek: '+ 1.32%',
     thumbnail: LisaThumbnail,
     link: 'https://www.youtube.com/embed/awkkyBH2zEo',
-    availableShares: 30,
+    supply: 30,
     ownedShares: 12,
   },
   {
@@ -59,7 +59,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     priceChangeLastWeek: '+ 1.32%',
     thumbnail: AgostoThumbnail,
     link: 'https://www.youtube.com/embed/llvKcrvHt3w',
-    availableShares: 46,
+    supply: 46,
     ownedShares: 42,
   },
   {
@@ -73,7 +73,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     priceChangeLastWeek: '+ 1.32%',
     thumbnail: PortoThumbnail,
     link: 'https://www.youtube.com/embed/NmAPsC2zRPo',
-    availableShares: 100,
+    supply: 100,
     ownedShares: 3,
   },
 ];

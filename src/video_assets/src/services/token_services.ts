@@ -58,6 +58,25 @@ export const getBalanceForIdentity = async (identity: Identity): Promise<Number>
   throw new Error(JSON.stringify(result));
 };
 
+export const getShareBalanceForIdentity = async (
+  identity: Identity,
+  canisterId: string
+): Promise<Number> => {
+  const httpAgent = await getHttpAgent(identity);
+  const tokenActor = Actor.createActor(nativeTokenIdl, {
+    agent: httpAgent,
+    canisterId: Principal.fromText(canisterId),
+  });
+  const principal = identity.getPrincipal();
+
+  const result = (await tokenActor.balance({
+    token: '',
+    user: { principal },
+  })) as BigIntResult;
+  if ('ok' in result) return Number(result.ok);
+  throw new Error(JSON.stringify(result));
+};
+
 export const receiveICPForIdentity = async (
   amount: number,
   identity: Identity
@@ -98,6 +117,7 @@ function parseTokenResult(result: Array<VideoTokenResult>): Array<VideoToken> {
     parsedResult.push({
       name: entry.name,
       canisterId: entry.canisterId,
+      supply: entry.supply,
       ...metadata,
     });
   }
