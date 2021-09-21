@@ -1,9 +1,8 @@
 import {Actor, ActorSubclass, HttpAgent} from '@dfinity/agent';
 import {Principal} from '@dfinity/principal';
-import {idlFactory as video_idl} from 'dfx-generated/backend';
-import {idlFactory as bucket_idl} from 'dfx-generated/bucket';
+import {idlFactory as videoBackend_idl} from 'dfx-generated/video_backend';
+import {idlFactory as videoCanister_idl} from 'dfx-generated/video_canister';
 import {idlFactory as adManager_idl} from 'dfx-generated/ad_manager'
-import {idlFactory as adCanister_idl} from 'dfx-generated/ad_canister'
 import canisterIds from "../../../../.dfx/local/canister_ids.json"
 
 import {Post, SimpleDHT_Storage_Type} from '../interfaces/video_interface';
@@ -12,7 +11,7 @@ import {Chunk} from "../../../../.dfx/local/canisters/bucket/bucket.did";
 import {Ad_Info} from "../../../../.dfx/local/canisters/ad_canister/ad_canister.did";
 
 const agent = new HttpAgent();
-const videoBackend = Actor.createActor(video_idl, {
+const videoBackend = Actor.createActor(videoBackend_idl, {
   agent,
   canisterId: Principal.fromText(canisterIds.backend.local),
 });
@@ -36,8 +35,8 @@ async function loadVideo(videoInfo: Post): Promise<string> {
   let chunk_count: bigint = dht_info.simpleDistMap[0];
   let bucket_princ: Principal = dht_info.simpleDistMap[1][0];
 
-  const bucketActor = Actor.createActor(
-      bucket_idl
+  const videoActor = Actor.createActor(
+      videoCanister_idl
       , {
         agent: agent,
         canisterId: bucket_princ,
@@ -46,7 +45,7 @@ async function loadVideo(videoInfo: Post): Promise<string> {
   const chunkBuffers: Uint8Array[] | Buffer[] = [];
   const chunksAsPromises = [];
   for (let i = 0; i < chunk_count; i++) {
-    chunksAsPromises.push(bucketActor.getChunk(video_id_unpacked, i));
+    chunksAsPromises.push(videoActor.getChunk(video_id_unpacked, i));
   }
   const nestedBytes = (await Promise.all(chunksAsPromises))
     .map((val: Array<Chunk>) => {
@@ -78,7 +77,7 @@ async function loadRandomAd(): Promise<string> {
   }
 
   const adActor = Actor.createActor(
-      adCanister_idl,
+      videoCanister_idl,
       {
         agent: agent,
         canisterId: ad_principal,
@@ -200,7 +199,7 @@ async function uploadVideo(
   const store_info = returnVideo.storage_type as SimpleDHT_Storage_Type;
 
   const bucketActor = Actor.createActor(
-      bucket_idl
+      videoCanister_idl
   , {
     agent: agent,
     canisterId: store_info.simpleDistMap[1][0],

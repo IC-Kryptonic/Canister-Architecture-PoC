@@ -27,7 +27,7 @@
       "type": "custom"
     },
     "video_assets": {
-      "dependencies": ["video_backend", "ad_manager"],
+      "dependencies": ["video_backend", "ad_manager", "profile_backend"],
       "frontend": {
         "entrypoint": "src/video_assets/src/index.html"
       },
