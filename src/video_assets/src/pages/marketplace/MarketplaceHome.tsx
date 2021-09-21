@@ -10,28 +10,12 @@ import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import MarketplaceCardRow, { RowType } from '../../components/marketplace/MarketplaceCardRow';
 import { VideoToken } from '../../interfaces/token_interface';
-import { getAllTokens } from '../../services/token_services';
-import { AuthContext } from '../../contexts/AuthContext';
+import { TokenContext } from '../../contexts/TokenContext';
 
 const MarketplaceHome = () => {
-  const { identity } = useContext(AuthContext);
+  const { videoTokens } = useContext(TokenContext);
   const classes = marketplaceHomeStyles();
 
-  const [videoTokens, setVideoTokens] = useState<Array<VideoToken>>([]);
-
-  useEffect(() => {
-    async function queryTokens() {
-      try {
-        const result = await getAllTokens(identity);
-        setVideoTokens(result);
-      } catch (error) {
-        console.error('error fetching video tokens');
-      }
-    }
-    queryTokens();
-  }, []);
-
-  getAllTokens(identity);
   return (
     <>
       <div className={classes.background} />

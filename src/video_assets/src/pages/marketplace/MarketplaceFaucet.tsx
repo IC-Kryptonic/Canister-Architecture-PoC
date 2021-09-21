@@ -4,9 +4,11 @@ import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import { AuthContext } from '../../contexts/AuthContext';
 import { receiveICPForIdentity } from '../../services/token_services';
+import { TokenContext } from '../../contexts/TokenContext';
 
 const MarketplaceFaucet = () => {
   const { isAuthenticated, identity } = useContext(AuthContext);
+  const { setBalanceTrigger } = useContext(TokenContext);
 
   const [amount, setAmount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -15,7 +17,7 @@ const MarketplaceFaucet = () => {
     setLoading(true);
     try {
       await receiveICPForIdentity(amount, identity);
-      // TODO trigger balance reload
+      setBalanceTrigger(true);
     } catch (error) {
       console.error('Error receiving kICP from faucet', error);
     } finally {

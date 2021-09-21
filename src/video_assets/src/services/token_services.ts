@@ -54,7 +54,6 @@ export const getBalanceForIdentity = async (identity: Identity): Promise<Number>
     token: '',
     user: { principal },
   })) as BigIntResult;
-  console.log(result);
   if ('ok' in result) return Number(result.ok);
   throw new Error(JSON.stringify(result));
 };

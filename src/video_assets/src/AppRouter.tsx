@@ -4,6 +4,7 @@ import History from './components/History';
 import ProtectedRoute from './components/ProtectedRoute';
 import MarketplaceProtectedRoute from './components/marketplace/MarketplaceProtectedRoute';
 import { AuthContextState } from './contexts/AuthContextState';
+import { TokenContextState } from './contexts/TokenContextState';
 import Auth from './pages/Auth';
 import Feed from './pages/Feed';
 import Upload from './pages/Upload';
@@ -18,37 +19,39 @@ import MarketplaceAuth from './pages/marketplace/MarketplaceAuth';
 export const AppRouter = () => {
   return (
     <AuthContextState>
-      <Router history={History}>
-        <Switch>
-          <ProtectedRoute exact path="/upload" component={Upload} />
-          <ProtectedRoute exact path="/feed" component={Feed} />
-          <ProtectedRoute exact path="/video/:id" component={WatchVideo} />
-          <ProtectedRoute exact path="/profile/:id" component={ProfilePage} />
-          <ProtectedRoute exact path="/profile" component={ProfilePage} />
-          <MarketplaceProtectedRoute
-            exact
-            path="/marketplace/markets"
-            component={MarketplaceHome}
-          />
-          <MarketplaceProtectedRoute
-            exact
-            path="/marketplace/dashboard"
-            component={MarketplaceDashboard}
-          />
-          <MarketplaceProtectedRoute
-            exact
-            path="/marketplace/faucet"
-            component={MarketplaceFaucet}
-          />
-          <MarketplaceProtectedRoute
-            path={['/marketplace/sell/:id', '/marketplace/sell']}
-            component={MarketplaceSell}
-          />
-          <Route exact path="/marketplace/login" component={MarketplaceAuth} />
-          <Route exact path="/login" component={Auth} />
-          <Redirect from="/" to="/feed" />
-        </Switch>
-      </Router>
+      <TokenContextState>
+        <Router history={History}>
+          <Switch>
+            <ProtectedRoute exact path="/upload" component={Upload} />
+            <ProtectedRoute exact path="/feed" component={Feed} />
+            <ProtectedRoute exact path="/video/:id" component={WatchVideo} />
+            <ProtectedRoute exact path="/profile/:id" component={ProfilePage} />
+            <ProtectedRoute exact path="/profile" component={ProfilePage} />
+            <MarketplaceProtectedRoute
+              exact
+              path="/marketplace/markets"
+              component={MarketplaceHome}
+            />
+            <MarketplaceProtectedRoute
+              exact
+              path="/marketplace/dashboard"
+              component={MarketplaceDashboard}
+            />
+            <MarketplaceProtectedRoute
+              exact
+              path="/marketplace/faucet"
+              component={MarketplaceFaucet}
+            />
+            <MarketplaceProtectedRoute
+              path={['/marketplace/sell/:id', '/marketplace/sell']}
+              component={MarketplaceSell}
+            />
+            <Route exact path="/marketplace/login" component={MarketplaceAuth} />
+            <Route exact path="/login" component={Auth} />
+            <Redirect from="/" to="/feed" />
+          </Switch>
+        </Router>
+      </TokenContextState>
     </AuthContextState>
   );
 };

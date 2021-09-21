@@ -1,16 +1,13 @@
-import { Box, Button, Card, Divider, Grid, Paper, Typography } from '@material-ui/core';
-import React from 'react';
+import { Card, Grid } from '@material-ui/core';
+import React, { useContext } from 'react';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import PublicIcon from '@material-ui/icons/Public';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCard';
 import { marketplaceDashboardStyles } from '../../styles/marketplace/marketplace_dashboard_styles';
 import { VideoToken } from '../../interfaces/token_interface';
-import { mockVideoTokens } from '../../mocks/marketplace/videos';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import MarketplaceChart from '../../components/marketplace/MarketplaceChart';
-import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import { PieChart } from 'react-minimal-pie-chart';
 import { marketplaceStatStyles } from '../../styles/marketplace/marketplace_stat_styles';
 import {
@@ -21,10 +18,14 @@ import {
   WhatsappIcon,
   RedditIcon,
 } from 'react-share';
+import { TokenContext } from '../../contexts/TokenContext';
 
 const MarketplaceDashboard = () => {
+  const { videoTokensForCreator } = useContext(TokenContext);
+
   const classes = marketplaceDashboardStyles();
   const statClasses = marketplaceStatStyles();
+
   return (
     <>
       <div className={classes.background} />
@@ -73,9 +74,9 @@ const MarketplaceDashboard = () => {
           Your video shares
         </Grid>
         <Grid container justify="space-around" spacing={2} className={classes.cards}>
-          {mockVideoTokens.map((videoToken: VideoToken) => {
+          {videoTokensForCreator.map((videoToken: VideoToken) => {
             return (
-              <>
+              <React.Fragment key={videoToken.canisterId}>
                 <Grid item xs={8}>
                   <Card style={{ marginBottom: 20, height: 300, width: '100%' }}>
                     <Grid container>
@@ -132,7 +133,7 @@ const MarketplaceDashboard = () => {
                 <Grid item xs={3}>
                   <MarketplaceChart width={350} height={300} />
                 </Grid>
-              </>
+              </React.Fragment>
             );
           })}
         </Grid>
