@@ -1,12 +1,11 @@
-import { Button, Grid, TextField, Paper } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
-import { AuthContext } from '../../contexts/AuthContext';
-import { mockVideoTokens } from '../../mocks/marketplace/videos';
 import { VideoToken } from '../../interfaces/token_interface';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
+import { TokenContext } from '../../contexts/TokenContext';
 
 interface SelectOption {
   value: string;
@@ -27,11 +26,11 @@ function findId(id: string | null, tokens: Array<VideoToken>): SelectOption | nu
 }
 
 const MarketplaceFaucet = () => {
-  const { identity } = useContext(AuthContext);
+  const { videoTokensForCreator } = useContext(TokenContext);
   let { id } = useParams<SellParams>();
 
   const [selectedToken, setSelectedToken] = useState<SelectOption | null>(
-    findId(id, mockVideoTokens)
+    findId(id, videoTokensForCreator)
   );
   const [selectedAmount, setSelectedAmount] = useState<SelectOption | null>(null);
   const [price, setPrice] = useState<number | null>(null);
@@ -40,18 +39,18 @@ const MarketplaceFaucet = () => {
 
   useEffect(() => {
     let options: Array<SelectOption> = [];
-    for (let videoToken of mockVideoTokens) {
+    for (let videoToken of videoTokensForCreator) {
       options.push({
         label: videoToken.name,
         value: videoToken.canisterId,
       });
     }
     setTokenOptions(options);
-  }, []);
+  }, [videoTokensForCreator]);
 
   useEffect(() => {
-    if (!selectedToken) return;
-    let token = mockVideoTokens.find(
+    if (!selectedToken || videoTokensForCreator.length < 1) return;
+    let token = videoTokensForCreator.find(
       (element: VideoToken) => element.canisterId === selectedToken.value
     );
 

@@ -1,4 +1,4 @@
-import { Card, Grid } from '@material-ui/core';
+import { Button, Card, Grid } from '@material-ui/core';
 import React, { useContext } from 'react';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -10,15 +10,8 @@ import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import MarketplaceChart from '../../components/marketplace/MarketplaceChart';
 import { PieChart } from 'react-minimal-pie-chart';
 import { marketplaceStatStyles } from '../../styles/marketplace/marketplace_stat_styles';
-import {
-  TwitterShareButton,
-  WhatsappShareButton,
-  RedditShareButton,
-  TwitterIcon,
-  WhatsappIcon,
-  RedditIcon,
-} from 'react-share';
 import { TokenContext } from '../../contexts/TokenContext';
+import history from '../../components/History';
 
 const MarketplaceDashboard = () => {
   const { videoTokensForCreator } = useContext(TokenContext);
@@ -110,21 +103,18 @@ const MarketplaceDashboard = () => {
                           {`${videoToken.ownedShares || '...'} / ${videoToken.supply}`}
                         </Grid>
                         <Grid item xs={12} className={classes.factTitle}>
-                          Show your friends:
+                          Create an offer:
                         </Grid>
-                        <Grid container item xs={12} justify="flex-start" style={{ padding: 15 }}>
-                          <TwitterShareButton
-                            url={'https://twitter.com'}
-                            hashtags={['hashtag1', 'hashtag2']}
+                        <Grid item xs={12} className={classes.factValue}>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() =>
+                              history.push(`/marketplace/sell/${videoToken.canisterId}`)
+                            }
                           >
-                            <TwitterIcon size={32} round />
-                          </TwitterShareButton>
-                          <WhatsappShareButton url={'https://whatsapp.com'}>
-                            <WhatsappIcon size={32} round />
-                          </WhatsappShareButton>
-                          <RedditShareButton url={'https://reddit.com'}>
-                            <RedditIcon size={32} round />
-                          </RedditShareButton>
+                            Sell
+                          </Button>
                         </Grid>
                       </Grid>
                     </Grid>

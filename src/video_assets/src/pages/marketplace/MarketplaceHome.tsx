@@ -1,5 +1,5 @@
 import { Grid } from '@material-ui/core';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -8,7 +8,7 @@ import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCard';
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
-import MarketplaceCardRow, { RowType } from '../../components/marketplace/MarketplaceCardRow';
+import MarketplaceCardRow from '../../components/marketplace/MarketplaceCardRow';
 import { VideoToken } from '../../interfaces/token_interface';
 import { TokenContext } from '../../contexts/TokenContext';
 
@@ -76,13 +76,7 @@ const MarketplaceHome = () => {
         {/* table content */}
         <Grid container className={classes.tableContent}>
           {videoTokens.map((videoToken: VideoToken) => {
-            return (
-              <MarketplaceCardRow
-                videoToken={videoToken}
-                rowType={RowType.MARKETS}
-                key={videoToken.canisterId}
-              />
-            );
+            return <MarketplaceCardRow videoToken={videoToken} key={videoToken.canisterId} />;
           })}
         </Grid>
       </Grid>

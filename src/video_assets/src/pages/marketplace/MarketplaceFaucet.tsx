@@ -33,7 +33,7 @@ const MarketplaceFaucet = () => {
     <>
       <MarketplaceHeader />
       <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
-        Kryptonice ICP (kICP) Faucet
+        Kryptonic ICP (kICP) Faucet
       </Grid>
       <Grid container justify="center" style={{ marginTop: 30, fontSize: 22 }}>
         <Grid container spacing={2} justify="center" alignItems="center">

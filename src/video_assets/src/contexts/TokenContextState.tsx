@@ -59,7 +59,6 @@ const TokenContextState = (props: TokenContextStateProps) => {
 
   useEffect(() => {
     async function queryVideoBalances() {
-      setIsLoading(true);
       let newTokensForCreator = [];
       for (let token of videoTokensForCreator) {
         try {
@@ -71,7 +70,6 @@ const TokenContextState = (props: TokenContextStateProps) => {
           newTokensForCreator.push(token);
         }
       }
-      setIsLoading(false);
       // update video tokens with share balances
       setVideoTokensForCreator(newTokensForCreator);
     }
