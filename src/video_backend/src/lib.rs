@@ -52,21 +52,25 @@ pub async fn get_random_feed(num: usize) -> Feed{
 pub async fn get_user_feed(num: usize, user: Principal) -> Feed{
     let profile = get_profile(user).await;
 
-    let videos = storage::get::<VideoCache>();
+    return if let profile = Some(profile) {
+        let videos = storage::get::<VideoCache>();
 
-    let mut feed = Vec::with_capacity(num);
+        let mut feed = Vec::with_capacity(num);
 
-    for (video_princ, _) in videos{
-        if feed.len() >= num {
-            break;
+        for (video_princ, _) in videos {
+            if feed.len() >= num {
+                break;
+            }
+
+            if !profile.viewed.contains(video_princ) {
+                feed.push(video_princ.clone())
+            }
         }
 
-        if !profile.viewed.contains(video_princ){
-            feed.push(video_princ.clone())
-        }
-    }
-
-    return feed;
+        feed
+    } else {
+        get_random_feed(num)
+    };
 }
 
 #[query]
@@ -151,10 +155,10 @@ async fn install_video_canister(canister: &Principal, video_info: &VideoInfo){
     }
 }
 
-async fn get_profile(princ: Principal) -> Profile{
+async fn get_profile(princ: Principal) -> Option<Profile>{
     let profile_princ = Principal::from_text(PROFILE_PRINCIPAL.clone()).expect("Couldn't deduce Principal from profile canister id text");
 
-    let response: Result<(Profile,), _> = call::call( profile_princ, "get_profile", (princ,)).await;
+    let response: Result<(Option<Profile>,), _> = call::call( profile_princ, "get_profile", (princ,)).await;
 
     match response{
         Ok((profile_res,)) => return profile_res,
