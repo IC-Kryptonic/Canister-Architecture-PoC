@@ -20,7 +20,7 @@
       "type": "custom"
     },
     "ad_manager": {
-      "dependencies": ["profile_backend", "video_backend"],
+      "dependencies": ["profile_backend"],
       "build": "cargo build --target wasm32-unknown-unknown --package  ad_manager --release",
       "candid": "src/ad_manager/ad_manager.did",
       "wasm": "target/wasm32-unknown-unknown/release/ad_manager.wasm",
