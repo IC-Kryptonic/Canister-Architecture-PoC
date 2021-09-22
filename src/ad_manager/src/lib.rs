@@ -47,14 +47,15 @@ pub async fn get_ad_principal_for_user(user: Principal) -> Option<Principal>{
         }
         get_random_ad_principal().await
     } else {
+        ic_cdk::api::print("No user profile found defaulting to random ad");
         get_random_ad_principal().await
     }
 }
 
 async fn get_profile(princ: Principal) -> Option<Profile>{
-    let profile_princ = Principal::from_text(PROFILE_PRINCIPAL.clone()).expect("Couldn't deduce Principal from profile canister id text");
+    let profile_canister = Principal::from_text(PROFILE_PRINCIPAL.clone()).expect("Couldn't deduce Principal from profile canister id text");
 
-    let response: Result<(Option<Profile>,), _> = call::call( profile_princ, "get_profile", (princ,)).await;
+    let response: Result<(Option<Profile>,), _> = call::call( profile_canister, "get_profile", (princ,)).await;
 
     match response{
         Ok((profile_res,)) => return profile_res,
