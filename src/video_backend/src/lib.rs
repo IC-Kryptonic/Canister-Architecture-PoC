@@ -52,7 +52,7 @@ pub async fn get_random_feed(num: usize) -> Feed{
 pub async fn get_user_feed(num: usize, user: Principal) -> Feed{
     let profile = get_profile(user).await;
 
-    return if let profile = Some(profile) {
+    return if let Some(profile) = profile {
         let videos = storage::get::<VideoCache>();
 
         let mut feed = Vec::with_capacity(num);
@@ -69,7 +69,7 @@ pub async fn get_user_feed(num: usize, user: Principal) -> Feed{
 
         feed
     } else {
-        get_random_feed(num)
+        get_random_feed(num).await
     };
 }
 
