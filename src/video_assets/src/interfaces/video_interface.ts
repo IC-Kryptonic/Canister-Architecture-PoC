@@ -1,25 +1,26 @@
 import {Principal} from "@dfinity/principal";
-import {Chunk_Num} from "../../../../.dfx/local/canisters/backend/backend.did";
 
 export interface Post {
-  chunk_count: number;
+  owner: Principal;
+  creator: Principal;
+  name: string;
   description: string;
   keywords: Array<string>;
+  thumbnail: string;
+  views: number;
+  likes: number;
+  storageType: CanisterStorage;
+}
+
+export interface CreatePost {
   name: string;
-  owner: Principal;
-  video_id: string;
-  storage_type: InCanister_Storage_Type | SimpleDHT_Storage_Type;
-};
+  description: string;
+  keywords: Array<string>;
+  thumbnail: File;
+  video: File;
+}
 
-export interface InCanister_Storage_Type {
-  inCanister: number;
-};
-
-export interface SimpleDHT_Storage_Type { 'simpleDistMap' : [Chunk_Num, [] | [Principal]] }
-
-
-export interface Video_Data {
-  inCanister: {
-    data: Array<number>;
-  };
-};
+export interface CanisterStorage{
+  chunkCount: number;
+  canister: Principal;
+}
