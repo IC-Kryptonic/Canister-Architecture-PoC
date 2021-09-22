@@ -98,11 +98,13 @@ mod ad_manager_tests {
 
         //Setup
         let identity = util::generate_random_identity();
-        let my_principal = identity.sender().expect("Could not deduce principal from identity");
         let ad_actor = Actor::from_name("ad_manager", identity).await;
+
         let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
         let video_actor = Actor::from_name("video_backend", identity).await;
+
         let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let my_principal = identity.sender().expect("Could not deduce principal from identity");
         let profile_actor = Actor::from_name("profile_backend", identity).await;
 
         //create ad
