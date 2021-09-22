@@ -13,3 +13,4 @@ declare module '@material-ui/icons*';
 declare module 'dfx-generated/video_backend';
 declare module 'dfx-generated/video_canister';
 declare module 'dfx-generated/ad_manager';
+declare module 'dfx-generated/profile_backend';

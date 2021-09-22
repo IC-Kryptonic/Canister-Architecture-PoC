@@ -7,8 +7,8 @@ export interface Post {
   description: string;
   keywords: Array<string>;
   thumbnail: string;
-  views: number;
-  likes: number;
+  views: bigint;
+  likes: bigint;
   storageType: CanisterStorage;
 }
 
@@ -21,6 +21,6 @@ export interface CreatePost {
 }
 
 export interface CanisterStorage{
-  chunkCount: number;
+  chunkCount: bigint;
   canister: Principal;
 }

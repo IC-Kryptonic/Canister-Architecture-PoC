@@ -77,8 +77,8 @@ async function loadVideo(videoInfo: Post): Promise<string> {
 }
 
 async function uploadVideo(
-    post: CreatePost
-) {
+    post: CreatePost, save: Boolean
+): Promise<Principal> {
 
   await agent.fetchRootKey();
 
@@ -108,7 +108,7 @@ async function uploadVideo(
   }
 
   const returnInfo = (await videoBackend.create_video(
-      videoInfo
+      videoInfo, save
   )) as VideoInfo;
 
   let video_principal = (returnInfo.storage_type as { 'canister' : [ChunkNum, [] | [Principal]] }).canister[1][0];
@@ -134,6 +134,8 @@ async function uploadVideo(
   console.debug('starting to upload chunks', `timestamp: ${Date.now()}`);
   await Promise.all(putChunkPromises);
   console.debug('upload finished', `timestamp: ${Date.now()}`);
+
+  return video_principal;
 }
 
 async function _loadVideoPosts(principals: Array<Principal>): Promise<Array<Post>>{
