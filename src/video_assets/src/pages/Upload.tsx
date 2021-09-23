@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Grid, TextField, Button, CircularProgress } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { Grid, TextField, Button, CircularProgress, Typography, LinearProgress, Box } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
 import Header from '../components/Header';
 import { uploadStyles } from '../styles/upload_styles';
 import { uploadVideo } from '../services/video_backend';
 import { ToastContainer, toast } from 'react-toastify';
+import Layout from '../components/shared/Layout';
 
 const maxFileSize = 30000000;
 const filesLimit = 1;
@@ -16,16 +17,26 @@ const Upload = () => {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [uploading, setUploading] = useState<boolean>(false);
+  const [progress, setProgress] = useState(0);
 
   const canSubmit = () => {
     return video !== undefined && title !== '' && description !== '';
   };
 
+  // Sets video progress
+  const setProgressBarValue = (current: number, total: number) => {
+    let progress = current / total * 100;
+    if (progress > 100) {
+      progress = 100;
+    }
+    setProgress(progress);
+  };
+
   const executeUpload = async () => {
     setUploading(true);
     try {
-      await uploadVideo(title, description, video);
-      toast.success('Video erfolgreich hochgeladen!', {
+      await uploadVideo(title, description, video, setProgressBarValue);
+      toast.success('Video sucessfuly uploaded!', {
         position: 'bottom-left',
         autoClose: 5000,
         hideProgressBar: true,
@@ -40,9 +51,26 @@ const Upload = () => {
     }
   };
 
+  let preview;
+  if (video) {
+    preview = (
+      <>
+        <Typography align="left" variant="subtitle1">
+          <b>Preview</b>
+        </Typography>
+        <div className={classes.dropzone}>
+          <video controls className={classes.progress}>
+            <source src={URL.createObjectURL(video)} type="video/mp4" />
+          </video>
+        </div>
+      </>)
+  } else {
+    preview = <></>
+  }
+
+
   return (
-    <>
-      <Header />
+    <Layout title={"Upload"}>
       <ToastContainer
         position="bottom-left"
         autoClose={5000}
@@ -54,91 +82,117 @@ const Upload = () => {
         draggable
         pauseOnHover
       />
-      <Grid container justify="center">
-        <Grid
-          container
-          justify="center"
-          className={classes.uploadContainer}
-          spacing={3}
-        >
-          <Grid container item justify="center">
-            <span className={classes.headerText}>
-              <strong>Video hochladen</strong>
-            </span>
-          </Grid>
-          <Grid
-            container
-            item
-            justify="center"
-            alignItems="center"
-            spacing={1}
-            className={classes.uploadArea}
-          >
-            <Grid
-              container
-              item
-              justify="center"
-              className={classes.dropzoneContainer}
-              xs={4}
-            >
-              <div className={classes.dropzone}>
-                <DropzoneArea
-                  onChange={(videos) => setVideo(videos[0])}
-                  maxFileSize={maxFileSize}
-                  filesLimit={filesLimit}
-                  acceptedFiles={acceptedFiles}
-                  //@ts-ignore (fault of the package afaik)
-                  fileObjects={[video]}
-                />
-              </div>
-            </Grid>
-            <Grid container item xs={4} justify="center">
-              <Grid container spacing={2} className={classes.form}>
-                <Grid container item>
-                  Titel:
-                </Grid>
-                <Grid container item>
-                  <TextField
-                    variant="outlined"
-                    value={title}
-                    onChange={(changedTitle) => {
-                      setTitle(changedTitle.target.value);
-                    }}
-                  />
-                </Grid>
-                <Grid container item>
-                  Beschreibung:
-                </Grid>
-                <Grid container item>
-                  <TextField
-                    variant="outlined"
-                    value={description}
-                    onChange={(changedDescription) => {
-                      setDescription(changedDescription.target.value);
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid container item justify="center">
-            <Button
-              className={classes.uploadButton}
-              disabled={uploading || !canSubmit()}
-              variant="contained"
-              color="secondary"
-              onClick={executeUpload}
-            >
-              {uploading ? (
-                <CircularProgress className={classes.progress} />
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+        spacing={4}
+      >
+        <Grid item>
+          <Typography variant="h4">
+            <strong>Create a new NFT</strong>
+          </Typography>
+        </Grid>
+        <Grid item className={classes.gridItem}>
+          <Typography align="left" variant="subtitle1">
+            <b>Upload a video</b>
+          </Typography>
+          <div className={classes.dropzone}>
+            <DropzoneArea
+              onChange={(videos) => setVideo(videos[0])}
+              maxFileSize={maxFileSize}
+              filesLimit={filesLimit}
+              acceptedFiles={acceptedFiles}
+              //@ts-ignore (fault of the package afaik)
+              fileObjects={[video]}
+            />
+          </div>
+        </Grid>
+
+        <Grid item className={classes.gridItem}>
+          {preview}
+        </Grid>
+
+        <Grid item className={classes.gridItem}>
+          <Typography align="left" variant="subtitle1">
+            <b>Video description</b>
+          </Typography>
+          <TextField
+            label="Title"
+            variant="outlined"
+            value={title}
+            placeholder={"Awesome title..."}
+            fullWidth
+            onChange={(changedTitle) => {
+              setTitle(changedTitle.target.value);
+            }}
+            className={classes.textBox}
+          />
+          <TextField
+            label="Description"
+            variant="outlined"
+            value={description}
+            fullWidth
+            placeholder={"Insightful description..."}
+            multiline
+            rows={4}
+            onChange={(changedDescription) => {
+              setDescription(changedDescription.target.value);
+            }}
+          />
+        </Grid>
+
+        <Grid item className={classes.gridItem}>
+          <Typography align="left" variant="subtitle1">
+            <b>Marketplace settings</b>
+          </Typography>
+
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <TextField
+              id="standard-number"
+              label="Number of shares"
+              type="number"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            // onChange={handleBidChange}
+            />
+
+            <TextField
+              id="standard-number"
+              label="Price per share"
+              type="number"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            // onChange={handleBidChange}
+            />
+          </Box>
+
+        </Grid>
+
+        <Grid item className={classes.gridItem}>
+          <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+            {
+              !uploading ? (
+                <Button
+                  disabled={uploading || !canSubmit()}
+                  variant="contained"
+                  color="secondary"
+                  onClick={executeUpload}
+                >Upload</Button>
               ) : (
-                'Hochladen'
-              )}
-            </Button>
-          </Grid>
+                <>
+                  <Typography>Progress {Math.floor(progress)}%</Typography>
+                  <LinearProgress variant="determinate" value={progress} className={classes.progress} />
+                </>
+              )
+            }
+          </Box>
         </Grid>
       </Grid>
-    </>
+    </Layout>
   );
 };
 

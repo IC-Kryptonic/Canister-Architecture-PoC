@@ -42,7 +42,7 @@ interface NextVideoPayload {
 async function getNextVideo(videoNumber: number): Promise<NextVideoPayload> {
   let posts = await videoBackend.getDefaultFeed(10) as Array<Post>;
   let number = Math.abs(videoNumber) % posts.length;
-  console.log(number);
+  //console.log(number);
   return {
     post: posts[number],
     id: number
@@ -144,7 +144,8 @@ function _processAndUploadChunkToBucket(
 async function uploadVideo(
   videoName: string,
   videoDescription: string,
-  video: File
+  video: File,
+  progressCallback: (current: number, total: number) => void
 ) {
   await agent.fetchRootKey();
   console.debug('starting upload');
@@ -190,6 +191,7 @@ async function uploadVideo(
     byteStart < video.size;
     byteStart += maxChunkSize, chunk++
   ) {
+    progressCallback(chunk + 1, Number(chunkCount));
     putChunkPromises.push(
       _processAndUploadChunkToBucket(videoBuffer, byteStart, video.size, returnVideo.video_id[0], chunk, bucketActor)
     );

@@ -23,12 +23,16 @@ const uploadStyles = makeStyles({
   headerText: {
     fontSize: 40,
   },
-  uploadButton: {
-    marginTop: 50,
-  },
   progress: {
-    maxHeight: '100%',
+    maxWidth: "500px",
+    width: '100%'
   },
+  gridItem: {
+    width: "100%"
+  },
+  textBox: {
+    marginBottom: "10px"
+  }
 });
 
 export { uploadStyles };

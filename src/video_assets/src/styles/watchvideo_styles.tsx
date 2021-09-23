@@ -39,6 +39,7 @@ const watchVideoStyles = makeStyles({
         minWidth: "200px"
     },
     titleBox: {
+        flexGrow: 1,
         padding: "10px"
     }
 });
