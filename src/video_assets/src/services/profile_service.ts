@@ -5,16 +5,14 @@ import {
     canisterId as backendVideoId,
 } from 'dfx-generated/backend';
 import { Profile, ProfileUpdate } from '../interfaces/profile_interface';
+import canisterIds from "../../../../.dfx/local/canister_ids.json"
 
 import { getAuthenticatedIdentity } from './auth_services';
 
 const agent = new HttpAgent();
-
-agent.fetchRootKey();
-
 const videoBackend = Actor.createActor(video_idl, {
-    agent,
-    canisterId: backendVideoId,
+  agent,
+  canisterId: Principal.fromText(canisterIds.backend.local),
 });
 
 async function loadProfile(): Promise<Profile> {
