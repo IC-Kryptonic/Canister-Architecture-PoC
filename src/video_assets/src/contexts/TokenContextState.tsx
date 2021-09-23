@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { TokenContext } from './TokenContext';
 import { AuthContext } from './AuthContext';
-import { VideoToken } from '../interfaces/token_interface';
+import { OffersByToken, VideoToken } from '../interfaces/token_interface';
 import {
+  getAllOffersByToken,
   getAllTokens,
   getBalanceForIdentity,
   getShareBalanceForIdentity,
@@ -17,7 +18,7 @@ const TokenContextState = (props: TokenContextStateProps) => {
   const { identity } = useContext(AuthContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [videoTokens, setVideoTokens] = useState<Array<VideoToken>>([]);
+  const [tokenOffers, setTokenOffers] = useState<Array<OffersByToken>>([]);
   const [videoTokensForCreator, setVideoTokensForCreator] = useState<Array<VideoToken>>([]);
   const [nativeTokenBalance, setNativeTokenBalance] = useState<null | Number>(null);
   const [balanceTrigger, setBalanceTrigger] = useState<boolean>(true);
@@ -38,11 +39,12 @@ const TokenContextState = (props: TokenContextStateProps) => {
   }, [identity, balanceTrigger]);
 
   useEffect(() => {
-    async function queryTokens() {
+    async function queryOffersAndTokens() {
+      console.log('querying offers and tokens');
       setIsLoading(true);
       try {
-        const videoTokensResult = await getAllTokens(identity);
-        setVideoTokens(videoTokensResult);
+        const tokenOffersResult = await getAllOffersByToken(identity);
+        setTokenOffers(tokenOffersResult);
         const videoTokensForCreatorResult = await getTokensForCreator(identity);
         setVideoTokensForCreator(videoTokensForCreatorResult);
       } catch (error) {
@@ -53,7 +55,7 @@ const TokenContextState = (props: TokenContextStateProps) => {
     }
 
     if (identity) {
-      queryTokens();
+      queryOffersAndTokens();
     }
   }, [identity]);
 
@@ -85,8 +87,8 @@ const TokenContextState = (props: TokenContextStateProps) => {
         setBalanceTrigger,
         isLoading,
         setIsLoading,
-        videoTokens,
-        setVideoTokens,
+        tokenOffers,
+        setTokenOffers,
         videoTokensForCreator,
         setVideoTokensForCreator,
         nativeTokenBalance,

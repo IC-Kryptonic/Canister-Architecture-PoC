@@ -6,6 +6,8 @@ import { VideoToken } from '../../interfaces/token_interface';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
 import { TokenContext } from '../../contexts/TokenContext';
+import { createShareOffer } from '../../services/token_services';
+import { AuthContext } from '../../contexts/AuthContext';
 
 interface SelectOption {
   value: string;
@@ -27,6 +29,7 @@ function findId(id: string | null, tokens: Array<VideoToken>): SelectOption | nu
 
 const MarketplaceFaucet = () => {
   const { videoTokensForCreator } = useContext(TokenContext);
+  const { identity } = useContext(AuthContext);
   let { id } = useParams<SellParams>();
 
   const [selectedToken, setSelectedToken] = useState<SelectOption | null>(
@@ -86,6 +89,20 @@ const MarketplaceFaucet = () => {
 
   const buttonEnabled = () => {
     return selectedToken && selectedAmount && price > 0;
+  };
+
+  const createOffer = async () => {
+    try {
+      await createShareOffer(
+        identity,
+        selectedToken.value,
+        selectedToken.label,
+        parseInt(selectedAmount.value),
+        price
+      );
+    } catch (error) {
+      console.error('error creating offer on dex', error);
+    }
   };
 
   return (
@@ -157,6 +174,7 @@ const MarketplaceFaucet = () => {
                 color="primary"
                 style={{ width: 150 }}
                 disabled={!buttonEnabled()}
+                onClick={() => createOffer()}
               >
                 Create offer
               </Button>

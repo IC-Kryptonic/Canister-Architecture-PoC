@@ -1,10 +1,10 @@
 import { Paper, Grid, Button } from '@material-ui/core';
 import React from 'react';
-import { VideoToken } from '../../interfaces/token_interface';
+import { OffersByToken } from '../../interfaces/token_interface';
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
 
 interface MarketplaceCardProps {
-  videoToken: VideoToken;
+  offersByToken: OffersByToken;
 }
 
 const MarketplaceCardRow = (props: MarketplaceCardProps) => {
@@ -16,27 +16,27 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
         <Grid item className={classes.videoCell}>
           <Grid container alignItems="center">
             <Grid item xs={6}>
-              <img src={props.videoToken.thumbnail} alt="thumbnail" className={classes.thumbnail} />
+              <img src="" alt="thumbnail" className={classes.thumbnail} />
             </Grid>
             <Grid item xs={6}>
-              {props.videoToken.name}
+              {props.offersByToken.tokenName}
             </Grid>
           </Grid>
         </Grid>
         <Grid item className={classes.tableCell}>
-          {props.videoToken.marketCap}
+          {'$ 253,343'}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {props.videoToken.sharePrice}
+          {props.offersByToken.minPrice + ' - ' + props.offersByToken.maxPrice}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {props.videoToken.viewsLastWeek}
+          {`${props.offersByToken.offeredAmount}`}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {props.videoToken.revenueLastWeek}
+          {'50,000'}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {props.videoToken.priceChangeLastWeek}
+          {'$ 7043'}
         </Grid>
         <Grid item className={classes.buttonCell}>
           <Grid container justify="center" spacing={1}>

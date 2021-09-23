@@ -33,14 +33,18 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
   // native token actor
   let nativeToken = actor(_nativeTokenCanisterId) : TokenActor;
 
-  public shared(msg) func createOffer(tokenId: Text, pricePerShare: Nat, shareAmount: Nat): async Result.Result<(), ExchangeError> {
+  // TODO change back to msg.caller instead of caller as argument
+  public shared(msg) func createOffer(
+    caller: Principal, tokenId: Text, tokenName: Text, pricePerShare: Nat, shareAmount: Nat
+  ): async Result.Result<(), ExchangeError> {
     let videoTokenActor = actor(tokenId) : TokenActor;
     let canisterPrincipal = await _getThisPrincipal();
     
     // create offer object
     let newOffer: Exchange = {
-      from = msg.caller;
+      from = caller;
       token = videoTokenActor;
+      tokenName = tokenName;
       pricePerShare = pricePerShare;
       shareAmount = shareAmount;
       offerTimeStamp = Time.now();
@@ -51,7 +55,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
     // check if user owns enough tokens and has allowed the dex canister to trade them 
     var curAllowanceBalance : AllowanceBalance = {allowance = 0; balance = 0;};
     switch(await Validity.checkAllowanceAndBalance(
-      videoTokenActor, msg.caller, canisterPrincipal, shareAmount
+      videoTokenActor, caller, canisterPrincipal, shareAmount
     )) {
       case (#ok(allowanceBalance)) {
         curAllowanceBalance := allowanceBalance;
@@ -61,12 +65,12 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
       };
     };
 
-    var existingOffers = offerMap.get(msg.caller);
+    var existingOffers = offerMap.get(caller);
     switch(existingOffers) {
       case null {
         let newMap = HashMap.HashMap<Nat, Exchange>(0, ExchangeMaps.isEqNat, ExchangeMaps.natToHash);
         newMap.put(0, newOffer);
-        offerMap.put(msg.caller, newMap);
+        offerMap.put(caller, newMap);
       };
       case (?offersForPrincipal) {
         // check that new offer is valid considering existing offers
@@ -74,7 +78,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
         for (offer in offersForPrincipal.entries()) {
           if(
             offer.1.token == videoTokenActor and 
-            offer.1.from == msg.caller
+            offer.1.from == caller
           ) {
             curOfferedAmount += offer.1.shareAmount;
           };
@@ -86,7 +90,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
           return #err(#InsufficientAllowance(curAllowanceBalance.allowance));
         };
         offersForPrincipal.put(offersForPrincipal.size(), newOffer);
-        offerMap.put(msg.caller, offersForPrincipal);
+        offerMap.put(caller, offersForPrincipal);
       };
     };
     return #ok();
@@ -150,6 +154,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
                 let newExchange = {
                   from = validExchange.from;
                   token = validExchange.token;
+                  tokenName = validExchange.tokenName;
                   pricePerShare = validExchange.pricePerShare;
                   shareAmount = validExchange.shareAmount;
                   offerTimeStamp = validExchange.offerTimeStamp;
@@ -177,14 +182,14 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
     return #ok();
   };
 
-  public shared(msg) func getOffersForUser(): async [Exchange] {
-    return await ExchangeMaps.getMapForUser(offerMap, msg.caller);
+  public shared(msg) func getOffersForUser(user: Principal): async [Exchange] {
+    return await ExchangeMaps.getMapForUser(offerMap, user);
   };
 
   public func getAllOffers() : async [Exchange] { return await ExchangeMaps.getAll(offerMap); };
 
-  public shared(msg) func getExchangesForUser(): async [Exchange] {
-    return await ExchangeMaps.getMapForUser(exchangeMap, msg.caller);
+  public shared(msg) func getExchangesForUser(user: Principal): async [Exchange] {
+    return await ExchangeMaps.getMapForUser(exchangeMap, user);
   };
 
   public func getAllExchanges() : async [Exchange] { return await ExchangeMaps.getAll(exchangeMap); };

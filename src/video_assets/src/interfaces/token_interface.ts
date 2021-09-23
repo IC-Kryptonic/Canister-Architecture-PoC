@@ -20,3 +20,20 @@ export interface VideoTokenResult {
   supply: BigInt;
   symbol: string;
 }
+
+export interface VideoTokenOffer {
+  from: string;
+  token: string;
+  tokenName: string;
+  pricePerShare: number;
+  shareAmount: number;
+  offerTimeStamp: string;
+}
+
+export interface OffersByToken {
+  tokenName: string;
+  minPrice: number;
+  maxPrice: number;
+  offeredAmount: number;
+  offers: Array<VideoTokenOffer>;
+}

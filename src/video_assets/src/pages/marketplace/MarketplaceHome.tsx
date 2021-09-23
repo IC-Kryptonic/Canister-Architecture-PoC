@@ -9,11 +9,11 @@ import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCar
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import MarketplaceCardRow from '../../components/marketplace/MarketplaceCardRow';
-import { VideoToken } from '../../interfaces/token_interface';
+import { OffersByToken, VideoToken } from '../../interfaces/token_interface';
 import { TokenContext } from '../../contexts/TokenContext';
 
 const MarketplaceHome = () => {
-  const { videoTokens } = useContext(TokenContext);
+  const { tokenOffers } = useContext(TokenContext);
   const classes = marketplaceHomeStyles();
 
   return (
@@ -59,10 +59,10 @@ const MarketplaceHome = () => {
               Market Cap.
             </Grid>
             <Grid item className={classes.tableCell}>
-              Share Price
+              Share Price [min - max]
             </Grid>
             <Grid item className={classes.tableCell}>
-              Views (last week)
+              Offered shares
             </Grid>
             <Grid item className={classes.tableCell}>
               Revenues (last week)
@@ -75,8 +75,10 @@ const MarketplaceHome = () => {
         </Grid>
         {/* table content */}
         <Grid container className={classes.tableContent}>
-          {videoTokens.map((videoToken: VideoToken) => {
-            return <MarketplaceCardRow videoToken={videoToken} key={videoToken.canisterId} />;
+          {tokenOffers.map((offersByToken: OffersByToken) => {
+            return (
+              <MarketplaceCardRow offersByToken={offersByToken} key={offersByToken.tokenName} />
+            );
           })}
         </Grid>
       </Grid>

@@ -6,11 +6,11 @@ import { TokenContextProperties } from '../interfaces/token_context_interfaces';
 export const TokenContext = createContext<TokenContextProperties>({
   isLoading: true,
   setIsLoading: () => {},
-  videoTokens: [],
-  setVideoTokens: () => {},
+  tokenOffers: [],
+  setTokenOffers: () => {},
   videoTokensForCreator: [],
   setVideoTokensForCreator: () => {},
   nativeTokenBalance: 0,
   setNativeTokenBalance: () => {},
-  setBalanceTrigger: () => {}
+  setBalanceTrigger: () => {},
 });

@@ -11,6 +11,7 @@ import HashMap "mo:base/HashMap";
 import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Iter "mo:base/Iter";
+import Nat "mo:base/Nat";
 
 //Get the path right
 import AID "./util/AccountIdentifier";
@@ -155,17 +156,18 @@ actor class native_token() {
       };
     };
   };
-  
-  public shared(msg) func approve(request: ApproveRequest) : async () {
-    let owner = AID.fromPrincipal(msg.caller, request.subaccount);
+
+  // TODO change back to msg.caller instead of caller as argument
+  public shared(msg) func approve(caller: Principal, spender: Principal, allowance: Nat) : async () {
+    let owner = AID.fromPrincipal(caller, null);
     switch (_allowances.get(owner)) {
       case (?owner_allowances) {
-        owner_allowances.put(request.spender, request.allowance);
+        owner_allowances.put(spender, allowance);
         _allowances.put(owner, owner_allowances);
       };
       case (_) {
         var temp = HashMap.HashMap<Principal, Balance>(1, Principal.equal, Principal.hash);
-        temp.put(request.spender, request.allowance);
+        temp.put(spender, allowance);
         _allowances.put(owner, temp);
       };
     };

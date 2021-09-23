@@ -41,6 +41,7 @@ module Types {
   public type Exchange = {
       from: Principal;
       token: TokenActor;
+      tokenName: Text;
       pricePerShare: Nat;
       shareAmount: Nat;
       offerTimeStamp: Time.Time;
