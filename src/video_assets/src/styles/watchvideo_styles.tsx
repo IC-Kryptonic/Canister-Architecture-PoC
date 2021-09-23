@@ -41,6 +41,9 @@ const watchVideoStyles = makeStyles({
     titleBox: {
         flexGrow: 1,
         padding: "10px"
+    },
+    fullWidth: {
+        width: "100%"
     }
 });
 

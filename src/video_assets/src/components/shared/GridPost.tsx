@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useGridPostStyles } from "../../styles/shared_styles";
 import { Typography, CircularProgress } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Post } from "../../interfaces/video_interface";
 import { loadVideo } from '../../services/video_backend';
 
@@ -9,7 +9,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import OnHoverVideoPlayer from "./OnHoverVideoPlayer";
 
 interface GridPostInterface {
-   post: Post
+    post: Post
 }
 
 function GridPost({ post }: GridPostInterface) {
@@ -58,7 +58,9 @@ function GridPost({ post }: GridPostInterface) {
             ) : (
                 <CircularProgress className={classes.loadingSpinner} />
             )}
-            <Typography>{post.name}</Typography>
+            <Link to={`/video/${post.video_id}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
+                <Typography>{post.name}</Typography>
+            </Link>
         </div>
     );
 }

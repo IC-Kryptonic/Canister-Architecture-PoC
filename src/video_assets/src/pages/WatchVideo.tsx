@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory, Link } from "react-router-dom";
 import { Box, makeStyles, Grid, CircularProgress, Typography, Divider, Button, Tabs, Tab, IconButton } from '@material-ui/core';
 import {
     FacebookShareButton,
@@ -167,7 +167,7 @@ const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
             spacing={2}
             className={classes.metadataBox}
         >
-            <Grid item>
+            <Grid item className={classes.fullWidth}>
                 <Box className={classes.titleBox}>
                     <Typography align="center" variant="h4"><b>{post?.name}</b></Typography>
                     <Divider />
@@ -193,7 +193,9 @@ const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
                     </Typography>
                     <Box display="flex" justifyContent="center" alignItems="center">
                         <AccountCircle className={classes.shareIcon} />
-                        {profile?.name}
+                        <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
+                            {profile?.name}
+                        </Link>
                     </Box>
                 </Box>
                 {/* <Button>Follow</Button> */}

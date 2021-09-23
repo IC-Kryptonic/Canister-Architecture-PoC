@@ -282,8 +282,6 @@ function PostCountSection({ profile }: ProfilePropInterface) {
   const classes = useProfilePageStyles();
   const options = ["posts", "followers", "follows"];
 
-
-
   return (
     <>
       <Hidden smUp>
