@@ -161,9 +161,14 @@ async function uploadVideo(
     creator: Principal.anonymous(),
     description: videoDescription,
     keywords: [],
-    storage_type: { inCanister: chunkCount },
-  })) as string;
-  console.debug('videoId:', id, `timestamp: ${Date.now()}`);
+    storage_type: { simpleDistMap : [chunkCount, []]},
+  }
+
+  const returnVideo = (await videoBackend.createVideo(
+      videoInfo
+  )) as Video_Info;
+
+  console.debug('videoId:', returnVideo.video_id, `timestamp: ${Date.now()}`);
 
   const videoBuffer = (await video?.arrayBuffer()) || new ArrayBuffer(0);
   const putChunkPromises = [];
