@@ -93,6 +93,30 @@ export const createShareOffer = async (
   await dexActor.createOffer(identityPrincipal, canisterId, tokenName, price, amount);
 };
 
+export const realizeExchange = async (
+  identity: Identity,
+  offers: Array<VideoTokenOffer>,
+  amount: number
+) => {
+  const dexActor = await getDexActor(identity);
+  const nativeTokenActor = await getNativeTokenActor(identity);
+  const dexPrincipal = Principal.fromText(canisterIds.dex.local);
+  const identityPrincipal = identity.getPrincipal();
+
+  // TODO determine which offers must be realized
+  let offer = offers[0];
+  // allow dex to transfer the token on video token canister
+  await nativeTokenActor.approve(identityPrincipal, dexPrincipal, amount * offer.pricePerShare);
+  // realize exchanges on dex canister for each offer
+  await dexActor.realizeExchange(
+    identity,
+    offer.from,
+    offer.token,
+    offer.pricePerShare,
+    offer.shareAmount
+  );
+};
+
 export const getAllOffers = async (identity: Identity): Promise<VideoTokenOffer[]> => {
   const dexActor = await getDexActor(identity);
   return (await dexActor.getAllOffers()) as Array<VideoTokenOffer>;

@@ -20,6 +20,7 @@ const TokenContextState = (props: TokenContextStateProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [tokenOffers, setTokenOffers] = useState<Array<OffersByToken>>([]);
   const [videoTokensForCreator, setVideoTokensForCreator] = useState<Array<VideoToken>>([]);
+  const [videoBalancesTrigger, setVideoBalancesTrigger] = useState<boolean>(false);
   const [nativeTokenBalance, setNativeTokenBalance] = useState<null | Number>(null);
   const [balanceTrigger, setBalanceTrigger] = useState<boolean>(true);
 
@@ -40,13 +41,13 @@ const TokenContextState = (props: TokenContextStateProps) => {
 
   useEffect(() => {
     async function queryOffersAndTokens() {
-      console.log('querying offers and tokens');
       setIsLoading(true);
       try {
         const tokenOffersResult = await getAllOffersByToken(identity);
         setTokenOffers(tokenOffersResult);
         const videoTokensForCreatorResult = await getTokensForCreator(identity);
         setVideoTokensForCreator(videoTokensForCreatorResult);
+        setVideoBalancesTrigger(true);
       } catch (error) {
         console.error('error fetching video tokens');
       } finally {
@@ -64,6 +65,7 @@ const TokenContextState = (props: TokenContextStateProps) => {
       let newTokensForCreator = [];
       for (let token of videoTokensForCreator) {
         try {
+          setVideoBalancesTrigger(false);
           const balance = await getShareBalanceForIdentity(identity, token.canisterId);
           token.ownedShares = balance;
         } catch (error) {
@@ -76,10 +78,10 @@ const TokenContextState = (props: TokenContextStateProps) => {
       setVideoTokensForCreator(newTokensForCreator);
     }
 
-    if (identity) {
+    if (identity && videoBalancesTrigger) {
       queryVideoBalances();
     }
-  }, [videoTokensForCreator]);
+  }, [videoBalancesTrigger]);
 
   return (
     <TokenContext.Provider

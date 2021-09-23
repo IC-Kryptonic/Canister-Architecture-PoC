@@ -2,6 +2,7 @@ import { Paper, Grid, Button } from '@material-ui/core';
 import React from 'react';
 import { OffersByToken } from '../../interfaces/token_interface';
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
+import history from '../History';
 
 interface MarketplaceCardProps {
   offersByToken: OffersByToken;
@@ -41,7 +42,13 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
         <Grid item className={classes.buttonCell}>
           <Grid container justify="center" spacing={1}>
             <Grid item xs={12}>
-              <Button variant="contained" color="primary">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() =>
+                  history.push(`/marketplace/buy/${props.offersByToken.offers[0].token}`)
+                }
+              >
                 Buy
               </Button>
             </Grid>

@@ -2,12 +2,13 @@ import { Button, Grid } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
-import { VideoToken } from '../../interfaces/token_interface';
+import { OffersByToken, VideoToken, VideoTokenOffer } from '../../interfaces/token_interface';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
 import { TokenContext } from '../../contexts/TokenContext';
-import { createShareOffer } from '../../services/token_services';
+import { createShareOffer, realizeExchange } from '../../services/token_services';
 import { AuthContext } from '../../contexts/AuthContext';
+import { Principal } from '@dfinity/principal';
 
 interface SelectOption {
   value: string;
@@ -18,63 +19,35 @@ interface SellParams {
   id: string | null;
 }
 
-function findId(id: string | null, tokens: Array<VideoToken>): SelectOption | null {
+function findId(id: string | null, tokens: Array<OffersByToken>): OffersByToken | null {
   if (!id || tokens.length < 1) {
     return null;
   }
-  let result = tokens.find((token: VideoToken) => id === token.canisterId);
-  if (!result) return null;
-  return { label: result.name, value: result.canisterId };
+  // TODO cast principal to string properly
+  let result = tokens.find((token: OffersByToken) => id === token.offers[0].token.toString());
+  return result;
 }
 
-const MarketplaceSell = () => {
-  const { videoTokensForCreator } = useContext(TokenContext);
+const MarketplaceBuy = () => {
+  const { tokenOffers } = useContext(TokenContext);
   const { identity } = useContext(AuthContext);
   let { id } = useParams<SellParams>();
 
-  const [selectedToken, setSelectedToken] = useState<SelectOption | null>(
-    findId(id, videoTokensForCreator)
-  );
+  const [offersByToken, setOffersByToken] = useState<OffersByToken>(findId(id, tokenOffers));
+  console.log(tokenOffers);
   const [selectedAmount, setSelectedAmount] = useState<SelectOption | null>(null);
   const [price, setPrice] = useState<number | null>(null);
-  const [tokenOptions, setTokenOptions] = useState<Array<SelectOption>>([]);
   const [amountOptions, setAmountOptions] = useState<Array<SelectOption>>([]);
 
   useEffect(() => {
-    let options: Array<SelectOption> = [];
-    for (let videoToken of videoTokensForCreator) {
-      options.push({
-        label: videoToken.name,
-        value: videoToken.canisterId,
-      });
-    }
-    setTokenOptions(options);
-  }, [videoTokensForCreator]);
+    if (!offersByToken) return;
 
-  useEffect(() => {
-    if (!selectedToken || videoTokensForCreator.length < 1) return;
-    let token = videoTokensForCreator.find(
-      (element: VideoToken) => element.canisterId === selectedToken.value
-    );
-
-    // TODO hacky
-    let amounts = Array.from({ length: parseInt(token.ownedShares.toString()) }, (x, i) => i + 1);
+    let amounts = Array.from({ length: offersByToken.offeredAmount }, (x, i) => i + 1);
     let amountsAsOptions = amounts.map((element: number) => {
       return { label: `${element}`, value: `${element}` };
     });
     setAmountOptions(amountsAsOptions);
-  }, [selectedToken]);
-
-  const onTokenValueChange = (value: SelectOption, { action, removedValue }: any) => {
-    switch (action) {
-      case 'select-option':
-        setSelectedToken(value);
-        break;
-      default:
-        setSelectedToken(null);
-        break;
-    }
-  };
+  }, []);
 
   const onAmountValueChange = (value: SelectOption, { action, removedValue }: any) => {
     switch (action) {
@@ -88,18 +61,12 @@ const MarketplaceSell = () => {
   };
 
   const buttonEnabled = () => {
-    return selectedToken && selectedAmount && price > 0;
+    return selectedAmount && price > 0;
   };
 
-  const createOffer = async () => {
+  const buyShares = async () => {
     try {
-      await createShareOffer(
-        identity,
-        selectedToken.value,
-        selectedToken.label,
-        parseInt(selectedAmount.value),
-        price
-      );
+      await realizeExchange(identity, offersByToken.offers, parseInt(selectedAmount.value));
     } catch (error) {
       console.error('error creating offer on dex', error);
     }
@@ -109,7 +76,7 @@ const MarketplaceSell = () => {
     <>
       <MarketplaceHeader />
       <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
-        Sell
+        Buy
       </Grid>
       <Grid container justify="center" style={{ marginTop: 10 }}>
         <Grid container spacing={2} justify="center" alignItems="center">
@@ -119,7 +86,7 @@ const MarketplaceSell = () => {
             justify="center"
             style={{ marginBottom: 30, fontWeight: 300, fontSize: 22, color: 'grey' }}
           >
-            Offer your video share tokens
+            Acquire video share tokens
           </Grid>
           <Grid
             container
@@ -128,13 +95,7 @@ const MarketplaceSell = () => {
             spacing={2}
           >
             <Grid item xs={12}>
-              <Select
-                value={selectedToken}
-                options={tokenOptions}
-                isClearable
-                placeholder="Select Video ..."
-                onChange={onTokenValueChange}
-              />
+              {offersByToken?.tokenName}
             </Grid>
             <Grid item xs={12}>
               <Select
@@ -142,7 +103,7 @@ const MarketplaceSell = () => {
                 options={amountOptions}
                 isClearable
                 placeholder="Define amount ..."
-                isDisabled={!selectedToken}
+                isDisabled={!offersByToken}
                 onChange={onAmountValueChange}
               />
             </Grid>
@@ -150,7 +111,7 @@ const MarketplaceSell = () => {
               <Grid item xs={6}>
                 <input
                   value={price}
-                  onChange={(event) => setPrice(parseFloat(event.target.value))}
+                  disabled
                   type="number"
                   placeholder="Price per share"
                   style={{
@@ -174,9 +135,9 @@ const MarketplaceSell = () => {
                 color="primary"
                 style={{ width: 150 }}
                 disabled={!buttonEnabled()}
-                onClick={() => createOffer()}
+                onClick={() => buyShares()}
               >
-                Create offer
+                Buy shares
               </Button>
             </Grid>
           </Grid>
@@ -187,4 +148,4 @@ const MarketplaceSell = () => {
   );
 };
 
-export default MarketplaceSell;
+export default MarketplaceBuy;

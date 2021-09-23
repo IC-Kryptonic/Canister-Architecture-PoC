@@ -96,7 +96,9 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
     return #ok();
   };
   
-  public shared (msg) func realizeExchange(currentOwner: Text, tokenId: Text, pricePerShare: Nat, shareAmount: Nat): async Result.Result<(), ExchangeError> {
+  public shared (msg) func realizeExchange(
+    caller: Principal, currentOwner: Text, tokenId: Text, pricePerShare: Nat, shareAmount: Nat
+  ): async Result.Result<(), ExchangeError> {
     let ownerPrincipal = Principal.fromText(currentOwner);
     let videoTokenActor = actor(tokenId) : TokenActor;
     let price = pricePerShare * shareAmount;
@@ -114,7 +116,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
 
     // check if video share buyer has enough native tokens and has allowed the dex canister to trade them 
     switch(await Validity.checkAllowanceAndBalance(
-      nativeToken, msg.caller, canisterPrincipal, shareAmount * pricePerShare
+      nativeToken, caller, canisterPrincipal, shareAmount * pricePerShare
     )) {
       case (#ok(allowanceBalance)) {};
       case (#err(err)) {
@@ -138,7 +140,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
           };
           case (?offer) {
             // exchange native tokens and video shares
-            switch(await Exchange.exchangeTokens(nativeToken, videoTokenActor, ownerPrincipal, msg.caller, pricePerShare, shareAmount)){
+            switch(await Exchange.exchangeTokens(nativeToken, videoTokenActor, ownerPrincipal, caller, pricePerShare, shareAmount)){
               case (#ok(balance)) {};
               case (#err(err)) {
                 return #err(#TransferError());
@@ -158,19 +160,19 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
                   pricePerShare = validExchange.pricePerShare;
                   shareAmount = validExchange.shareAmount;
                   offerTimeStamp = validExchange.offerTimeStamp;
-                  to = ?msg.caller;
+                  to = ?caller;
                   fulfillmentTimeStamp = ?Time.now();
                 };
                 // add completed exchange to exchange map
-                switch(exchangeMap.get(msg.caller)) {
+                switch(exchangeMap.get(caller)) {
                   case null {
                     let newMap = HashMap.HashMap<Nat, Exchange>(0, ExchangeMaps.isEqNat, ExchangeMaps.natToHash);
                     newMap.put(0, newExchange);
-                    exchangeMap.put(msg.caller, newMap);
+                    exchangeMap.put(caller, newMap);
                   };
                   case (?exchangesForPrincipal) {
                     exchangesForPrincipal.put(exchangesForPrincipal.size(), newExchange);
-                    exchangeMap.put(msg.caller, exchangesForPrincipal);
+                    exchangeMap.put(caller, exchangesForPrincipal);
                   };
                 };
               };
