@@ -26,58 +26,7 @@ import TabPanel from "../components/shared/TabPanel";
 import { getVideoOwners, getVideoBidders } from "../services/videometadata_service";
 import PlaceBidDialog from "../components/watchvideo/PlaceBidDialog";
 import useQuery from '../utils/use_params';
-
-const watchVideoStyles = makeStyles({
-    arrowControl: {
-        height: "50px",
-        width: "50px"
-    },
-    arrowControlWrapper: {
-        width: "50px"
-    },
-    container: {
-        padding: 0,
-        margin: 0,
-        top: "0px",
-        right: "0px",
-        bottom: "0px",
-        left: "0px",
-    },
-    videoBox: {
-        width: "75vh",
-        height: "85vh",
-        // border: "1px solid black",
-        backgroundColor: "#E9E6E6"
-    },
-    videoPlayer: {
-        width: "75vh",
-        height: "42vh",
-    },
-    metadataBox: {
-        width: "25vw",
-        hegiht: "85vh"
-    },
-    filler: {
-        width: 100,
-        height: 400
-    },
-    videoStatisticsWrapper: {
-        width: "100px"
-    },
-    videoStatistic: {
-        margin: 5
-    },
-    shareIcon: {
-        height: "30px",
-        width: "30px"
-    },
-    textLabel: {
-        marginRight: "5px"
-    },
-    bidButton: {
-        minWidth: "200px"
-    }
-});
+import { watchVideoStyles } from "../styles/watchvideo_styles";
 
 interface WatchVideoPathParam {
     id: string
@@ -85,7 +34,6 @@ interface WatchVideoPathParam {
 
 const WatchVideo = () => {
     const classes = watchVideoStyles();
-
     const [post, setPost] = useState<Post | null>(null);
     const [videoNumber, setVideoNumber] = useState(0);
 
@@ -143,11 +91,14 @@ const WatchVideo = () => {
         console.info(post);
         history.push(`/video/${post.video_id}?id=${id}`);
         setPost(post);
+        // Null other attributes to cause a rerender
+        setVideo(null);
+        setProfile(null);
     }
 
     return (
         <Layout title={"test"} marginTop={0}>
-            <Box display="flex" flexWrap="nowrap" justifyContent="space-evenly" alignItems="stretch" className={classes.container}>
+            <Box display="flex" flexWrap="nowrap" justifyContent="space-evenly" alignItems="stretch">
                 <VideoControls loadNext={loadNext} />
                 <VideoBox post={post} video={video} />
                 <MetaDataBox post={post} profile={profile} />
@@ -180,10 +131,9 @@ interface VideoBoxProps {
     video?: string
 }
 
-const VideoBox = ({ post, video }: VideoBoxProps) => {
+const VideoBox = ({ video }: VideoBoxProps) => {
     const classes = watchVideoStyles();
-
-    let key = (post)? post.video_id: "";
+    //let key = (post)? post.video_id: "";
     let content = video ? (
         <video controls className={classes.videoPlayer}>
             <source src={video} type="video/mp4" />
@@ -193,7 +143,7 @@ const VideoBox = ({ post, video }: VideoBoxProps) => {
     );
 
     return (
-        <Box key={key} className={classes.videoBox} display="flex" justifyContent="center" alignItems="center">
+        <Box /*key={key}*/ className={classes.videoBox} display="flex" justifyContent="center" alignItems="center">
             {content}
         </Box>
     );
@@ -206,7 +156,6 @@ interface MetaDataBoxProperties {
 
 const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
     const classes = watchVideoStyles();
-
     const [viewNumber, setViewNumber] = useState(Math.floor(Math.random() * 1000));
 
     return (
@@ -219,9 +168,11 @@ const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
             className={classes.metadataBox}
         >
             <Grid item>
-                <Typography align="center" variant="h4"><b>{post?.name}</b></Typography>
-                <Divider />
-                <Typography align="center" variant="h5">{post?.description}</Typography>
+                <Box className={classes.titleBox}>
+                    <Typography align="center" variant="h4"><b>{post?.name}</b></Typography>
+                    <Divider />
+                    <Typography align="left" variant="h6">{post?.description}</Typography>
+                </Box>
             </Grid>
 
             <Grid item>
