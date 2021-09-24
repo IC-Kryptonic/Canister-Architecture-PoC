@@ -49,8 +49,8 @@ const Post = ({ post }: PostProps) => {
                     <strong>{'<<username>>'}</strong>
                   </Grid>
                   <Grid item className={classes.lightText}>
-                    {post?.video_id
-                      ? trimString(post.video_id, 15)
+                    {post?.storageType.canister
+                      ? trimString(post.storageType.canister.toString(), 15)
                       : '<<video_id>>'}
                   </Grid>
                 </Grid>

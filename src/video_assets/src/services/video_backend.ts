@@ -11,7 +11,7 @@ import {
   StorageType,
   ChunkNum,
   Comment
-} from "../../../../.dfx/local/canisters/video_canister/video_canister.did";
+} from "../../../../.dfx/local/canisters/video_backend/video_backend.did";
 import {idlFactory as profileBackend_idl} from "dfx-generated/profile_backend";
 import {UserComment} from "../interfaces/profile_interface";
 import {getLazyUserProfile} from "./profile_backend";
@@ -19,7 +19,7 @@ import {getLazyUserProfile} from "./profile_backend";
 const agent = new HttpAgent();
 const videoBackend = Actor.createActor(videoBackend_idl, {
   agent,
-  canisterId: Principal.fromText(canisterIds.backend.local),
+  canisterId: Principal.fromText(canisterIds.video_backend.local),
 });
 const profileBackend = Actor.createActor(profileBackend_idl, {
   agent,
@@ -124,23 +124,22 @@ async function uploadVideo(
   const chunkCount = BigInt(Math.ceil(post.video.size / maxChunkSize));
   console.debug('chunkCount:', chunkCount, `timestamp: ${Date.now()}`);
 
-  let storage: StorageType = {
-    'canister': [chunkCount, null]
-  }
 
   const thumbnailBuffer = (await post.thumbnail?.arrayBuffer()) || new ArrayBuffer(0);
 
   let videoInfo: VideoInfo = {
-    name: post.name,
-    owner: null,
+    storage_type: {canister: [chunkCount, []]},
     creator: await agent.getPrincipal(),
-    description: post.description,
-    keywords: post.keywords,
-    storage_type: storage,
-    likes: BigInt(0),
     thumbnail: Array.from(new Uint8Array(thumbnailBuffer)),
     views: BigInt(0),
-  }
+    likes: BigInt(0),
+    owner: await agent.getPrincipal(),
+    name: post.name,
+    description: post.description,
+    keywords: post.keywords,
+  };
+
+  console.debug("Creating Video:", videoInfo);
 
   const returnInfo = (await videoBackend.create_video(
       videoInfo, save
@@ -213,3 +212,4 @@ function createVideoActor(principal: Principal): ActorSubclass{
 }
 
 export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, createVideoActor, loadVideoComments};
+
