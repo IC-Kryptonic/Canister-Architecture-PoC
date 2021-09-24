@@ -32,10 +32,6 @@ async function getLazyMyProfile(): Promise<LazyProfilePost>{
   return _getLazyProfile(await agent.getPrincipal());
 }
 
-async function addView(videoPrincipal: Principal){
-  await profileBackend.add_view(videoPrincipal);
-}
-
 async function addComment(comment: string, videoPrincipal: Principal){
   let videoCanisterActor = createVideoActor(videoPrincipal);
 
@@ -63,4 +59,4 @@ async function _getLazyProfile(profile_principal: Principal): Promise<LazyProfil
 }
 
 
-export { createProfile, getLazyMyProfile, getLazyUserProfile, addView, addComment, addLike};
+export { createProfile, getLazyMyProfile, getLazyUserProfile, addComment, addLike};

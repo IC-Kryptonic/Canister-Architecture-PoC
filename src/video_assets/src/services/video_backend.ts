@@ -11,13 +11,16 @@ import {
   StorageType,
   ChunkNum
 } from "../../../../.dfx/local/canisters/video_canister/video_canister.did";
-
-import {addView} from "./profile_backend";
+import {idlFactory as profileBackend_idl} from "dfx-generated/profile_backend";
 
 const agent = new HttpAgent();
 const videoBackend = Actor.createActor(videoBackend_idl, {
   agent,
   canisterId: Principal.fromText(canisterIds.backend.local),
+});
+const profileBackend = Actor.createActor(profileBackend_idl, {
+  agent,
+  canisterId: Principal.fromText(canisterIds.profile_backend.local),
 });
 
 const maxChunkSize = 1024 * 500; // 500kb
@@ -77,7 +80,7 @@ async function loadVideo(videoInfo: VideoPost): Promise<string> {
 
 
   //Add view to profile backend
-  await addView(videoPrincipal);
+  await profileBackend.add_view(videoPrincipal);
 
 
   return URL.createObjectURL(videoBlob);
