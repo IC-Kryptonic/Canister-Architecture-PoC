@@ -1,61 +1,27 @@
 use std::io::Read;
 use ic_agent::export::Principal;
-use ic_cdk::export::candid::{Encode, Decode, CandidType, Deserialize};
+use ic_cdk::export::candid::{Encode, Decode};
 use crate::util::Actor;
 use std::fs::File;
 
 mod util;
 
-type ChunkNum = usize;
-type VideoId = String;
-#[derive(Clone, CandidType, Deserialize, Debug)]
-pub struct IPFSData {
-    data: String,
-}
-
-const MAX_CHUNK_SIZE: usize = 1024 * 500; // 500kb
-
-#[derive(CandidType, Deserialize)]
-pub struct AdInfo{
-    owner: Principal,
-    canister: Option<Principal>,
-    name: String,
-    chunk_num: ChunkNum,
-}
-
-#[derive(CandidType, Deserialize, Debug, Clone)]
-pub enum StorageType {
-    #[serde(rename = "inCanister")]
-    InCanister(ChunkNum),
-    #[serde(rename = "simpleDistMap")]
-    SimpleDistMap(ChunkNum, Option<Principal>),
-    #[serde(rename = "ipfs")]
-    IPFS(IPFSData),
-}
-
-#[derive(CandidType, Deserialize)]
-pub struct VideoInfo {
-    pub video_id: Option<VideoId>,
-    pub owner: Principal,
-    pub creator: Principal,
-    pub name: String,
-    pub description: String,
-    pub keywords: Vec<String>,
-    pub storage_type: StorageType,
-}
+use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE};
 
 #[tokio::main]
 async fn main() {
     let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
     let ad_manager = Actor::from_name("ad_manager", identity).await;
-    upload_ads(&ad_manager).await;
+
 
     let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
-    let video_backend = Actor::from_name("backend", identity).await;
+    let video_backend = Actor::from_name("video_backend", identity).await;
+
+    upload_ads(&ad_manager, &video_backend).await;
     upload_videos(&video_backend).await;
 }
 
-async fn upload_ads(ad_manager: &Actor){
+async fn upload_ads(ad_manager: &Actor, video_backend: &Actor){
     let dir = std::fs::read_dir("seed_data/ads/").expect("Could not open seeding ads folder");
 
     for file in dir{
@@ -65,20 +31,30 @@ async fn upload_ads(ad_manager: &Actor){
 
         let chunks = chunkify_video(video);
 
-        let ad_info = AdInfo{
+        let ad_info = VideoInfo{
             owner: Principal::anonymous(),
-            canister: None,
             name: String::from(name.to_str().expect("Could not convert OSString to Rust str").strip_suffix(".mp4").expect("Could not strip mp4 from name")),
-            chunk_num: chunks.len(),
+            description: "".to_string(),
+            keywords: vec![],
+            thumbnail: vec![],
+            storage_type: StorageType::Canister(chunks.len(), None),
+            views: 0,
+            creator: Principal::anonymous(),
+            likes: 0
         };
 
-        let arg = Encode!(&ad_info).expect("Could not encode ad info");
+        let arg = Encode!(&ad_info, &false).expect("Could not encode ad info");
 
-        let response = ad_manager.update_call("createAd", arg).await;
+        let response = video_backend.update_call("create_video", arg).await;
         let raw_result = util::check_ok(response);
-        let result_info = Decode!(raw_result.as_slice(), AdInfo).expect("Could not decode result ad info");
+        let result_info = Decode!(raw_result.as_slice(), VideoInfo).expect("Could not decode result ad info");
 
-        let ad_canister = result_info.canister.expect("No canister principal in result info");
+        let ad_canister = if let StorageType::Canister(_chunks, may_canister) = result_info.storage_type{
+            may_canister.expect("Result video info did not have bucket principal")
+        } else{
+            panic!("Send Storage type differs from returned storage type")
+        };
+
         let ad_actor = util::Actor{
             agent: ad_manager.agent.clone(),
             principal: ad_canister,
@@ -86,9 +62,14 @@ async fn upload_ads(ad_manager: &Actor){
 
         for (i, chunk) in chunks.iter().enumerate(){
             let chunk_data = Encode!(&i, &chunk).expect("Could not encode chunk");
-            let response = ad_actor.update_call("insertChunk", chunk_data).await;
+            let response = ad_actor.update_call("insert_chunk", chunk_data).await;
             util::check_ok(response);
         }
+
+        let ad_arg = Encode!(&ad_canister).expect("Could not encode ad principal");
+        let response = ad_manager.update_call("add_ad", ad_arg).await;
+        let raw_result = util::check_ok(response);
+        Decode!(raw_result.as_slice(), ()).expect("Could not decode empty add_ad result");
     }
 }
 
@@ -103,24 +84,25 @@ async fn upload_videos(video_backend: &Actor){
         let chunks = chunkify_video(video);
 
         let video_info = VideoInfo{
-            video_id: None,
             owner: Principal::anonymous(),
             name: String::from(name.to_str().expect("Could not convert OSString to Rust str").strip_suffix(".mp4").expect("Could not strip mp4 from name")),
             description: String::new(),
             keywords: vec![],
             creator: Principal::anonymous(),
-            storage_type: StorageType::SimpleDistMap(chunks.len(), None),
+            storage_type: StorageType::Canister(chunks.len(), None),
+            views: 0,
+            thumbnail: vec![],
+            likes: 0
         };
 
-        let arg = Encode!(&video_info).expect("Could not encode video info");
+        let arg = Encode!(&video_info, &true).expect("Could not encode video info");
 
-        let response = video_backend.update_call("createVideo", arg).await;
+        let response = video_backend.update_call("create_video", arg).await;
         let raw_result = util::check_ok(response);
         let result_info = Decode!(raw_result.as_slice(), VideoInfo).expect("Could not decode result video info");
 
-        let video_id = result_info.video_id.expect("Video id not in result");
-        let video_canister = if let StorageType::SimpleDistMap(_chunks, may_bucket) = result_info.storage_type{
-            may_bucket.expect("Result video info did not have bucket principal")
+        let video_canister = if let StorageType::Canister(_chunks, may_canister) = result_info.storage_type{
+            may_canister.expect("Result video info did not have bucket principal")
         } else{
             panic!("Send Storage type differs from returned storage type")
         };
@@ -131,8 +113,8 @@ async fn upload_videos(video_backend: &Actor){
         };
 
         for (i, chunk) in chunks.iter().enumerate(){
-            let chunk_data = Encode!(&video_id, &i, &chunk).expect("Could not encode chunk");
-            let response = video_actor.update_call("insertChunk", chunk_data).await;
+            let chunk_data = Encode!(&i, &chunk).expect("Could not encode chunk");
+            let response = video_actor.update_call("insert_chunk", chunk_data).await;
             util::check_ok(response);
         }
     }

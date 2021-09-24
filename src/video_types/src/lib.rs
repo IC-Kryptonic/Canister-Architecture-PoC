@@ -7,6 +7,8 @@ pub type Chunks = Vec<Chunk>;
 pub type Feed = Vec<Principal>;
 pub type Comment = (Principal, String);
 
+pub const MAX_CHUNK_SIZE: usize = 1024 * 500; // 500kb
+
 #[derive(Clone, CandidType, Deserialize)]
 pub struct IPFSData{
     data: String,
