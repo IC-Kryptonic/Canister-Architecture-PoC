@@ -9,9 +9,12 @@ import {
   Chunk,
   VideoInfo,
   StorageType,
-  ChunkNum
+  ChunkNum,
+  Comment
 } from "../../../../.dfx/local/canisters/video_canister/video_canister.did";
 import {idlFactory as profileBackend_idl} from "dfx-generated/profile_backend";
+import {UserComment} from "../interfaces/profile_interface";
+import {getLazyUserProfile} from "./profile_backend";
 
 const agent = new HttpAgent();
 const videoBackend = Actor.createActor(videoBackend_idl, {
@@ -84,6 +87,28 @@ async function loadVideo(videoInfo: VideoPost): Promise<string> {
 
 
   return URL.createObjectURL(videoBlob);
+}
+
+async function loadVideoComments(post: VideoPost, count: bigint): Promise<Array<UserComment>>{
+  const {storageType} = post;
+  let videoPrincipal = storageType.canister;
+  let videoActor = createVideoActor(videoPrincipal);
+
+
+  let comments = await videoActor.get_comments(count) as Array<Comment>;
+
+  let profiles = comments.map( (comment) => {
+    return getLazyUserProfile(comment.commenter);
+
+  });
+
+  return (await Promise.all(profiles)).map(function(profile, i) {
+    return {
+      commenter: profile,
+      comment: comments[i].text,
+    }
+  });
+
 }
 
 async function uploadVideo(
@@ -187,4 +212,4 @@ function createVideoActor(principal: Principal): ActorSubclass{
       });
 }
 
-export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, createVideoActor};
+export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, createVideoActor, loadVideoComments};

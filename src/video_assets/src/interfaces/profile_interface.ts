@@ -20,3 +20,13 @@ export interface ProfilePost{
     comments: Array<VideoPost>,
     viewed: Array<VideoPost>,
 }
+
+export interface LazyUserComment{
+    commenter: Principal,
+    comment: string,
+}
+
+export interface UserComment{
+    commenter: LazyProfilePost,
+    comment: string,
+}
