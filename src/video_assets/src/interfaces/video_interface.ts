@@ -1,6 +1,6 @@
 import {Principal} from "@dfinity/principal";
 
-export interface Post {
+export interface VideoPost {
   owner: Principal;
   creator: Principal;
   name: string;
@@ -12,7 +12,7 @@ export interface Post {
   storageType: CanisterStorage;
 }
 
-export interface CreatePost {
+export interface CreateVideoPost {
   name: string;
   description: string;
   keywords: Array<string>;

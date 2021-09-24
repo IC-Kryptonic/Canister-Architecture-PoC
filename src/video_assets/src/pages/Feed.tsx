@@ -3,10 +3,10 @@ import { Grid } from '@material-ui/core';
 import Header from '../components/Header';
 import PostComponent from '../components/Post';
 import { loadDefaultFeed } from '../services/video_backend';
-import { Post } from '../interfaces/video_interface';
+import { VideoPost } from '../interfaces/video_interface';
 
 const Feed = () => {
-  const [posts, setPosts] = useState<Array<Post>>([]);
+  const [posts, setPosts] = useState<Array<VideoPost>>([]);
 
   useEffect(() => {
     async function queryFeed() {

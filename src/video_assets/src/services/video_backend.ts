@@ -4,13 +4,15 @@ import {idlFactory as videoBackend_idl} from 'dfx-generated/video_backend';
 import {idlFactory as videoCanister_idl} from 'dfx-generated/video_canister';
 import canisterIds from "../../../../.dfx/local/canister_ids.json"
 
-import {Post, CreatePost} from '../interfaces/video_interface';
+import {VideoPost, CreateVideoPost} from '../interfaces/video_interface';
 import {
   Chunk,
   VideoInfo,
   StorageType,
   ChunkNum
 } from "../../../../.dfx/local/canisters/video_canister/video_canister.did";
+
+import {addView} from "./profile_backend";
 
 const agent = new HttpAgent();
 const videoBackend = Actor.createActor(videoBackend_idl, {
@@ -20,36 +22,36 @@ const videoBackend = Actor.createActor(videoBackend_idl, {
 
 const maxChunkSize = 1024 * 500; // 500kb
 
-async function loadRandomFeed(count: number): Promise<Array<Post>> {
+async function loadRandomFeed(count: number): Promise<Array<VideoPost>> {
   let principals: Array<Principal> = await videoBackend.get_random_feed(count) as Array<Principal>;
 
   return _loadVideoPosts(principals);
 }
 
-async function loadUserFeed(count: number): Promise<Array<Post>> {
+async function loadUserFeed(count: number): Promise<Array<VideoPost>> {
   let principals: Array<Principal> = await videoBackend.get_user_feed(count, await agent.getPrincipal()) as Array<Principal>;
 
   return _loadVideoPosts(principals);
 }
 
-async function loadSearchFeed(count: number, to_search: String): Promise<Array<Post>> {
+async function loadSearchFeed(count: number, to_search: String): Promise<Array<VideoPost>> {
   let principals: Array<Principal> = await videoBackend.get_search_feed(count, to_search) as Array<Principal>;
 
   return _loadVideoPosts(principals);
 }
 
-async function loadCreatorFeed(count: number, creator: Principal): Promise<Array<Post>> {
+async function loadCreatorFeed(count: number, creator: Principal): Promise<Array<VideoPost>> {
   let principals: Array<Principal> = await videoBackend.get_creator_feed(count, creator) as Array<Principal>;
 
   return _loadVideoPosts(principals);
 }
 
-async function loadVideo(videoInfo: Post): Promise<string> {
+async function loadVideo(videoInfo: VideoPost): Promise<string> {
   const {storageType} = videoInfo;
   let videoPrincipal = storageType.canister;
   let chunkCount = storageType.chunkCount;
 
-  let videoActor = _createVideoActor(videoPrincipal);
+  let videoActor = createVideoActor(videoPrincipal);
 
   const chunkBuffers: Uint8Array[] | Buffer[] = [];
   const chunksAsPromises = [];
@@ -73,11 +75,16 @@ async function loadVideo(videoInfo: Post): Promise<string> {
     type: 'video/mp4',
   });
 
+
+  //Add view to profile backend
+  await addView(videoPrincipal);
+
+
   return URL.createObjectURL(videoBlob);
 }
 
 async function uploadVideo(
-    post: CreatePost, save: Boolean
+    post: CreateVideoPost, save: Boolean
 ): Promise<Principal> {
 
   await agent.fetchRootKey();
@@ -117,7 +124,7 @@ async function uploadVideo(
   const videoBuffer = (await post.video?.arrayBuffer()) || new ArrayBuffer(0);
   const putChunkPromises = [];
 
-  const video_actor = _createVideoActor(video_principal);
+  const video_actor = createVideoActor(video_principal);
 
   console.debug('video info: ', returnInfo);
 
@@ -138,13 +145,13 @@ async function uploadVideo(
   return video_principal;
 }
 
-async function _loadVideoPosts(principals: Array<Principal>): Promise<Array<Post>>{
+async function _loadVideoPosts(principals: Array<Principal>): Promise<Array<VideoPost>>{
 
-  const promises: Array<Promise<Post>> = [];
+  const promises: Array<Promise<VideoPost>> = [];
   principals.forEach( (principal) => {
-    const canisterActor = _createVideoActor(principal);
+    const canisterActor = createVideoActor(principal);
 
-    promises.push(canisterActor.get_info() as Promise<Post>);
+    promises.push(canisterActor.get_info() as Promise<VideoPost>);
   })
 
   return await Promise.all(promises);
@@ -168,7 +175,7 @@ function _processAndUploadChunkToCanister(
 
 
 
-function _createVideoActor(principal: Principal): ActorSubclass{
+function createVideoActor(principal: Principal): ActorSubclass{
   return Actor.createActor(
       videoCanister_idl
       , {
@@ -177,4 +184,4 @@ function _createVideoActor(principal: Principal): ActorSubclass{
       });
 }
 
-export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo};
+export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, createVideoActor};

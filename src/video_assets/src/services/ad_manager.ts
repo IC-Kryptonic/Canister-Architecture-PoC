@@ -13,16 +13,11 @@ import {uploadVideo, loadVideo} from "./video_backend";
 import {ChunkNum} from "../../../../.dfx/local/canisters/video_canister/video_canister.did";
 
 const agent = new HttpAgent();
-const videoBackend = Actor.createActor(videoBackend_idl, {
-  agent,
-  canisterId: Principal.fromText(canisterIds.backend.local),
-});
 const adManager = Actor.createActor(adManager_idl, {
   agent,
   canisterId: Principal.fromText(canisterIds.ad_manager.local),
 })
 
-const maxChunkSize = 1024 * 500; // 500kb
 
 async function createAd(post: CreateAdPost){
   let created_principal = await uploadVideo(post, false);
@@ -39,7 +34,7 @@ async function loadRandomAdPost(): Promise<AdPost> {
     return;
   }
 
-  return loadAdPostFromCanister(ad_principal);
+  return _loadAdPostFromCanister(ad_principal);
 }
 
 async function loadTargetedAdPost(): Promise<AdPost>{
@@ -50,7 +45,7 @@ async function loadTargetedAdPost(): Promise<AdPost>{
     return;
   }
 
-  return loadAdPostFromCanister(ad_principal);
+  return _loadAdPostFromCanister(ad_principal);
 }
 
 async function loadAdVideo(post: AdPost): Promise<string>{
@@ -58,7 +53,7 @@ async function loadAdVideo(post: AdPost): Promise<string>{
 }
 
 
-async function loadAdPostFromCanister(principal: Principal): Promise<AdPost>{
+async function _loadAdPostFromCanister(principal: Principal): Promise<AdPost>{
   const adActor = Actor.createActor(
       videoCanister_idl,
       {

@@ -1,8 +1,8 @@
-import {CreatePost, Post} from "./video_interface";
+import {CreateVideoPost, VideoPost} from "./video_interface";
 
-export interface AdPost extends Post{
+export interface AdPost extends VideoPost{
 }
 
-export interface CreateAdPost extends CreatePost{
+export interface CreateAdPost extends CreateVideoPost{
 
 }

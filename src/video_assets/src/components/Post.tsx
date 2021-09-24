@@ -5,13 +5,13 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { trimString } from '../utils/texts';
 import { loadVideo } from '../services/video_backend';
-import { Post } from '../interfaces/video_interface';
+import { VideoPost } from '../interfaces/video_interface';
 
 const defaultAvatar =
   'https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg';
 
 interface PostProps {
-  post: Post;
+  post: VideoPost;
 }
 
 const Post = ({ post }: PostProps) => {

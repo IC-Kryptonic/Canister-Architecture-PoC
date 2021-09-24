@@ -5,4 +5,5 @@ service : {
     "put_profile": (Profile) -> () oneway;
     "add_like": () -> () oneway;
     "add_comment": (principal) -> () oneway;
+    "add_view": (principal) -> () oneway;
 }
