@@ -46,6 +46,17 @@ async function addLike(videoPrincipal: Principal){
   await profileBackend.add_like(videoPrincipal);
 }
 
+async function getUserComments(user: Principal): Promise<Array<string>>{
+  let commentedVideos = (await profileBackend.get_profile() as Profile).comments;
+
+  let comments = commentedVideos.map((video) => {
+    let video_actor = createVideoActor(video);
+    return video_actor.get_comment(user) as Promise<string>;
+  });
+
+  return Promise.all(comments)
+}
+
 async function _getLazyProfile(profile_principal: Principal): Promise<LazyProfilePost>{
   let profile_result = await profileBackend.get_profile(profile_principal) as Profile;
 
@@ -59,4 +70,4 @@ async function _getLazyProfile(profile_principal: Principal): Promise<LazyProfil
 }
 
 
-export { createProfile, getLazyMyProfile, getLazyUserProfile, addComment, addLike};
+export { createProfile, getLazyMyProfile, getLazyUserProfile, addComment, addLike, getUserComments};
