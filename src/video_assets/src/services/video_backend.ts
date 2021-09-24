@@ -8,7 +8,6 @@ import {VideoPost, CreateVideoPost} from '../interfaces/video_interface';
 import {
   Chunk,
   VideoInfo,
-  StorageType,
   ChunkNum,
   Comment
 } from "../../../../.dfx/local/canisters/video_backend/video_backend.did";
@@ -29,6 +28,7 @@ const profileBackend = Actor.createActor(profileBackend_idl, {
 const maxChunkSize = 1024 * 500; // 500kb
 
 async function loadRandomFeed(count: number): Promise<Array<VideoPost>> {
+  await agent.fetchRootKey();
   let principals: Array<Principal> = await videoBackend.get_random_feed(count) as Array<Principal>;
 
   return _loadVideoPosts(principals);
@@ -174,14 +174,36 @@ async function uploadVideo(
 
 async function _loadVideoPosts(principals: Array<Principal>): Promise<Array<VideoPost>>{
 
-  const promises: Array<Promise<VideoPost>> = [];
+  const promises: Array<Promise<VideoInfo>> = [];
   principals.forEach( (principal) => {
     const canisterActor = createVideoActor(principal);
 
-    promises.push(canisterActor.get_info() as Promise<VideoPost>);
+    promises.push(canisterActor.get_info() as Promise<VideoInfo>);
   })
 
-  return await Promise.all(promises);
+
+  return (await Promise.all(promises)).map((video) =>{
+    const thumbnailBlob = new Blob([Buffer.from(new Uint8Array(video.thumbnail))], {
+      type: 'image/png',
+    });
+
+    let storage = (video.storage_type as { 'canister' : [ChunkNum, [] | [Principal]] }).canister;
+
+    return{
+      owner: video.owner,
+      creator: video.creator,
+      name: video.name,
+      description: video.description,
+      keywords: video.keywords,
+      thumbnail: URL.createObjectURL(thumbnailBlob),
+      views: video.views,
+      likes: video.likes,
+      storageType: {
+        chunkCount: storage[0],
+        canister: storage[1][0],
+      },
+    }
+  })
 }
 
 function _processAndUploadChunkToCanister(

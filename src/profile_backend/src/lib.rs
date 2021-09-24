@@ -60,9 +60,12 @@ pub fn add_view(video_princ: Principal){
 
     let caller = ic_cdk::caller();
 
-    profile_store
-        .get_mut(&caller)
-        .expect("Caller has not made a profile yet")
-        .viewed
-        .insert(video_princ);
+    match profile_store.get_mut(&caller){
+        None => {
+            ic_cdk::api::print("Caller has not made a profile yet, ignoring view")
+        }
+        Some(profile) => {
+            profile.viewed.insert(video_princ);
+        }
+    }
 }
