@@ -1,4 +1,4 @@
-import {Actor, ActorSubclass, HttpAgent} from '@dfinity/agent';
+import {Actor, HttpAgent} from '@dfinity/agent';
 import {Principal} from '@dfinity/principal';
 import {idlFactory as videoBackend_idl} from 'dfx-generated/video_backend';
 import {idlFactory as videoCanister_idl} from 'dfx-generated/video_canister';
@@ -9,7 +9,7 @@ import {AdPost, CreateAdPost} from '../interfaces/ad_interface';
 import {CanisterStorage} from "../interfaces/video_interface";
 import {VideoInfo} from "../../../../.dfx/local/canisters/ad_manager/ad_manager.did";
 
-import {uploadVideo} from "./video_backend";
+import {uploadVideo, loadVideo} from "./video_backend";
 import {ChunkNum} from "../../../../.dfx/local/canisters/video_canister/video_canister.did";
 
 const agent = new HttpAgent();
@@ -39,11 +39,31 @@ async function loadRandomAdPost(): Promise<AdPost> {
     return;
   }
 
+  return loadAdPostFromCanister(ad_principal);
+}
+
+async function loadTargetedAdPost(): Promise<AdPost>{
+  let maybe_ad_principal = await adManager.get_ad_principal_for_user(agent.getPrincipal()) as [Principal];
+  let ad_principal = maybe_ad_principal[0];
+  if (ad_principal === undefined) {
+    console.error("No ad uploaded yet")
+    return;
+  }
+
+  return loadAdPostFromCanister(ad_principal);
+}
+
+async function loadAdVideo(post: AdPost): Promise<string>{
+  return loadVideo(post);
+}
+
+
+async function loadAdPostFromCanister(principal: Principal): Promise<AdPost>{
   const adActor = Actor.createActor(
       videoCanister_idl,
       {
         agent: agent,
-        canisterId: ad_principal,
+        canisterId: principal,
       }
   );
 
@@ -59,7 +79,7 @@ async function loadRandomAdPost(): Promise<AdPost> {
     type: 'image/png',
   });
 
-  let post: AdPost = {
+  return {
     creator: adInfo.creator,
     description: adInfo.description,
     keywords: adInfo.keywords,
@@ -70,7 +90,7 @@ async function loadRandomAdPost(): Promise<AdPost> {
     views: adInfo.views,
     owner: adInfo.owner,
   }
-
 }
 
-export { createAd, loadRandomAdPost};
+
+export { createAd, loadRandomAdPost, loadTargetedAdPost, loadAdVideo};

@@ -4,7 +4,7 @@ import {idlFactory as videoBackend_idl} from 'dfx-generated/video_backend';
 import {idlFactory as videoCanister_idl} from 'dfx-generated/video_canister';
 import canisterIds from "../../../../.dfx/local/canister_ids.json"
 
-import {Post, CreatePost, CanisterStorage} from '../interfaces/video_interface';
+import {Post, CreatePost} from '../interfaces/video_interface';
 import {
   Chunk,
   VideoInfo,
