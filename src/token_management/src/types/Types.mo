@@ -28,6 +28,7 @@ module Types {
     name: Text;
     symbol: Text;
     supply: Nat;
+    ownedAmount: Int;
     metadata: Text;
   };
 
@@ -51,4 +52,9 @@ module Types {
   };
 
   public type ExchangeMap = HashMap.HashMap<Principal, HashMap.HashMap<Nat, Exchange>>;
+
+  public type Ownership = {
+    tokenId: Text;
+    ownedAmount: Int;
+  };
 };

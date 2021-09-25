@@ -40,7 +40,11 @@ dfx canister call token_management getTokenCount
 dfx identity use $video_share_seller_identity
 
 echo "TKM-TEST: Creating video token: (TEST, TST, 2, 200, {})"
-dfx canister call token_management createToken '("TEST", "TST", 2, 200, "{}")'
+dfx canister call token_management createToken '("joalj-yj6rt-ruo4b-rwq5y-554ic-yh4r5-tv3qm-zt3r2-aclla-tk47i-qqe", "TEST", "TST", 2, 200, "{}")'
+
+dfx canister call token_management getOwnedTokens '("joalj-yj6rt-ruo4b-rwq5y-554ic-yh4r5-tv3qm-zt3r2-aclla-tk47i-qqe")'
+
+dfx canister call token_management changeOwnership '("joalj-yj6rt-ruo4b-rwq5y-554ic-yh4r5-tv3qm-zt3r2-aclla-tk47i-qqe", "5v72r-4aaaa-aaaaa-aabnq-cai", 5)'
 
 echo "TKM-TEST: Video token count after creation should be: <(1)>"
 dfx canister call token_management getTokenCount

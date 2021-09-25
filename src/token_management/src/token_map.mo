@@ -6,6 +6,7 @@ import Iter "mo:base/Iter";
 import List "mo:base/List";
 import Nat "mo:base/Nat";
 import Principal "mo:base/Principal";
+import Text "mo:base/Text";
 
 import ExchangeMaps "./exchange_util/Exchange_Maps";
 import Types "./types/Types";
@@ -15,21 +16,28 @@ actor TokenMap {
 
   type Token = VideoToken.video_token;
   type TokenAsRecord = Types.TokenAsRecord;
+  type Ownership = Types.Ownership;
 
-  let tokenMap = HashMap.HashMap<Principal, HashMap.HashMap<Nat, Token>>(0, ExchangeMaps.isEqPrinc, Principal.hash);
+  let tokenMap = HashMap.HashMap<Text, Token>(0, Text.equal, Text.hash);
+  let tokenOwners = HashMap.HashMap<Principal, [Ownership]>(0, Principal.equal, Principal.hash);
 
   public shared(msg) func createToken(owner: Text, name: Text, symbol: Text, decimals: Nat8, supply: Nat, metadata: Text) : async() {
     let ownerPrincipal = Principal.fromText(owner);
     let newToken = await VideoToken.video_token(name, symbol, decimals, supply, ownerPrincipal, metadata);
-    switch(tokenMap.get(ownerPrincipal)) {
+    let canisterId = Principal.toText(Principal.fromActor(newToken));
+
+    tokenMap.put(canisterId, newToken);
+
+    let newOwnership = {
+      tokenId = canisterId;
+      ownedAmount = supply;
+    };
+    switch(tokenOwners.get(ownerPrincipal)) {
       case null {
-        let newMap = HashMap.HashMap<Nat, Token>(0, ExchangeMaps.isEqNat, ExchangeMaps.natToHash);
-        newMap.put(0, newToken);
-        tokenMap.put(ownerPrincipal, newMap);
+        tokenOwners.put(ownerPrincipal, [newOwnership]);
       };
-      case (?tokensFromPrincipal) {
-        tokensFromPrincipal.put(tokensFromPrincipal.size(), newToken);
-        tokenMap.put(ownerPrincipal, tokensFromPrincipal);
+      case (?ownerships) {
+        tokenOwners.put(ownerPrincipal, Array.append(ownerships, [newOwnership]));
       };
     };
     Debug.print("Token <" # name # "> was created successfully");
@@ -37,28 +45,56 @@ actor TokenMap {
 
   public shared(msg) func getAllTokens() : async [TokenAsRecord] {
     var result: [TokenAsRecord] = [];
-    for (mapForPrincipal in tokenMap.entries()) {
-      for(tokenForPrincipal in mapForPrincipal.1.entries()) {
-        let tokenAsRecord = await _parseToken(tokenForPrincipal.1);
+    for(token in tokenMap.entries()) {
+        let tokenAsRecord = await _parseToken(token.1, 0);
         result := Array.append(result, [tokenAsRecord]);        
+      };
+    return result;
+  };
+
+  public shared(msg) func getOwnedTokens(holder: Text) : async [TokenAsRecord] {
+    let holderPrincipal = Principal.fromText(holder);
+    var result: [TokenAsRecord] = [];
+    switch(tokenOwners.get(holderPrincipal)) {
+      case null {};
+      case (?ownerships) {
+        for(ownership in ownerships.vals()) {
+          switch(tokenMap.get(ownership.tokenId)) {
+            case null {};
+            case (?token) {
+              let tokenAsRecord = await _parseToken(token, ownership.ownedAmount);
+              result := Array.append(result, [tokenAsRecord]);    
+            };
+          };
+        };    
       };
     };
     return result;
   };
 
-  public shared(msg) func getTokensForCreator(creator: Text) : async [TokenAsRecord] {
-    let creatorPrincipal = Principal.fromText(creator);
-    var result: [TokenAsRecord] = [];
-    switch(tokenMap.get(creatorPrincipal)) {
+  public shared(msg) func changeOwnership(holder: Text, tokenId: Text, delta: Int): async () {
+    let holderPrincipal = Principal.fromText(holder);
+    switch(tokenOwners.get(holderPrincipal)) {
       case null {};
-      case (?mapForPrincipal) {
-        for(tokenForPrincipal in mapForPrincipal.entries()) {
-          let tokenAsRecord = await _parseToken(tokenForPrincipal.1);
-          result := Array.append(result, [tokenAsRecord]);    
-        };    
+      case (?ownerships) {
+        for(ownership in ownerships.vals()) {
+          if(ownership.tokenId == tokenId) {
+            let remainingItems = Array.filter<Ownership>(ownerships, func(item: Ownership) : Bool { item.tokenId != tokenId });
+            let newAmount = ownership.ownedAmount + delta;
+            if(newAmount < 1) {
+              tokenOwners.put(holderPrincipal, remainingItems);
+            } else {
+              let newItem = {
+                tokenId = tokenId;
+                ownedAmount = newAmount;
+              };
+              tokenOwners.put(holderPrincipal, Array.append(remainingItems, [newItem]));
+            };
+            return;
+          };
+        };
       };
-    };
-    return result;
+    }; 
   };
 
   public shared(msg) func getTokenCount(): async Nat {
@@ -66,7 +102,7 @@ actor TokenMap {
   };
 
   // internal function
-  func _parseToken(token: Token): async TokenAsRecord {
+  func _parseToken(token: Token, ownedAmount: Int): async TokenAsRecord {
     let tokenId = Principal.toText(Principal.fromActor(token));
     var tokenName = "undefined";
     var tokenSymbol = "undefined";
@@ -112,6 +148,7 @@ actor TokenMap {
       symbol = tokenSymbol;
       supply = tokenSupply;
       metadata = tokenMetadata;
+      ownedAmount = ownedAmount;
     };
   };
 };
