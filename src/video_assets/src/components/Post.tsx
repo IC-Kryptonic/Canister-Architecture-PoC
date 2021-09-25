@@ -13,6 +13,7 @@ import { Principal } from "@dfinity/principal";
 import { trimString } from '../utils/texts';
 import { loadVideo } from '../services/video_backend';
 import { getProfile, followProfile, unfollowProfile } from '../services/profile_service';
+import { getVideoLikes, getVideoViews } from "../services/videometadata_service";
 import { Post } from '../interfaces/video_interface';
 import { Profile } from '../interfaces/profile_interface';
 
@@ -27,6 +28,16 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
   const classes = postStyles();
   const [video, setVideo] = useState(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+
+  const [viewNumber, setViewNumber] = useState(0);
+  const [likeNumber, setLikeNumber] = useState(0);
+
+  useEffect(() => {
+    if (post) {
+      setViewNumber(getVideoViews(post.video_id));
+      setLikeNumber(getVideoLikes(post.video_id));
+    }
+  }, [post]);
 
   useEffect(() => {
     async function queryVideo() {
@@ -125,7 +136,7 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
           </Grid>
           <Grid item>
             <IconButton className={classes.bottomButton}>
-              <VisibilityIcon />
+              <VisibilityIcon /><Typography variant="body2">{viewNumber}</Typography>
             </IconButton>
           </Grid>
         </Grid>

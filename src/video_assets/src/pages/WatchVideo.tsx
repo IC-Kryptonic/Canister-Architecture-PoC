@@ -23,7 +23,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
 import background from "../assets/images/watch_video_background.svg";
 import TabPanel from "../components/shared/TabPanel";
-import { getVideoOwners, getVideoBidders } from "../services/videometadata_service";
+import { getVideoOwners, getVideoBidders, getVideoLikes, getVideoViews } from "../services/videometadata_service";
 import PlaceBidDialog from "../components/watchvideo/PlaceBidDialog";
 import useQuery from '../utils/use_params';
 import { watchVideoStyles } from "../styles/watchvideo_styles";
@@ -156,7 +156,15 @@ interface MetaDataBoxProperties {
 
 const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
     const classes = watchVideoStyles();
-    const [viewNumber, setViewNumber] = useState(Math.floor(Math.random() * 1000));
+    const [viewNumber, setViewNumber] = useState(0);
+    const [likeNumber, setLikeNumber] = useState(0);
+
+    useEffect(() => {
+        if(post) {
+            setViewNumber(getVideoViews(post.video_id));
+            setLikeNumber(getVideoLikes(post.video_id));
+        }
+    }, [post]);
 
     return (
         <Grid
@@ -171,7 +179,7 @@ const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
                 <Box className={classes.titleBox}>
                     <Typography align="center" variant="h4"><b>{post?.name}</b></Typography>
                     <Divider />
-                    <Typography align="left" variant="h6">{post?.description}</Typography>
+                    <Typography align="left" variant="body1">{post?.description}</Typography>
                 </Box>
             </Grid>
 
@@ -181,7 +189,7 @@ const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
                         <VisibilityIcon className={classes.videoStatistic} />{viewNumber}
                     </Box>
                     <Box display="flex" justifyContent="center" alignItems="center">
-                        <FavoriteIcon className={classes.videoStatistic} />{1}
+                        <FavoriteIcon className={classes.videoStatistic} />{likeNumber}
                     </Box>
                 </Box>
             </Grid>

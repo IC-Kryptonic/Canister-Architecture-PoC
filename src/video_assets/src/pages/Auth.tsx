@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom';
 import Header from '../components/Header';
 import { AuthContext } from '../contexts/AuthContext';
 import { authWithInternetIdentity } from '../services/auth_services';
+import Layout from "../components/shared/Layout";
 
 const Auth = () => {
   const { isLoading, isAuthenticated, setIsLoading, setIsAuthenticated } =
@@ -26,8 +27,7 @@ const Auth = () => {
   };
 
   return (
-    <>
-      <Header />
+    <Layout title={"Login"}>
       <Grid container justify="center" spacing={2}>
         <Grid container justify="center" item>
           <span>Du bist nicht eingeloggt!</span>
@@ -47,7 +47,7 @@ const Auth = () => {
           </Button>
         </Grid>
       </Grid>
-    </>
+    </Layout>
   );
 };
 

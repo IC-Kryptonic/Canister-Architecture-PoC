@@ -3,6 +3,28 @@ interface VideoOwner {
     shares: number
 }
 
+const VideoLikes: {[videoId: string]: number} = {};
+
+function getVideoLikes(videoId: string): number {
+    if(VideoLikes[videoId]) {
+        return VideoLikes[videoId];
+    } else {
+        VideoLikes[videoId] = Math.floor(10 + Math.random() * 100);
+        return VideoLikes[videoId];
+    }
+}
+
+const VideoViews: {[videoId: string]: number} = {};
+
+function getVideoViews(videoId: string): number {
+    if(VideoViews[videoId]) {
+        return VideoViews[videoId];
+    } else {
+        VideoViews[videoId] = Math.floor(100 + Math.random() * 1000);
+        return VideoViews[videoId];
+    }
+}
+
 // Currently only a mockup
 function getVideoOwners(): VideoOwner[] {
     return [
@@ -53,6 +75,8 @@ function getVideoBidders(): VideoBidder[] {
 }
 
 export {
+    getVideoLikes,
+    getVideoViews,
     VideoOwner,
     getVideoOwners,
     VideoBidder,
