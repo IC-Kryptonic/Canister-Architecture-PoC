@@ -1,0 +1,11 @@
+import "../../../../src/common_types.did"
+
+service : {
+    "create_video": (VideoInfo, bool) -> (VideoInfo);
+    "update_cache": (principal) -> () oneway;
+
+    "get_random_feed": (nat64) -> (Feed) query;
+    "get_user_feed": (nat64, principal) -> (Feed) query;
+    "get_search_feed": (nat64, text) -> (Feed) query;
+    "get_creator_feed": (nat64, principal) -> (Feed) query;
+}

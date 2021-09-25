@@ -8,12 +8,12 @@ import VideocamIcon from '@material-ui/icons/Videocam';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 
 import GridPost from "../shared/GridPost";
-import { Profile } from "../../interfaces/profile_interface";
-import { Post } from "../../interfaces/video_interface";
-import { loadOwnerFeed } from '../../services/video_backend';
+import { LazyProfilePost } from "../../interfaces/profile_interface";
+import { VideoPost } from "../../interfaces/video_interface";
+import { loadCreatorFeed } from '../../services/video_backend';
 
 interface ProfileTabsInterface {
-    profile: Profile,
+    profile: LazyProfilePost,
     isOwner: Boolean
 }
 
@@ -21,16 +21,16 @@ function ProfileTabs({ profile, isOwner }: ProfileTabsInterface) {
     const classes = useProfileTabsStyles();
     const [value, setValue] = useState(0);
 
-    const [profilePosts, setProfilePosts] = useState<Post[]>([]);
-    const [likedPosts, setLikedPosts] = useState<Post[]>([]);
+    const [profilePosts, setProfilePosts] = useState<VideoPost[]>([]);
+    const [likedPosts, setLikedPosts] = useState<VideoPost[]>([]);
 
     const handleProfilePosts= async () => {
-        let profilePosts = await loadOwnerFeed(profile.principal);
+        let profilePosts = await loadCreatorFeed(10, profile.principal);
         setProfilePosts(profilePosts);
     }
 
     const handleLikedPosts= async () => {
-        let likedPosts = await loadOwnerFeed(profile.principal);
+        let likedPosts = await loadCreatorFeed(10, profile.principal);
         setLikedPosts(likedPosts);
     }
 
@@ -103,9 +103,9 @@ function ProfileTabs({ profile, isOwner }: ProfileTabsInterface) {
 }
 
 interface ProfilePostsInterface {
-    profile: Profile,
+    profile: LazyProfilePost,
     isOwner: Boolean,
-    profilePosts: Post[]
+    profilePosts: VideoPost[]
 }
 
 function ProfilePosts({ profile, isOwner, profilePosts }: ProfilePostsInterface) {
@@ -128,7 +128,7 @@ function ProfilePosts({ profile, isOwner, profilePosts }: ProfilePostsInterface)
         <article className={classes.article}>
             <div className={classes.postContainer}>
                 {profilePosts.map((post) => (
-                    <GridPost key={post.video_id} post={post} />
+                    <GridPost key={post.storageType.canister.toString()} post={post} />
                 ))}
             </div>
         </article>
@@ -136,8 +136,8 @@ function ProfilePosts({ profile, isOwner, profilePosts }: ProfilePostsInterface)
 }
 
 interface LikedPostsInterface {
-    profile: Profile,
-    likedPosts: Post[]
+    profile: LazyProfilePost,
+    likedPosts: VideoPost[]
 }
 
 function SavedPosts({ profile, likedPosts }: LikedPostsInterface) {
@@ -161,7 +161,7 @@ function SavedPosts({ profile, likedPosts }: LikedPostsInterface) {
     <article className={classes.article}>
       <div className={classes.postContainer}>
         {likedPosts.map((post) => (
-          <GridPost key={post.video_id} post={post} />
+          <GridPost key={post.storageType.canister.toString()} post={post} />
         ))}
       </div>
     </article>

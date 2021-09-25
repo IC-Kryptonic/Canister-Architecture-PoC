@@ -10,10 +10,10 @@ import {
     WhatsappIcon
 } from "react-share";
 import Layout from "../components/shared/Layout";
-import { Profile } from "../interfaces/profile_interface";
-import { getNextVideo, getVideoInfo, loadVideo } from "../services/video_backend";
-import { Post } from "../interfaces/video_interface";
-import { getProfile } from "../services/profile_service";
+import { LazyProfilePost } from "../interfaces/profile_interface";
+import { loadVideo, _loadVideoPosts } from "../services/video_backend";
+import { VideoPost } from "../interfaces/video_interface";
+// import { getProfile } from "../services/profile_service";
 import { Principal } from "@dfinity/principal";
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import FavoriteIcon from '@material-ui/icons/Favorite';
@@ -21,12 +21,12 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
-import background from "../assets/images/watch_video_background.svg";
 import TabPanel from "../components/shared/TabPanel";
 import { getVideoOwners, getVideoBidders, getVideoLikes, getVideoViews } from "../services/videometadata_service";
 import PlaceBidDialog from "../components/watchvideo/PlaceBidDialog";
 import useQuery from '../utils/use_params';
 import { watchVideoStyles } from "../styles/watchvideo_styles";
+import { getLazyUserProfile } from "../services/profile_backend";
 
 interface WatchVideoPathParam {
     id: string
@@ -34,11 +34,11 @@ interface WatchVideoPathParam {
 
 const WatchVideo = () => {
     const classes = watchVideoStyles();
-    const [post, setPost] = useState<Post | null>(null);
+    const [post, setPost] = useState<VideoPost | null>(null);
     const [videoNumber, setVideoNumber] = useState(0);
 
     const [video, setVideo] = useState(null);
-    const [profile, setProfile] = useState<Profile | null>(null);
+    const [profile, setProfile] = useState<LazyProfilePost | null>(null);
 
     let { id }: WatchVideoPathParam = useParams();
 
@@ -52,26 +52,29 @@ const WatchVideo = () => {
 
     // Load initial config
     useEffect(() => {
-        async function queryVideo() {
+        async function queryVideoPost() {
             try {
-                const loadedVideoInfo = (await getVideoInfo(id))[0];
+                let videoPrincipal = Principal.fromText(id);
+                const loadedVideoInfo = (
+                    await _loadVideoPosts([videoPrincipal])
+                )[0];
                 setPost(loadedVideoInfo);
                 // console.log(loadedVideoInfo);
             } catch (error) {
                 console.error('Error loading video', error);
             }
         }
-        queryVideo();
+        queryVideoPost();
     }, []);
 
     // Refresh when post is changed
     useEffect(() => {
         async function queryVideo() {
             try {
-                const loadedVideo = await loadVideo(post);
-                setVideo(loadedVideo);
-                const loadedProfile = await getProfile(Principal.from(post.owner));
-                setProfile(loadedProfile);
+                if (post) {
+                    const loadedVideo = await loadVideo(post);
+                    setVideo(loadedVideo);
+                }
             } catch (error) {
                 console.error('Error loading video', error);
             }
@@ -79,28 +82,42 @@ const WatchVideo = () => {
         queryVideo();
     }, [post]);
 
-    // Load next video in queue
-    const loadNext = async (loadNext: boolean) => {
-        let videoToLoad = videoNumber;
-        if (loadNext) {
-            videoToLoad = videoToLoad - 1;
-        } else {
-            videoToLoad = videoToLoad + 1;
+    useEffect(() => {
+        async function queryProfile() {
+            try {
+                if (post) {
+                    const loadedProfile = await getLazyUserProfile(Principal.from(post.owner));
+                    setProfile(loadedProfile);
+                }
+            } catch (error) {
+                console.error('Error loading profile', error);
+            }
         }
-        let { post, id } = (await getNextVideo(videoToLoad));
-        console.info(post);
-        history.push(`/video/${post.video_id}?id=${id}`);
-        setPost(post);
-        // Null other attributes to cause a rerender
-        setVideo(null);
-        setProfile(null);
-    }
+        queryProfile();
+    }, [post]);
+
+    // TODO: Load next video in queue
+    // const loadNext = async (loadNext: boolean) => {
+    //     let videoToLoad = videoNumber;
+    //     if (loadNext) {
+    //         videoToLoad = videoToLoad - 1;
+    //     } else {
+    //         videoToLoad = videoToLoad + 1;
+    //     }
+    //     let { post, id } = (await getNextVideo(videoToLoad));
+    //     console.info(post);
+    //     history.push(`/video/${post.video_id}?id=${id}`);
+    //     setPost(post);
+    //     // Null other attributes to cause a rerender
+    //     setVideo(null);
+    //     setProfile(null);
+    // }
 
     return (
         <Layout title={"test"} marginTop={0}>
             <Box display="flex" flexWrap="nowrap" justifyContent="space-evenly" alignItems="stretch">
-                <VideoControls loadNext={loadNext} />
-                <VideoBox post={post} video={video} />
+                {/* <VideoControls loadNext={loadNext} /> */}
+                <VideoBox video={video} />
                 <MetaDataBox post={post} profile={profile} />
             </Box>
         </Layout>
@@ -127,7 +144,6 @@ const VideoControls = ({ loadNext }: VideoControlsProps) => {
 }
 
 interface VideoBoxProps {
-    post: Post,
     video?: string
 }
 
@@ -150,8 +166,8 @@ const VideoBox = ({ video }: VideoBoxProps) => {
 }
 
 interface MetaDataBoxProperties {
-    post?: Post,
-    profile?: Profile
+    post?: VideoPost,
+    profile?: LazyProfilePost
 }
 
 const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
@@ -160,9 +176,9 @@ const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
     const [likeNumber, setLikeNumber] = useState(0);
 
     useEffect(() => {
-        if(post) {
-            setViewNumber(getVideoViews(post.video_id));
-            setLikeNumber(getVideoLikes(post.video_id));
+        if (post) {
+            setViewNumber(getVideoViews(post?.storageType.canister.toString()));
+            setLikeNumber(getVideoLikes(post?.storageType.canister.toString()));
         }
     }, [post]);
 
@@ -236,7 +252,7 @@ const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
 };
 
 interface OwnerBidSectionProps {
-    profile: Profile
+    profile: LazyProfilePost
 }
 
 const OwnerBidSection = ({ profile }: OwnerBidSectionProps) => {

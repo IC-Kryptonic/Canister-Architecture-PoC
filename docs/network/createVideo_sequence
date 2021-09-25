@@ -1,0 +1,27 @@
+@startuml
+activate Frontend
+Frontend -> VideoBackend: create_video(video_info, true)
+activate VideoBackend
+create VideoCanister
+VideoBackend ->> VideoCanister: create_video(video_info)
+Frontend <-- VideoBackend: create_video: video_info
+deactivate VideoBackend
+
+loop chunk_num times
+    Frontend ->> VideoCanister: insert_chunk(chunk)
+    activate VideoCanister
+    deactivate VideoCanister
+end
+
+Frontend -> TokenManager: create_token(token_info)
+activate TokenManager
+TokenManager ->> Token: create_token(token_info)
+activate Token
+deactivate Token
+TokenManager ->> VideoCanister: set_owner(principal)
+activate VideoCanister
+deactivate VideoCanister
+TokenManager --> Frontend: create_token: token_info
+deactivate TokenManager
+
+@enduml

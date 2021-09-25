@@ -22,8 +22,8 @@ function Search() {
         <Box>
             <form onSubmit={handleSubmit} className={classes.form} >
                 <input id="search" type="text" placeholder="Search" className={classes.input} />
-                <IconButton aria-label="Search videos" type="submit" className={classes.button} >
-                    <SearchIcon />
+                <IconButton aria-label="Search videos" type="submit" className={classes.button}>
+                    <SearchIcon/>
                 </IconButton>
             </form>
         </Box>

@@ -1,0 +1,12 @@
+import "../../../../src/common_types.did";
+
+service : (VideoInfo) -> {
+    "insert_chunk": (ChunkNum, Chunk) -> () oneway;
+    "get_chunk": (ChunkNum) -> (opt Chunk) query;
+    "set_owner": (principal) -> () oneway;
+    "get_info": () -> (VideoInfo) query;
+    "add_like": () -> () oneway;
+    "add_comment": (text) -> () oneway;
+    "get_comment": (principal) -> (opt text) query;
+    "get_comments": (nat64) -> (vec Comment) query;
+}

@@ -6,7 +6,6 @@ import { AuthContextState } from './contexts/AuthContextState';
 import Auth from './pages/Auth';
 import Feed from './pages/Feed';
 import Upload from './pages/Upload';
-import Profile from './pages/Profile';
 import ProfilePage from './pages/ProfilePage';
 import WatchVideo from './pages/WatchVideo';
 

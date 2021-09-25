@@ -1,0 +1,28 @@
+@startuml
+activate Frontend
+alt random
+    Frontend -> VideoBackend: get_random_feed(length)
+    activate VideoBackend
+    VideoBackend --> Frontend: get_random_feed: feed
+    deactivate VideoBackend
+else user_feed
+    Frontend -> VideoBackend: get_user_feed(length, user_principal)
+    activate VideoBackend
+    VideoBackend -> ProfileBackend: get_profile(length, user_principal)
+    activate ProfileBackend
+    VideoBackend <-- ProfileBackend: get_profile: profile
+    deactivate ProfileBackend
+    Frontend <-- VideoBackend: get_user_feed: feed
+    deactivate VideoBackend
+else creator_feed
+    Frontend -> VideoBackend: get_creator_feed(length, creator_principal)
+    activate VideoBackend
+    VideoBackend --> Frontend: get_creator_feed: feed
+    deactivate VideoBackend
+else search_feed
+    Frontend -> VideoBackend: get_search_feed(length, search_word)
+    activate VideoBackend
+    VideoBackend --> Frontend: get_search_feed: feed
+    deactivate VideoBackend
+end
+@enduml

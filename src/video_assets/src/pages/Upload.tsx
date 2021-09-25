@@ -6,6 +6,7 @@ import { uploadStyles } from '../styles/upload_styles';
 import { uploadVideo } from '../services/video_backend';
 import { ToastContainer, toast } from 'react-toastify';
 import Layout from '../components/shared/Layout';
+import {CreateVideoPost} from "../interfaces/video_interface";
 
 const maxFileSize = 30000000;
 const filesLimit = 1;
@@ -35,8 +36,15 @@ const Upload = () => {
   const executeUpload = async () => {
     setUploading(true);
     try {
-      await uploadVideo(title, description, video, setProgressBarValue);
-      toast.success('Video sucessfuly uploaded!', {
+      let createPost: CreateVideoPost = {
+        name: title,
+        description: description,
+        keywords: [],
+        thumbnail: undefined,
+        video: video,
+      }
+      await uploadVideo(createPost, true, setProgressBarValue );
+      toast.success('Video erfolgreich hochgeladen!', {
         position: 'bottom-left',
         autoClose: 5000,
         hideProgressBar: true,

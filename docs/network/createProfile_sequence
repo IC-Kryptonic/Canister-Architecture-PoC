@@ -1,0 +1,6 @@
+@startuml
+    activate Frontend
+    Frontend ->> ProfileBackend: put_profile(profile)
+    activate ProfileBackend
+    deactivate ProfileBackend
+@enduml

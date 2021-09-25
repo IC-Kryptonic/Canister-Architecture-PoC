@@ -1,0 +1,8 @@
+@startuml
+activate Frontend
+
+Frontend -> VideoCanister: get_comments(#)
+activate VideoCanister
+VideoCanister --> Frontend: get_comments: comments
+deactivate VideoCanister
+@enduml

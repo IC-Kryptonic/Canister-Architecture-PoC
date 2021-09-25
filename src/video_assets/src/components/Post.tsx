@@ -12,30 +12,29 @@ import { Principal } from "@dfinity/principal";
 
 import { trimString } from '../utils/texts';
 import { loadVideo } from '../services/video_backend';
-import { getProfile, followProfile, unfollowProfile } from '../services/profile_service';
 import { getVideoLikes, getVideoViews } from "../services/videometadata_service";
-import { Post } from '../interfaces/video_interface';
-import { Profile } from '../interfaces/profile_interface';
+import { VideoPost } from '../interfaces/video_interface';
+import { LazyProfilePost } from '../interfaces/profile_interface';
+import { getLazyUserProfile } from '../services/profile_backend';
 
 interface PostProps {
-  post: Post;
+  post: VideoPost;
   like: Boolean;
-  likeVideo: (id: String) => void;
 }
 
-const Post = ({ post, like, likeVideo }: PostProps) => {
+const Post = ({ post, like }: PostProps) => {
 
   const classes = postStyles();
   const [video, setVideo] = useState(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<LazyProfilePost | null>(null);
 
   const [viewNumber, setViewNumber] = useState(0);
   const [likeNumber, setLikeNumber] = useState(0);
 
   useEffect(() => {
     if (post) {
-      setViewNumber(getVideoViews(post.video_id));
-      setLikeNumber(getVideoLikes(post.video_id));
+      setViewNumber(getVideoViews(post.storageType.canister.toString()));
+      setLikeNumber(getVideoLikes(post.storageType.canister.toString()));
     }
   }, [post]);
 
@@ -44,29 +43,35 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
       try {
         const loadedVideo = await loadVideo(post);
         setVideo(loadedVideo);
-        const loadedProfile = await getProfile(Principal.from(post.owner));
+      } catch (error) {
+        console.error('Error loading video', error);
+      }
+    }
+    async function queryProfile() {
+      try {
+        const loadedProfile = await getLazyUserProfile(post.owner);
         setProfile(loadedProfile);
-        console.info(loadedProfile);
       } catch (error) {
         console.error('Error loading video', error);
       }
     }
     queryVideo();
+    queryProfile();
   }, [post]);
 
-  const likeButtonHandler = async (videoId: String) => {
-    likeVideo(videoId);
+  const likeButtonHandler = async (videoPrincipal: Principal) => {
+    
   }
 
   const followHandler = async () => {
     if (profile) {
-      followProfile(Principal.from(profile.principal));
+      // followProfile(Principal.from(profile.principal));
     }
   }
 
   const unfollowHandler = async () => {
     if (profile) {
-      unfollowProfile(Principal.from(profile.principal));
+      // unfollowProfile(Principal.from(profile.principal));
     }
   }
 
@@ -76,7 +81,7 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
         {/* Post header with user info & follow button */}
         <Grid container alignItems="center" justify="space-between">
           <Grid item>
-            <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
+            <Link to={`/profile/${profile? profile.principal.toString(): ""}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
               <Box display="flex" justifyContent="left" alignItems="center">
                 <AccountCircle className={classes.userProfile} />
                 <strong>{profile?.name || '<<username>>'}</strong>
@@ -84,10 +89,10 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
             </Link>
           </Grid>
           <Grid item className={classes.lightText}>
-            {post?.video_id
-              ? (
-                <Link to={`/video/${post.video_id}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
-                  {trimString(post.video_id[0], 30)}
+            {post?
+              (
+                <Link to={`/video/${post.storageType.canister}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
+                  {trimString(post.storageType.canister.toString(), 30)}
                 </Link>
               )
               : '<<video_id>>'}
@@ -125,11 +130,11 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
             {
               like ? (
                 <IconButton className={classes.bottomButton}>
-                  <FavoriteIcon />
+                  <FavoriteIcon /><Typography variant="body2">{likeNumber}</Typography>
                 </IconButton>
               ) : (
-                <IconButton className={classes.bottomButton} onClick={() => likeButtonHandler(post.video_id[0])}>
-                  <FavoriteBorderIcon />
+                <IconButton className={classes.bottomButton} onClick={() => likeButtonHandler(post?.storageType.canister)}>
+                  <FavoriteBorderIcon /><Typography variant="body2">{likeNumber}</Typography>
                 </IconButton>
               )
             }

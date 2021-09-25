@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
 import Header from '../components/Header';
 import PostComponent from '../components/Post';
-import { loadDefaultFeed, loadSearchFeed } from '../services/video_backend';
-import { loadProfile, likeVideo } from '../services/profile_service';
-import { Post } from '../interfaces/video_interface';
-import { Profile } from '../interfaces/profile_interface';
+import { loadRandomFeed, loadSearchFeed } from '../services/video_backend';
+import { VideoPost } from '../interfaces/video_interface';
 import useQuery from '../utils/use_params';
+import { LazyProfilePost } from '../interfaces/profile_interface';
+import { getLazyMyProfile } from '../services/profile_backend';
 
 const Feed = () => {
-  const [posts, setPosts] = useState<Array<Post>>([]);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [posts, setPosts] = useState<Array<VideoPost>>([]);
+  const [profile, setProfile] = useState<LazyProfilePost | null>(null);
   const [queryParams, setQueryParams] = useState<String | null>(null);
 
   // Query profile
   useEffect(() => {
     const handleProfile = async () => {
-      let profile = await loadProfile();
+      let profile = await getLazyMyProfile();
       setProfile(profile);
     };
     handleProfile();
@@ -33,27 +33,16 @@ const Feed = () => {
   useEffect(() => {
     async function queryFeed() {
       try {
-        if (!query.get("search")) {
-          const res = await loadDefaultFeed(10);
-          setPosts(res);
-        } else {
-          const res = await loadSearchFeed(query.get("search"));
-          setPosts(res);
-        }
-
+        const res = (queryParams)? 
+        await loadSearchFeed(10, queryParams):
+        await loadRandomFeed(10);
+        setPosts(res);
       } catch (error) {
         console.error('Error querying feed', error);
       }
     }
     queryFeed();
   }, [queryParams]);
-
-  const likeVideoHandler = async (videoId: String) => {
-    setProfile({ ...profile, likes: profile.likes.concat([videoId]) });
-    await likeVideo(videoId);
-  }
-
-  console.log(profile);
 
   return (
     <>
@@ -62,7 +51,7 @@ const Feed = () => {
         {posts && posts.length > 0 ? (
           <>
             {posts.map((post, index) => (
-              <PostComponent key={index} post={post} like={profile && profile.likes.includes(post.video_id[0])} likeVideo={likeVideoHandler} />
+              <PostComponent key={index} post={post} like={true} />
             ))}
           </>
         ) : (

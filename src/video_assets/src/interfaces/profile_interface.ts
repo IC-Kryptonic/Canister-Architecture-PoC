@@ -1,15 +1,32 @@
-import { Principal } from '@dfinity/principal';
+import {Principal} from "@dfinity/principal";
+import {VideoPost} from "./video_interface";
 
-export interface Profile {
-    principal: Principal,
+export interface CreateProfilePost {
     name: string,
-    bio: string,
-    likes: Array<String>
-    follows: Principal[],
-    followers: Principal[],
 }
 
-export interface ProfileUpdate {
+export interface LazyProfilePost {
+    principal: Principal,
     name: string,
-    bio: string,
+    likes: Array<Principal>,
+    comments: Array<Principal>,
+    viewed: Array<Principal>,
+}
+
+export interface ProfilePost{
+    principal: Principal,
+    name: string,
+    likes: Array<VideoPost>,
+    comments: Array<VideoPost>,
+    viewed: Array<VideoPost>,
+}
+
+export interface LazyUserComment{
+    commenter: Principal,
+    comment: string,
+}
+
+export interface UserComment{
+    commenter: LazyProfilePost,
+    comment: string,
 }
