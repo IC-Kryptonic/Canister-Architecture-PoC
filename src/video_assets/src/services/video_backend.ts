@@ -31,25 +31,25 @@ async function loadRandomFeed(count: number): Promise<Array<VideoPost>> {
   await agent.fetchRootKey();
   let principals: Array<Principal> = await videoBackend.get_random_feed(count) as Array<Principal>;
 
-  return _loadVideoPosts(principals);
+  return loadVideoPosts(principals);
 }
 
 async function loadUserFeed(count: number): Promise<Array<VideoPost>> {
   let principals: Array<Principal> = await videoBackend.get_user_feed(count, await agent.getPrincipal()) as Array<Principal>;
 
-  return _loadVideoPosts(principals);
+  return loadVideoPosts(principals);
 }
 
 async function loadSearchFeed(count: number, to_search: String): Promise<Array<VideoPost>> {
   let principals: Array<Principal> = await videoBackend.get_search_feed(count, to_search) as Array<Principal>;
 
-  return _loadVideoPosts(principals);
+  return loadVideoPosts(principals);
 }
 
 async function loadCreatorFeed(count: number, creator: Principal): Promise<Array<VideoPost>> {
   let principals: Array<Principal> = await videoBackend.get_creator_feed(count, creator) as Array<Principal>;
 
-  return _loadVideoPosts(principals);
+  return loadVideoPosts(principals);
 }
 
 async function loadVideo(videoInfo: VideoPost): Promise<string> {
@@ -176,7 +176,7 @@ async function uploadVideo(
   return video_principal;
 }
 
-async function _loadVideoPosts(principals: Array<Principal>): Promise<Array<VideoPost>>{
+async function loadVideoPosts(principals: Array<Principal>): Promise<Array<VideoPost>>{
 
   const promises: Array<Promise<VideoInfo>> = [];
   principals.forEach( (principal) => {
@@ -237,5 +237,5 @@ function createVideoActor(principal: Principal): ActorSubclass{
       });
 }
 
-export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, createVideoActor, loadVideoComments, _loadVideoPosts};
+export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, createVideoActor, loadVideoComments, loadVideoPosts};
 
