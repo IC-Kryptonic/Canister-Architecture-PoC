@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-import { Grid, Button, CircularProgress, IconButton } from '@material-ui/core';
+import { Box, Grid, Button, CircularProgress, IconButton, Typography } from '@material-ui/core';
 import { postStyles } from '../styles/post_styles';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import Collapsible from "react-collapsible-paragraph";
 
 import { Principal } from "@dfinity/principal";
 
@@ -64,40 +65,37 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
         {/* Post header with user info & follow button */}
         <Grid container alignItems="center" justify="space-between">
           <Grid item>
-            <Grid container>
-              <Grid item>
-                <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
-                  <AccountCircle className={classes.userProfile} />
+            <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
+              <Box display="flex" justifyContent="left" alignItems="center">
+                <AccountCircle className={classes.userProfile} />
+                <strong>{profile?.name || '<<username>>'}</strong>
+              </Box>
+            </Link>
+          </Grid>
+          <Grid item className={classes.lightText}>
+            {post?.video_id
+              ? (
+                <Link to={`/video/${post.video_id}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
+                  {trimString(post.video_id[0], 30)}
                 </Link>
-              </Grid>
-              <Grid item>
-                <Grid container spacing={1}>
-                  <Grid item>
-                    <Link to={`/profile/${profile?.principal.toText()}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
-                      <strong>{profile?.name || '<<username>>'}</strong>
-                    </Link>
-                  </Grid>
-                  <Grid item className={classes.lightText}>
-                    {post?.video_id
-                      ? (
-                        <Link to={`/video/${post.video_id}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
-                          {trimString(post.video_id, 15)}
-                        </Link>
-                      )
-                      : '<<video_id>>'}
-                  </Grid>
-                </Grid>
-                <Grid container spacing={1}>
-                  <Grid item>{post?.name || '<<name>>'}</Grid>
-                </Grid>
-                <Grid container spacing={1}>
-                  <Grid item>{post?.description || '<<description>>'}</Grid>
-                </Grid>
-              </Grid>
-            </Grid>
+              )
+              : '<<video_id>>'}
           </Grid>
           <Grid item>
             <Button className={classes.followButton} onClick={followHandler}>Follow</Button>
+          </Grid>
+        </Grid>
+        {/* Title and description */}
+        <Grid container direction="column" spacing={1}>
+          <Grid item>
+            <Typography align="left">
+              {post?.name || '<<name>>'}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Collapsible lines={2}>
+              {post?.description || '<<description>>'}
+            </Collapsible>
           </Grid>
         </Grid>
         {/* Post body with video */}
@@ -131,7 +129,7 @@ const Post = ({ post, like, likeVideo }: PostProps) => {
             </IconButton>
           </Grid>
         </Grid>
-      </Grid>
+      </Grid >
     </Grid >
   );
 };

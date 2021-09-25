@@ -32,6 +32,9 @@ const uploadStyles = makeStyles({
   },
   textBox: {
     marginBottom: "10px"
+  },
+  lastItem: {
+    marginBot: "25px"
   }
 });
 

@@ -148,21 +148,12 @@ const Upload = () => {
             <b>Marketplace settings</b>
           </Typography>
 
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box display="flex" justifyContent="left" alignItems="center">
             <TextField
               id="standard-number"
               label="Number of shares"
               type="number"
-              InputLabelProps={{
-                shrink: true,
-              }}
-            // onChange={handleBidChange}
-            />
-
-            <TextField
-              id="standard-number"
-              label="Price per share"
-              type="number"
+              defaultValue={1}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -173,7 +164,7 @@ const Upload = () => {
         </Grid>
 
         <Grid item className={classes.gridItem}>
-          <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+          <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" className={classes.lastItem}>
             {
               !uploading ? (
                 <Button
@@ -190,6 +181,7 @@ const Upload = () => {
               )
             }
           </Box>
+          <br/>
         </Grid>
       </Grid>
     </Layout>

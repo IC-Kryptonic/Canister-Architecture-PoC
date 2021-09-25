@@ -43,7 +43,7 @@ const postStyles = makeStyles({
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginRight: 15,
+    marginRight: 3,
   },
   lightText: {
     color: 'rgb(163, 162, 162)',

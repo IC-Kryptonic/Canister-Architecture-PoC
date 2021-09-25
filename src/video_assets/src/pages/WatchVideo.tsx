@@ -259,7 +259,7 @@ const OwnerBidSection = ({ profile }: OwnerBidSectionProps) => {
         <Box>
             <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
                 <Tab label="Owners" />
-                <Tab label="Bids" />
+                <Tab label="Offers" />
             </Tabs>
             <TabPanel value={value} index={0}>
                 {
@@ -295,7 +295,7 @@ const OwnerBidSection = ({ profile }: OwnerBidSectionProps) => {
             <Box display="flex" justifyContent="center">
                 <Button variant="contained" color="secondary" className={classes.bidButton} onClick={() => setDialogOpen(true)}>
                     <Typography align="center" variant="subtitle2">
-                        Place a bid
+                        Go to marketplace
                     </Typography>
                 </Button>
             </Box>
