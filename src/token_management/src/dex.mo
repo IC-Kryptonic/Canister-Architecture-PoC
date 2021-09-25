@@ -45,6 +45,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
       from = caller;
       token = videoTokenActor;
       tokenName = tokenName;
+      canisterId = tokenId;
       pricePerShare = pricePerShare;
       shareAmount = shareAmount;
       offerTimeStamp = Time.now();
@@ -97,9 +98,8 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
   };
   
   public shared (msg) func realizeExchange(
-    caller: Principal, currentOwner: Text, tokenId: Text, pricePerShare: Nat, shareAmount: Nat
+    caller: Principal, ownerPrincipal: Principal, tokenId: Text, pricePerShare: Nat, shareAmount: Nat
   ): async Result.Result<(), ExchangeError> {
-    let ownerPrincipal = Principal.fromText(currentOwner);
     let videoTokenActor = actor(tokenId) : TokenActor;
     let price = pricePerShare * shareAmount;
     let canisterPrincipal = await _getThisPrincipal();
@@ -157,6 +157,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
                   from = validExchange.from;
                   token = validExchange.token;
                   tokenName = validExchange.tokenName;
+                  canisterId = tokenId;
                   pricePerShare = validExchange.pricePerShare;
                   shareAmount = validExchange.shareAmount;
                   offerTimeStamp = validExchange.offerTimeStamp;

@@ -25,6 +25,7 @@ export interface VideoTokenOffer {
   from: string;
   token: string;
   tokenName: string;
+  canisterId: string;
   pricePerShare: number;
   shareAmount: number;
   offerTimeStamp: string;
@@ -32,6 +33,7 @@ export interface VideoTokenOffer {
 
 export interface OffersByToken {
   tokenName: string;
+  canisterId: string;
   minPrice: number;
   maxPrice: number;
   offeredAmount: number;

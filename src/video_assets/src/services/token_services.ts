@@ -106,12 +106,16 @@ export const realizeExchange = async (
   // TODO determine which offers must be realized
   let offer = offers[0];
   // allow dex to transfer the token on video token canister
-  await nativeTokenActor.approve(identityPrincipal, dexPrincipal, amount * offer.pricePerShare);
+  await nativeTokenActor.approve(
+    identityPrincipal,
+    dexPrincipal,
+    amount * parseInt(offer.pricePerShare.toString())
+  );
   // realize exchanges on dex canister for each offer
   await dexActor.realizeExchange(
-    identity,
+    identityPrincipal,
     offer.from,
-    offer.token,
+    offer.canisterId,
     offer.pricePerShare,
     offer.shareAmount
   );

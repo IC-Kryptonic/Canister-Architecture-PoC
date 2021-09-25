@@ -17,7 +17,7 @@ module Exchange {
       from = #principal(shareBuyer);
       to = #principal(shareHolder);
       token = "";
-      amount = shareAmount;
+      amount = shareAmount * pricePerShare;
       memo = "";
       notify = false;
       subaccount = null;

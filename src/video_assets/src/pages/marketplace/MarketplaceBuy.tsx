@@ -23,8 +23,7 @@ function findId(id: string | null, tokens: Array<OffersByToken>): OffersByToken 
   if (!id || tokens.length < 1) {
     return null;
   }
-  // TODO cast principal to string properly
-  let result = tokens.find((token: OffersByToken) => id === token.offers[0].token.toString());
+  let result = tokens.find((token: OffersByToken) => id === token.canisterId);
   return result;
 }
 
@@ -42,7 +41,10 @@ const MarketplaceBuy = () => {
   useEffect(() => {
     if (!offersByToken) return;
 
-    let amounts = Array.from({ length: offersByToken.offeredAmount }, (x, i) => i + 1);
+    let amounts = Array.from(
+      { length: parseInt(offersByToken.offeredAmount.toString()) },
+      (x, i) => i + 1
+    );
     let amountsAsOptions = amounts.map((element: number) => {
       return { label: `${element}`, value: `${element}` };
     });
@@ -53,6 +55,8 @@ const MarketplaceBuy = () => {
     switch (action) {
       case 'select-option':
         setSelectedAmount(value);
+        // TODO actually calculate the total price
+        setPrice(parseInt(value.value) * parseInt(offersByToken.minPrice.toString()));
         break;
       default:
         setSelectedAmount(null);
@@ -68,7 +72,7 @@ const MarketplaceBuy = () => {
     try {
       await realizeExchange(identity, offersByToken.offers, parseInt(selectedAmount.value));
     } catch (error) {
-      console.error('error creating offer on dex', error);
+      console.error('error realizing exchange on dex', error);
     }
   };
 

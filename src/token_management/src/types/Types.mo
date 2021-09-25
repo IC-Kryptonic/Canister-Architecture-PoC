@@ -41,6 +41,7 @@ module Types {
   public type Exchange = {
       from: Principal;
       token: TokenActor;
+      canisterId: Text;
       tokenName: Text;
       pricePerShare: Nat;
       shareAmount: Nat;
