@@ -49,7 +49,7 @@ const Post = ({ post, like }: PostProps) => {
     }
     async function queryProfile() {
       try {
-        const loadedProfile = await getLazyUserProfile(post.owner);
+        const loadedProfile = await getLazyUserProfile(post.creator);
         setProfile(loadedProfile);
       } catch (error) {
         console.error('Error loading video', error);
