@@ -6,7 +6,7 @@ use std::fs::File;
 
 mod util;
 
-use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE};
+use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile};
 
 #[tokio::main]
 async fn main() {
@@ -17,8 +17,12 @@ async fn main() {
     let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
     let video_backend = Actor::from_name("video_backend", identity).await;
 
+    let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+    let profile_backend = Actor::from_name("profile_backend", identity).await;
+
     upload_ads(&ad_manager, &video_backend).await;
     upload_videos(&video_backend).await;
+    create_profile(&profile_backend).await;
 }
 
 async fn upload_ads(ad_manager: &Actor, video_backend: &Actor){
@@ -118,6 +122,23 @@ async fn upload_videos(video_backend: &Actor){
             util::check_ok(response);
         }
     }
+}
+
+async fn create_profile(profile_backend: &Actor){
+
+    let profile = Profile{
+        principal: Principal::anonymous(),
+        name: "Seeder".to_string(),
+        likes: Default::default(),
+        comments: Default::default(),
+        viewed: Default::default()
+    };
+
+    let arg = Encode!(&profile).expect("Could not encode profile");
+
+    let response = profile_backend.update_call("put_profile", arg).await;
+    let raw_result = util::check_ok(response);
+    Decode!(raw_result.as_slice(), ()).expect("Could not decode result for put profile");
 }
 
 fn chunkify_video(video: File) ->Vec<Vec<u8>>{
