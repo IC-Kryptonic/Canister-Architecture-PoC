@@ -17,6 +17,7 @@ import Layout from '../components/shared/Layout';
 import { CreateVideoPost } from '../interfaces/video_interface';
 import { AuthContext } from '../contexts/AuthContext';
 import { createToken } from '../services/token_services';
+import { TokenContext } from '../contexts/TokenContext';
 
 const maxFileSize = 30000000;
 const filesLimit = 1;
@@ -24,6 +25,7 @@ const acceptedFiles = ['video/*'];
 
 const Upload = () => {
   const { identity } = useContext(AuthContext);
+  const { setTokenTrigger } = useContext(TokenContext);
   const classes = uploadStyles();
   const [video, setVideo] = useState<File | undefined>(undefined);
   const [title, setTitle] = useState<string>('');
@@ -57,6 +59,7 @@ const Upload = () => {
       };
       const videoId = await uploadVideo(createPost, true, setProgressBarValue);
       await createToken(identity, videoId, createPost, shareAmount);
+      setTokenTrigger(true);
       toast.success('Successfully uploaded video!', {
         position: 'bottom-left',
         autoClose: 5000,

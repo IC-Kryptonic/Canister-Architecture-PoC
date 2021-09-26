@@ -4,8 +4,8 @@ import { TokenContextProperties } from '../interfaces/token_context_interfaces';
 //these default values are never used, they're just making typescript happy
 
 export const TokenContext = createContext<TokenContextProperties>({
-  isLoading: true,
-  setIsLoading: () => {},
+  offersLoading: false,
+  dashboardLoading: false,
   tokenOffers: [],
   setTokenOffers: () => {},
   videoTokensForCreator: [],
@@ -13,5 +13,6 @@ export const TokenContext = createContext<TokenContextProperties>({
   nativeTokenBalance: 0,
   setNativeTokenBalance: () => {},
   setBalanceTrigger: () => {},
+  setTokenTrigger: () => {},
   videoMap: { timestamp: '', map: new Map() },
 });

@@ -14,7 +14,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import history from '../../components/History';
 
 const MarketplaceDashboard = () => {
-  const { videoTokensForCreator, videoMap, isLoading } = useContext(TokenContext);
+  const { videoTokensForCreator, videoMap, dashboardLoading } = useContext(TokenContext);
 
   const classes = marketplaceDashboardStyles();
   const statClasses = marketplaceStatStyles();
@@ -66,7 +66,7 @@ const MarketplaceDashboard = () => {
         <Grid container justify="center" style={{ marginTop: 30, fontSize: 32 }}>
           Your video shares
         </Grid>
-        {isLoading && (
+        {dashboardLoading && (
           <Grid container justify="center">
             <CircularProgress />
           </Grid>
@@ -81,7 +81,7 @@ const MarketplaceDashboard = () => {
                     <Grid container>
                       <Grid item xs="auto" style={{ minWidth: 200 }}>
                         {video ? (
-                          <video controls style={{ height: 300 }}>
+                          <video controls style={{ height: 300, maxWidth: 300 }}>
                             <source src={video} type="video/mp4" />
                           </video>
                         ) : (
@@ -99,7 +99,7 @@ const MarketplaceDashboard = () => {
                           Creator:
                         </Grid>
                         <Grid item xs={12} className={classes.factValue}>
-                          {videoToken.creator}
+                          Seeder
                         </Grid>
                         <Grid item xs={12} className={classes.factTitle}>
                           Shares (owned shares / existing shares):

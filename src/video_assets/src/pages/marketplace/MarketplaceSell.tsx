@@ -28,7 +28,7 @@ function findId(id: string | null, tokens: Array<VideoToken>): SelectOption | nu
 }
 
 const MarketplaceSell = () => {
-  const { videoTokensForCreator } = useContext(TokenContext);
+  const { videoTokensForCreator, setTokenTrigger } = useContext(TokenContext);
   const { identity } = useContext(AuthContext);
   let { id } = useParams<SellParams>();
 
@@ -95,13 +95,18 @@ const MarketplaceSell = () => {
   const createOffer = async () => {
     try {
       setLoading(true);
+      const tokenToOffer = videoTokensForCreator.find(
+        (element: VideoToken) => element.canisterId === selectedToken.value
+      );
       await createShareOffer(
         identity,
         selectedToken.value,
+        tokenToOffer.storageCanisterId,
         selectedToken.label,
         parseInt(selectedAmount.value),
         price
       );
+      setTokenTrigger(true);
     } catch (error) {
       console.error('error creating offer on dex', error);
     } finally {

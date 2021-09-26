@@ -18,9 +18,11 @@ interface TokenContextStateProps {
 const TokenContextState = (props: TokenContextStateProps) => {
   const { identity } = useContext(AuthContext);
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [offersLoading, setOffersLoading] = useState<boolean>(false);
+  const [dashboardLoading, setDashboardLoading] = useState<boolean>(false);
   const [tokenOffers, setTokenOffers] = useState<Array<OffersByToken>>([]);
   const [videoTokensForCreator, setVideoTokensForCreator] = useState<Array<VideoToken>>([]);
+  const [tokenTrigger, setTokenTrigger] = useState<boolean>(true);
   const [nativeTokenBalance, setNativeTokenBalance] = useState<null | Number>(null);
   const [balanceTrigger, setBalanceTrigger] = useState<boolean>(true);
   const [videoMap, setVideoMap] = useState<VideoMap>({
@@ -46,24 +48,29 @@ const TokenContextState = (props: TokenContextStateProps) => {
 
   useEffect(() => {
     async function queryOffersAndTokens() {
-      setIsLoading(true);
+      setOffersLoading(true);
+      setDashboardLoading(true);
       try {
         const tokenOffersResult = await getAllOffersByToken(identity);
         setTokenOffers(tokenOffersResult);
+        setOffersLoading(false);
         const videoTokensForCreatorResult = await getTokensForCreator(identity);
         setVideoTokensForCreator(videoTokensForCreatorResult);
+        setDashboardLoading(false);
         setVideoMapTrigger(true);
       } catch (error) {
         console.error('error fetching video tokens', error);
       } finally {
-        setIsLoading(false);
+        if (offersLoading) setOffersLoading(false);
+        if (dashboardLoading) setDashboardLoading(false);
+        if (tokenTrigger) setTokenTrigger(false);
       }
     }
 
     if (identity) {
       queryOffersAndTokens();
     }
-  }, [identity]);
+  }, [identity, tokenTrigger]);
 
   useEffect(() => {
     async function queryVideosForDashboard() {
@@ -94,9 +101,10 @@ const TokenContextState = (props: TokenContextStateProps) => {
   return (
     <TokenContext.Provider
       value={{
+        setTokenTrigger,
         setBalanceTrigger,
-        isLoading,
-        setIsLoading,
+        dashboardLoading,
+        offersLoading,
         tokenOffers,
         setTokenOffers,
         videoTokensForCreator,

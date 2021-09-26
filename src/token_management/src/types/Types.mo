@@ -43,6 +43,7 @@ module Types {
       from: Principal;
       token: TokenActor;
       canisterId: Text;
+      storageCanisterId: Text;
       tokenName: Text;
       pricePerShare: Nat;
       shareAmount: Nat;
