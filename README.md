@@ -48,6 +48,13 @@ cargo install ic-cdk-optimizer
 
 ```
 
+Add wasm32 as a target for Rust
+```
+
+rustup target add wasm32-unknown-unknown
+
+```
+
 Checkout our video_nft project:
 
 ```
@@ -173,18 +180,6 @@ If you start with a clean dfx replica, the deployment of the internet-identity c
 In that case, run `rm -rf .dfx` in the internet-identity repository and then deploy the canister.
 
 # Troubleshooting
-
-If you get the error `error[E0463]: can't find crate for 'core'`, following the instruction in the terminal, e.g.
-
-```
-
-rustup target add wasm32-unknown-unknown
-
-cargo build --target wasm32-unknown-unknown
-
-```
-
-Then try to deploy again.
 
 # Testing
 
