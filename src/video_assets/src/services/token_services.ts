@@ -100,6 +100,7 @@ export const realizeExchange = async (
 ) => {
   const dexActor = await getDexActor(identity);
   const nativeTokenActor = await getNativeTokenActor(identity);
+  const tokenBackend = await getTokenManagementActor(identity);
   const dexPrincipal = Principal.fromText(canisterIds.dex.local);
   const identityPrincipal = identity.getPrincipal();
 
@@ -119,6 +120,9 @@ export const realizeExchange = async (
     offer.pricePerShare,
     offer.shareAmount
   );
+  // change ownership
+  await tokenBackend.changeOwnership(offer.from, offer.canisterId, -offer.shareAmount);
+  await tokenBackend.changeOwnership(identityPrincipal, offer.canisterId, offer.shareAmount);
 };
 
 export const getAllOffers = async (identity: Identity): Promise<VideoTokenOffer[]> => {
@@ -141,6 +145,6 @@ export async function getAllTokens(identity: Identity): Promise<Array<VideoToken
 export async function getTokensForCreator(identity: Identity): Promise<Array<VideoToken>> {
   const tokenBackend = await getTokenManagementActor(identity);
   const principal = identity.getPrincipal().toText();
-  const result = (await tokenBackend.getTokensForCreator(principal)) as Array<VideoTokenResult>;
+  const result = (await tokenBackend.getOwnedTokens(principal)) as Array<VideoTokenResult>;
   return parseTokenResult(result);
 }

@@ -18,7 +18,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     thumbnail: RonaldoThumbnail,
     link: 'https://www.youtube.com/embed/Ahnby2vUlxM',
     supply: 100,
-    ownedShares: 27,
+    ownedAmount: 27,
   },
   {
     canisterId: '2',
@@ -32,7 +32,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     thumbnail: LissabonThumbnail,
     link: 'https://www.youtube.com/embed/n3YCrNhC1ak',
     supply: 20,
-    ownedShares: 2,
+    ownedAmount: 2,
   },
   {
     canisterId: '3',
@@ -46,7 +46,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     thumbnail: LisaThumbnail,
     link: 'https://www.youtube.com/embed/awkkyBH2zEo',
     supply: 30,
-    ownedShares: 12,
+    ownedAmount: 12,
   },
   {
     canisterId: '4',
@@ -60,7 +60,7 @@ export const mockVideoTokens: Array<VideoToken> = [
     thumbnail: AgostoThumbnail,
     link: 'https://www.youtube.com/embed/llvKcrvHt3w',
     supply: 46,
-    ownedShares: 42,
+    ownedAmount: 42,
   },
   {
     canisterId: '5',
@@ -74,6 +74,6 @@ export const mockVideoTokens: Array<VideoToken> = [
     thumbnail: PortoThumbnail,
     link: 'https://www.youtube.com/embed/NmAPsC2zRPo',
     supply: 100,
-    ownedShares: 3,
+    ownedAmount: 3,
   },
 ];

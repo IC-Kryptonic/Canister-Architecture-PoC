@@ -58,7 +58,7 @@ const MarketplaceSell = () => {
     );
 
     // TODO hacky
-    let amounts = Array.from({ length: parseInt(token.ownedShares.toString()) }, (x, i) => i + 1);
+    let amounts = Array.from({ length: parseInt(token.ownedAmount.toString()) }, (x, i) => i + 1);
     let amountsAsOptions = amounts.map((element: number) => {
       return { label: `${element}`, value: `${element}` };
     });

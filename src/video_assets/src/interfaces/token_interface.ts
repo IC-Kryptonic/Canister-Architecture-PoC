@@ -10,7 +10,7 @@ export interface VideoToken {
   priceChangeLastWeek: string;
   link: string;
   supply: number;
-  ownedShares?: Number;
+  ownedAmount: number;
 }
 
 export interface VideoTokenResult {
@@ -18,6 +18,7 @@ export interface VideoTokenResult {
   metadata: string;
   name: string;
   supply: BigInt;
+  ownedAmount: BigInt;
   symbol: string;
 }
 

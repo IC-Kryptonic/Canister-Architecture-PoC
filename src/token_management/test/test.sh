@@ -41,7 +41,7 @@ dfx identity use $video_share_seller_identity
 
 echo "TKM-TEST: Creating video token: (TEST, TST, 2, 200, {})"
 dfx canister call token_management createToken '("joalj-yj6rt-ruo4b-rwq5y-554ic-yh4r5-tv3qm-zt3r2-aclla-tk47i-qqe", "TEST", "TST", 2, 200, "{}")'
-
+dfx canister call token_management createToken '("mckk3-t5vc4-2eavt-jfqtw-ab6vd-q7d4j-3dkn3-uhqxz-e3knw-zntya-mae", "TEST", "TST", 2, 200, "{}")'
 dfx canister call token_management getOwnedTokens '("joalj-yj6rt-ruo4b-rwq5y-554ic-yh4r5-tv3qm-zt3r2-aclla-tk47i-qqe")'
 
 dfx canister call token_management changeOwnership '("joalj-yj6rt-ruo4b-rwq5y-554ic-yh4r5-tv3qm-zt3r2-aclla-tk47i-qqe", "5v72r-4aaaa-aaaaa-aabnq-cai", 5)'

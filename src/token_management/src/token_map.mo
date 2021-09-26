@@ -72,14 +72,19 @@ actor TokenMap {
     return result;
   };
 
-  public shared(msg) func changeOwnership(holder: Text, tokenId: Text, delta: Int): async () {
-    let holderPrincipal = Principal.fromText(holder);
+  public shared(msg) func changeOwnership(holderPrincipal: Principal, tokenId: Text, delta: Int): async () {
     switch(tokenOwners.get(holderPrincipal)) {
-      case null {};
+      case null {
+        tokenOwners.put(holderPrincipal, [{
+            tokenId = tokenId;
+            ownedAmount = delta;
+        }]);
+      };
       case (?ownerships) {
-        for(ownership in ownerships.vals()) {
-          if(ownership.tokenId == tokenId) {
-            let remainingItems = Array.filter<Ownership>(ownerships, func(item: Ownership) : Bool { item.tokenId != tokenId });
+        let matchingOwnerships = Array.filter<Ownership>(ownerships, func(item: Ownership) : Bool { item.tokenId == tokenId });
+        let remainingItems = Array.filter<Ownership>(ownerships, func(item: Ownership) : Bool { item.tokenId != tokenId });
+        if(matchingOwnerships.size() == 1) {
+            let ownership = matchingOwnerships[0];
             let newAmount = ownership.ownedAmount + delta;
             if(newAmount < 1) {
               tokenOwners.put(holderPrincipal, remainingItems);
@@ -91,7 +96,11 @@ actor TokenMap {
               tokenOwners.put(holderPrincipal, Array.append(remainingItems, [newItem]));
             };
             return;
-          };
+        } else if (matchingOwnerships.size() == 0 and delta > 0) {
+          tokenOwners.put(holderPrincipal, Array.append(remainingItems, [{
+            tokenId = tokenId;
+            ownedAmount = delta;
+          }]));
         };
       };
     }; 

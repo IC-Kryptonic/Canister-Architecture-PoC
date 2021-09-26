@@ -26,7 +26,7 @@ const MarketplaceFaucet = () => {
   };
 
   const buttonEnabled = () => {
-    return amount > 0 && amount <= 10 && isAuthenticated && identity;
+    return amount > 0 && amount <= 100 && isAuthenticated && identity;
   };
 
   return (
@@ -42,7 +42,7 @@ const MarketplaceFaucet = () => {
           </Grid>
           <Grid item>
             <TextField
-              label="Amount [0, 10]"
+              label="Amount [0, 100]"
               variant="outlined"
               type="number"
               value={amount}

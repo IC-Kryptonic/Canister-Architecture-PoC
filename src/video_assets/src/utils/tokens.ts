@@ -12,6 +12,7 @@ export function parseTokenResult(result: Array<VideoTokenResult>): Array<VideoTo
     parsedResult.push({
       name: entry.name,
       canisterId: entry.canisterId,
+      ownedAmount: entry.ownedAmount,
       supply: entry.supply,
       ...metadata,
     });
