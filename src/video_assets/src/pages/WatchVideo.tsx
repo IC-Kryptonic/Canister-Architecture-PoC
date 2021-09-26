@@ -11,7 +11,7 @@ import {
 } from "react-share";
 import Layout from "../components/shared/Layout";
 import { LazyProfilePost } from "../interfaces/profile_interface";
-import { loadVideo, loadVideoPosts } from "../services/video_backend";
+import { getRandomNextVideoPost, loadVideo, loadVideoPosts } from "../services/video_backend";
 import { VideoPost } from "../interfaces/video_interface";
 // import { getProfile } from "../services/profile_service";
 import { Principal } from "@dfinity/principal";
@@ -96,27 +96,26 @@ const WatchVideo = () => {
         queryProfile();
     }, [post]);
 
-    // TODO: Load next video in queue
-    // const loadNext = async (loadNext: boolean) => {
-    //     let videoToLoad = videoNumber;
-    //     if (loadNext) {
-    //         videoToLoad = videoToLoad - 1;
-    //     } else {
-    //         videoToLoad = videoToLoad + 1;
-    //     }
-    //     let { post, id } = (await getNextVideo(videoToLoad));
-    //     console.info(post);
-    //     history.push(`/video/${post.video_id}?id=${id}`);
-    //     setPost(post);
-    //     // Null other attributes to cause a rerender
-    //     setVideo(null);
-    //     setProfile(null);
-    // }
+    // Load next video in queue
+    const loadNext = async (loadNext: boolean) => {
+        let videoToLoad = videoNumber;
+        if (loadNext) {
+            videoToLoad = videoToLoad - 1;
+        } else {
+            videoToLoad = videoToLoad + 1;
+        }
+        let {post, index} = (await getRandomNextVideoPost(videoToLoad, 10));
+        history.push(`/video/${post.storageType.canister}?id=${index}`);
+        setPost(post);
+        // Null other attributes to cause a rerender
+        setVideo(null);
+        setProfile(null);
+    }
 
     return (
         <Layout title={"test"} marginTop={0}>
             <Box display="flex" flexWrap="nowrap" justifyContent="space-evenly" alignItems="stretch">
-                {/* <VideoControls loadNext={loadNext} /> */}
+                <VideoControls loadNext={loadNext} />
                 <VideoBox video={video} />
                 <MetaDataBox post={post} profile={profile} />
             </Box>

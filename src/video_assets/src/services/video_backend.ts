@@ -237,5 +237,19 @@ function createVideoActor(principal: Principal): ActorSubclass{
       });
 }
 
-export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, createVideoActor, loadVideoComments, loadVideoPosts};
+interface GetRandomNextVideoPostReturn {
+  post: VideoPost,
+  index: number
+}
+
+async function getRandomNextVideoPost(videoId: number, sampleSize: number): Promise<GetRandomNextVideoPostReturn> {
+  let posts = (await loadRandomFeed(sampleSize));
+  let index = Math.abs(videoId % Math.min(sampleSize, posts.length));
+  return {
+    post: posts[index],
+    index: index
+  };
+}
+
+export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, createVideoActor, loadVideoComments, loadVideoPosts, getRandomNextVideoPost};
 
