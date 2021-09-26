@@ -19,12 +19,7 @@ const MarketplaceHeader = () => {
   };
 
   return (
-    <Grid
-      container
-      justify="center"
-      className={classes.outerHeaderContainer}
-      style={{ backgroundColor: '#000F08' }}
-    >
+    <Grid container justify="center" className={classes.outerHeaderContainer}>
       <Grid
         container
         justify="space-between"

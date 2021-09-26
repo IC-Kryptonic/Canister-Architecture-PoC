@@ -1,10 +1,12 @@
 import { makeStyles } from '@material-ui/core';
 
+const borderBottom = '1px solid #e6e7e9';
+
 const headerStyles = makeStyles({
   outerHeaderContainer: {
     padding: 10,
-    borderBottom: 'solid 1px rgb(227, 227, 228)',
     marginBottom: 20,
+    borderBottom: borderBottom,
   },
   innerHeaderContainer: {
     maxWidth: 1280,
@@ -13,24 +15,20 @@ const headerStyles = makeStyles({
     height: 20,
   },
   textButton: {
-    color: 'white',
     width: 150,
     fontWeight: 350,
   },
   textButtonSmall: {
-    color: 'white',
     width: 100,
     fontWeight: 350,
   },
   textButtonActive: {
-    color: 'white',
-    borderBottom: '1px solid #FFFFFF',
+    borderBottom: borderBottom,
     width: 150,
     fontWeight: 400,
   },
   textButtonSmallActive: {
-    color: 'white',
-    borderBottom: '1px solid #FFFFFF',
+    borderBottom: borderBottom,
     width: 100,
     fontWeight: 400,
   },

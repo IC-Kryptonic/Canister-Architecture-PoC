@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Button, makeStyles } from '@material-ui/core';
 
-import logo from '../assets/images/logo.svg';
+import logo from '../assets/images/kryptonic_logo.png';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -12,11 +12,11 @@ import Search from './shared/Search';
 
 const headerStyles = makeStyles({
   container: {
-    maxHeight: "15vh"
+    maxHeight: '15vh',
   },
   logo_wrapper: {
     padding: 10,
-    marginLeft: 20
+    marginLeft: 20,
   },
   logo: {
     height: 20,
@@ -24,7 +24,7 @@ const headerStyles = makeStyles({
   profile: {
     width: 40,
     height: 40,
-  }
+  },
 });
 
 const Header = () => {
@@ -52,7 +52,7 @@ const Header = () => {
         <img className={classes.logo} src={logo} alt="logo" />
       </Grid>
       <Grid item>
-        <Search/>
+        <Search />
       </Grid>
       <Grid item>
         <Grid container direction="row" alignItems="center">
@@ -73,7 +73,7 @@ const Header = () => {
           </Grid>
           <Grid item>
             <Button component="label" onClick={onClickProfileButton}>
-              <AccountCircle className={classes.profile}/>
+              <AccountCircle className={classes.profile} />
             </Button>
           </Grid>
         </Grid>

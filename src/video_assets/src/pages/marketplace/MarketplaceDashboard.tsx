@@ -6,12 +6,13 @@ import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCard';
 import { marketplaceDashboardStyles } from '../../styles/marketplace/marketplace_dashboard_styles';
 import { VideoToken } from '../../interfaces/token_interface';
-import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import MarketplaceChart from '../../components/marketplace/MarketplaceChart';
 import { PieChart } from 'react-minimal-pie-chart';
 import { marketplaceStatStyles } from '../../styles/marketplace/marketplace_stat_styles';
 import { TokenContext } from '../../contexts/TokenContext';
 import history from '../../components/History';
+import chart from '../../assets/images/mock/chart1.png';
+import yourWeek from '../../assets/images/mock/your_week.png';
 
 const MarketplaceDashboard = () => {
   const { videoTokensForCreator, videoMap, dashboardLoading } = useContext(TokenContext);
@@ -21,54 +22,20 @@ const MarketplaceDashboard = () => {
 
   return (
     <>
-      <div className={classes.background} />
       <MarketplaceHeader />
       <Grid container justify="center">
         <Grid container justify="center" style={{ marginTop: 20, fontSize: 32 }}>
-          Your weekly overview
+          Your week
         </Grid>
-        <Grid container justify="center" spacing={2} className={classes.cards}>
-          <Grid item>
-            <Grid item>
-              <MarketplaceStatCard title="Video Views" value="1,464,434" icon={VisibilityIcon} />
-            </Grid>
-            <Grid item>
-              <MarketplaceStatCard
-                title="Earned Revenue"
-                value="$ 19,096"
-                icon={MonetizationOnIcon}
-              />
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Card className={statClasses.card}>
-              <Grid container alignItems="center" justify="center" spacing={1}>
-                <Grid item>
-                  <Grid container item className={statClasses.title}>
-                    Total Revenue by Video Title
-                  </Grid>
-                  <Grid container item justify="center">
-                    <PieChart
-                      data={[
-                        { title: 'One', value: 10, color: '#E38627' },
-                        { title: 'Two', value: 15, color: '#C13C37' },
-                        { title: 'Three', value: 20, color: '#6A2135' },
-                      ]}
-                      style={{ paddingTop: 15, height: 85 }}
-                      animate={true}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Card>
-          </Grid>
+        <Grid container justify="center" style={{ marginTop: 20, fontSize: 32 }}>
+          <img src={yourWeek} alt="weekly stats" style={{ width: 800, pointerEvents: 'none' }} />
         </Grid>
         <Grid container justify="center" style={{ marginTop: 30, fontSize: 32 }}>
           Your video shares
         </Grid>
         {dashboardLoading && (
           <Grid container justify="center">
-            <CircularProgress />
+            <CircularProgress style={{ marginTop: 30 }} />
           </Grid>
         )}
         <Grid container justify="space-around" spacing={2} className={classes.cards}>
@@ -85,7 +52,7 @@ const MarketplaceDashboard = () => {
                             <source src={video} type="video/mp4" />
                           </video>
                         ) : (
-                          <CircularProgress />
+                          '...'
                         )}
                       </Grid>
                       <Grid item xs={7} style={{ padding: 15 }}>
@@ -126,14 +93,24 @@ const MarketplaceDashboard = () => {
                   </Card>
                 </Grid>
                 <Grid item xs={3}>
-                  <MarketplaceChart width={350} height={300} />
+                  <Card>
+                    <img
+                      src={chart}
+                      alt="chart"
+                      style={{
+                        width: 350,
+                        height: 300,
+                        objectFit: 'contain',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </Card>
                 </Grid>
               </React.Fragment>
             );
           })}
         </Grid>
       </Grid>
-      <MarketplaceFooter />
     </>
   );
 };

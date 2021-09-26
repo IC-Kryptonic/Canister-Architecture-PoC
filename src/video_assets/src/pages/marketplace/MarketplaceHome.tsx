@@ -7,7 +7,6 @@ import PublicIcon from '@material-ui/icons/Public';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCard';
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
-import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import MarketplaceCardRow from '../../components/marketplace/MarketplaceCardRow';
 import { OffersByToken } from '../../interfaces/token_interface';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -75,7 +74,7 @@ const MarketplaceHome = () => {
         {/* table content */}
         {offersLoading && (
           <Grid container justify="center">
-            <CircularProgress />
+            <CircularProgress style={{ marginTop: 30 }} />
           </Grid>
         )}
         <Grid container></Grid>
@@ -87,7 +86,6 @@ const MarketplaceHome = () => {
           })}
         </Grid>
       </Grid>
-      <MarketplaceFooter />
     </>
   );
 };

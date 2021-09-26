@@ -1,7 +1,6 @@
 import { Button, CircularProgress, Grid } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
-import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import { OffersByToken } from '../../interfaces/token_interface';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
@@ -151,7 +150,6 @@ const MarketplaceBuy = () => {
           </Grid>
         </Grid>
       </Grid>
-      <MarketplaceFooter />
     </>
   );
 };
