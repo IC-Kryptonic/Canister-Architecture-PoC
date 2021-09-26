@@ -20,5 +20,5 @@ ic-cdk-optimizer target/wasm32-unknown-unknown/release/video_canister.wasm -o ta
 
 dfx deploy native_token
 dfx deploy token_management
-dfx deploy dex --argument \''('\"$(dfx canister id native_token)\"')'\'
+dfx deploy dex --argument '('\"$(dfx canister id native_token)\"')'
 dfx deploy video_assets
