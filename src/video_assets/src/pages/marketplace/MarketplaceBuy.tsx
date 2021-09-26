@@ -1,14 +1,13 @@
-import { Button, Grid } from '@material-ui/core';
+import { Button, CircularProgress, Grid } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
-import { OffersByToken, VideoToken, VideoTokenOffer } from '../../interfaces/token_interface';
+import { OffersByToken } from '../../interfaces/token_interface';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
 import { TokenContext } from '../../contexts/TokenContext';
-import { createShareOffer, realizeExchange } from '../../services/token_services';
+import { realizeExchange } from '../../services/token_services';
 import { AuthContext } from '../../contexts/AuthContext';
-import { Principal } from '@dfinity/principal';
 
 interface SelectOption {
   value: string;
@@ -33,10 +32,10 @@ const MarketplaceBuy = () => {
   let { id } = useParams<SellParams>();
 
   const [offersByToken, setOffersByToken] = useState<OffersByToken>(findId(id, tokenOffers));
-  console.log(tokenOffers);
   const [selectedAmount, setSelectedAmount] = useState<SelectOption | null>(null);
   const [price, setPrice] = useState<number | null>(null);
   const [amountOptions, setAmountOptions] = useState<Array<SelectOption>>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (!offersByToken) return;
@@ -65,14 +64,17 @@ const MarketplaceBuy = () => {
   };
 
   const buttonEnabled = () => {
-    return selectedAmount && price > 0;
+    return selectedAmount && price > 0 && !loading;
   };
 
   const buyShares = async () => {
     try {
+      setLoading(true);
       await realizeExchange(identity, offersByToken.offers, parseInt(selectedAmount.value));
     } catch (error) {
       console.error('error realizing exchange on dex', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -141,7 +143,7 @@ const MarketplaceBuy = () => {
                 disabled={!buttonEnabled()}
                 onClick={() => buyShares()}
               >
-                Buy shares
+                {loading ? <CircularProgress /> : 'Buy shares'}
               </Button>
             </Grid>
           </Grid>

@@ -1,4 +1,4 @@
-import { Button, Grid, TextField } from '@material-ui/core';
+import { Button, CircularProgress, Grid, TextField } from '@material-ui/core';
 import React, { useContext, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
@@ -26,7 +26,7 @@ const MarketplaceFaucet = () => {
   };
 
   const buttonEnabled = () => {
-    return amount > 0 && amount <= 100 && isAuthenticated && identity;
+    return amount > 0 && amount <= 100 && isAuthenticated && identity && !loading;
   };
 
   return (
@@ -57,7 +57,7 @@ const MarketplaceFaucet = () => {
               disabled={!buttonEnabled()}
               onClick={() => receiveICP()}
             >
-              Receive
+              {loading ? <CircularProgress /> : 'Receive'}
             </Button>
           </Grid>
         </Grid>

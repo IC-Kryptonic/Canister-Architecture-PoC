@@ -1,4 +1,4 @@
-import { Grid } from '@material-ui/core';
+import { CircularProgress, Grid } from '@material-ui/core';
 import React, { useContext } from 'react';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
@@ -9,11 +9,11 @@ import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCar
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import MarketplaceCardRow from '../../components/marketplace/MarketplaceCardRow';
-import { OffersByToken, VideoToken } from '../../interfaces/token_interface';
+import { OffersByToken } from '../../interfaces/token_interface';
 import { TokenContext } from '../../contexts/TokenContext';
 
 const MarketplaceHome = () => {
-  const { tokenOffers } = useContext(TokenContext);
+  const { tokenOffers, isLoading } = useContext(TokenContext);
   const classes = marketplaceHomeStyles();
 
   return (
@@ -74,6 +74,11 @@ const MarketplaceHome = () => {
           </Grid>
         </Grid>
         {/* table content */}
+        {isLoading && (
+          <Grid container justify="center">
+            <CircularProgress />
+          </Grid>
+        )}
         <Grid container className={classes.tableContent}>
           {tokenOffers.map((offersByToken: OffersByToken) => {
             return (

@@ -1,4 +1,4 @@
-import { Button, Grid } from '@material-ui/core';
+import { Button, CircularProgress, Grid } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
@@ -39,6 +39,7 @@ const MarketplaceSell = () => {
   const [price, setPrice] = useState<number | null>(null);
   const [tokenOptions, setTokenOptions] = useState<Array<SelectOption>>([]);
   const [amountOptions, setAmountOptions] = useState<Array<SelectOption>>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     let options: Array<SelectOption> = [];
@@ -88,11 +89,12 @@ const MarketplaceSell = () => {
   };
 
   const buttonEnabled = () => {
-    return selectedToken && selectedAmount && price > 0;
+    return selectedToken && selectedAmount && price > 0 && !loading;
   };
 
   const createOffer = async () => {
     try {
+      setLoading(true);
       await createShareOffer(
         identity,
         selectedToken.value,
@@ -102,6 +104,8 @@ const MarketplaceSell = () => {
       );
     } catch (error) {
       console.error('error creating offer on dex', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -176,7 +180,7 @@ const MarketplaceSell = () => {
                 disabled={!buttonEnabled()}
                 onClick={() => createOffer()}
               >
-                Create offer
+                {loading ? <CircularProgress /> : 'Create offer'}
               </Button>
             </Grid>
           </Grid>

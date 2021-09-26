@@ -14,7 +14,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import history from '../../components/History';
 
 const MarketplaceDashboard = () => {
-  const { videoTokensForCreator, videoMap } = useContext(TokenContext);
+  const { videoTokensForCreator, videoMap, isLoading } = useContext(TokenContext);
 
   const classes = marketplaceDashboardStyles();
   const statClasses = marketplaceStatStyles();
@@ -66,6 +66,11 @@ const MarketplaceDashboard = () => {
         <Grid container justify="center" style={{ marginTop: 30, fontSize: 32 }}>
           Your video shares
         </Grid>
+        {isLoading && (
+          <Grid container justify="center">
+            <CircularProgress />
+          </Grid>
+        )}
         <Grid container justify="space-around" spacing={2} className={classes.cards}>
           {videoTokensForCreator.map((videoToken: VideoToken) => {
             let video = videoMap.map.get(videoToken.storageCanisterId);
