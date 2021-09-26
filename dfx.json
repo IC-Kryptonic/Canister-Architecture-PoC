@@ -26,6 +26,18 @@
       "wasm": "target/wasm32-unknown-unknown/release/ad_manager.wasm",
       "type": "custom"
     },
+    "token_management": {
+      "main": "src/token_management/src/token_map.mo",
+      "type": "motoko"
+    },
+    "dex": {
+      "main": "src/token_management/src/dex.mo",
+      "type": "motoko"
+    },
+    "native_token": {
+      "main": "src/token_management/src/tokens/native_token.mo",
+      "type": "motoko"
+    },
     "video_assets": {
       "dependencies": ["video_backend", "ad_manager", "profile_backend"],
       "frontend": {

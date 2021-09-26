@@ -6,4 +6,5 @@ export interface AuthContextProperties {
   setIsAuthenticated: (input: boolean) => void;
   setIsLoading: (input: boolean) => void;
   identity: Identity | null;
+  setIdentity: (input: Identity) => void;
 }

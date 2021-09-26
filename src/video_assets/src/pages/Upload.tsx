@@ -1,27 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, TextField, Button, CircularProgress, Typography, LinearProgress, Box } from '@material-ui/core';
+import React, { useState, useEffect, useContext } from 'react';
+import {
+  Grid,
+  TextField,
+  Button,
+  CircularProgress,
+  Typography,
+  LinearProgress,
+  Box,
+} from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
 import Header from '../components/Header';
 import { uploadStyles } from '../styles/upload_styles';
 import { uploadVideo } from '../services/video_backend';
 import { ToastContainer, toast } from 'react-toastify';
 import Layout from '../components/shared/Layout';
-import {CreateVideoPost} from "../interfaces/video_interface";
+import { CreateVideoPost } from '../interfaces/video_interface';
+import { AuthContext } from '../contexts/AuthContext';
+import { createToken } from '../services/token_services';
+import { TokenContext } from '../contexts/TokenContext';
 
 const maxFileSize = 30000000;
 const filesLimit = 1;
 const acceptedFiles = ['video/*'];
 
 const Upload = () => {
+  const { identity } = useContext(AuthContext);
+  const { setTokenTrigger } = useContext(TokenContext);
   const classes = uploadStyles();
   const [video, setVideo] = useState<File | undefined>(undefined);
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [uploading, setUploading] = useState<boolean>(false);
+  const [shareAmount, setShareAmount] = useState<number>(20);
   const [progress, setProgress] = useState(0);
 
   const canSubmit = () => {
-    return video !== undefined && title !== '' && description !== '';
+    return video !== undefined && title !== '' && description !== '' && shareAmount;
   };
 
   // Sets video progress
@@ -42,9 +56,11 @@ const Upload = () => {
         keywords: [],
         thumbnail: undefined,
         video: video,
-      }
-      await uploadVideo(createPost, true, setProgressBarValue );
-      toast.success('Video erfolgreich hochgeladen!', {
+      };
+      const videoId = await uploadVideo(createPost, true, setProgressBarValue);
+      await createToken(identity, videoId, createPost, shareAmount);
+      setTokenTrigger(true);
+      toast.success('Successfully uploaded video!', {
         position: 'bottom-left',
         autoClose: 5000,
         hideProgressBar: true,
@@ -161,14 +177,13 @@ const Upload = () => {
               id="standard-number"
               label="Number of shares"
               type="number"
-              defaultValue={1}
+              value={shareAmount}
               InputLabelProps={{
                 shrink: true,
               }}
-            // onChange={handleBidChange}
+              onChange={(event) => setShareAmount(parseInt(event.target.value))}
             />
           </Box>
-
         </Grid>
 
         <Grid item className={classes.gridItem}>

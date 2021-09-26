@@ -59,6 +59,8 @@ async fn upload_ads(ad_manager: &Actor, video_backend: &Actor){
             panic!("Send Storage type differs from returned storage type")
         };
 
+        println!("Ad {}: {}",name.to_str().expect("Could not convert OSString to Rust str").strip_suffix(".mp4").expect("Could not strip mp4 from name"), ad_canister.clone());
+
         let ad_actor = util::Actor{
             agent: ad_manager.agent.clone(),
             principal: ad_canister,
@@ -110,6 +112,8 @@ async fn upload_videos(video_backend: &Actor){
         } else{
             panic!("Send Storage type differs from returned storage type")
         };
+
+        println!("Video {}: {}",name.to_str().expect("Could not convert OSString to Rust str").strip_suffix(".mp4").expect("Could not strip mp4 from name"), video_canister.clone());
 
         let video_actor = util::Actor{
             agent: video_backend.agent.clone(),

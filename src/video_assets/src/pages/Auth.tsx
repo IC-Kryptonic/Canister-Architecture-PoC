@@ -7,8 +7,7 @@ import { authWithInternetIdentity } from '../services/auth_services';
 import Layout from "../components/shared/Layout";
 
 const Auth = () => {
-  const { isLoading, isAuthenticated, setIsLoading, setIsAuthenticated } =
-    useContext(AuthContext);
+  const { isLoading, isAuthenticated, setIsLoading, setIsAuthenticated } = useContext(AuthContext);
 
   if (isAuthenticated) {
     return <Redirect to="/" />;

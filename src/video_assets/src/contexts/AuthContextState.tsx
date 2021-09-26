@@ -39,14 +39,12 @@ const AuthContextState = (props: AuthContextStateProps) => {
         const authenticatedIdentity = await getAuthenticatedIdentity();
         setIdentity(authenticatedIdentity);
       } catch (error) {
-        console.error(
-          'Error retrieving identity for authenticated user',
-          error
-        );
+        console.error('Error retrieving identity for authenticated user', error);
       }
     }
 
-    if (isAuthenticated) getIdentity();
+    if (isAuthenticated && !identity) getIdentity();
+    else if (!isAuthenticated && identity) setIdentity(null);
   }, [isAuthenticated]);
 
   return (
@@ -57,6 +55,7 @@ const AuthContextState = (props: AuthContextStateProps) => {
         isAuthenticated,
         setIsAuthenticated,
         identity,
+        setIdentity,
       }}
     >
       {props.children}
