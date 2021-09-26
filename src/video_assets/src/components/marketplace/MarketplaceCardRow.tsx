@@ -21,7 +21,7 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
           <Grid container alignItems="center">
             <Grid item xs={6}>
               {video ? (
-                <video controls style={{ maxHeight: '100%' }}>
+                <video controls className={classes.video}>
                   <source src={video} type="video/mp4" />
                 </video>
               ) : (

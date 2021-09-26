@@ -13,12 +13,11 @@ import { OffersByToken } from '../../interfaces/token_interface';
 import { TokenContext } from '../../contexts/TokenContext';
 
 const MarketplaceHome = () => {
-  const { tokenOffers, isLoading } = useContext(TokenContext);
+  const { tokenOffers, offersLoading } = useContext(TokenContext);
   const classes = marketplaceHomeStyles();
 
   return (
     <>
-      <div className={classes.background} />
       <MarketplaceHeader />
       <Grid container justify="center">
         <Grid container justify="center" spacing={2} className={classes.cards}>
@@ -74,11 +73,12 @@ const MarketplaceHome = () => {
           </Grid>
         </Grid>
         {/* table content */}
-        {isLoading && (
+        {offersLoading && (
           <Grid container justify="center">
             <CircularProgress />
           </Grid>
         )}
+        <Grid container></Grid>
         <Grid container className={classes.tableContent}>
           {tokenOffers.map((offersByToken: OffersByToken) => {
             return (

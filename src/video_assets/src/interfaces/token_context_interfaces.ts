@@ -6,8 +6,8 @@ export interface VideoMap {
 }
 
 export interface TokenContextProperties {
-  isLoading: boolean;
-  setIsLoading: (input: boolean) => void;
+  offersLoading: boolean;
+  dashboardLoading: boolean;
   tokenOffers: Array<OffersByToken>;
   setTokenOffers: (input: Array<OffersByToken>) => void;
   videoTokensForCreator: Array<VideoToken>;
@@ -15,5 +15,6 @@ export interface TokenContextProperties {
   nativeTokenBalance: Number | null;
   setNativeTokenBalance: (input: number) => void;
   setBalanceTrigger: (input: boolean) => void;
+  setTokenTrigger: (input: boolean) => void;
   videoMap: VideoMap;
 }

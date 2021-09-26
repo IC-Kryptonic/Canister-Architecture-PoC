@@ -18,10 +18,14 @@ const marketplaceHomeStyles = makeStyles({
     marginBottom: 5,
   },
   videoCell: {
-    minWidth: 200,
+    maxHeight: 60,
     paddingLeft: 5,
     width: '27%',
     fontSize: '0.9rem',
+  },
+  video: {
+    height: 60,
+    width: 100,
   },
   tableCell: {
     width: '12.0%',

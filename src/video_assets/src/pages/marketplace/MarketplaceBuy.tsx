@@ -27,7 +27,7 @@ function findId(id: string | null, tokens: Array<OffersByToken>): OffersByToken 
 }
 
 const MarketplaceBuy = () => {
-  const { tokenOffers } = useContext(TokenContext);
+  const { tokenOffers, setTokenTrigger, setBalanceTrigger } = useContext(TokenContext);
   const { identity } = useContext(AuthContext);
   let { id } = useParams<SellParams>();
 
@@ -71,6 +71,8 @@ const MarketplaceBuy = () => {
     try {
       setLoading(true);
       await realizeExchange(identity, offersByToken.offers, parseInt(selectedAmount.value));
+      setBalanceTrigger(true);
+      setTokenTrigger(true);
     } catch (error) {
       console.error('error realizing exchange on dex', error);
     } finally {
