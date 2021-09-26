@@ -1,5 +1,6 @@
-import { Paper, Grid, Button } from '@material-ui/core';
-import React from 'react';
+import { Paper, Grid, Button, CircularProgress } from '@material-ui/core';
+import React, { useContext } from 'react';
+import { TokenContext } from '../../contexts/TokenContext';
 import { OffersByToken } from '../../interfaces/token_interface';
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
 import history from '../History';
@@ -10,6 +11,8 @@ interface MarketplaceCardProps {
 
 const MarketplaceCardRow = (props: MarketplaceCardProps) => {
   const classes = marketplaceHomeStyles();
+  const { videoMap } = useContext(TokenContext);
+  const video = videoMap.map.get(props.offersByToken.storageCanisterId);
 
   return (
     <Paper style={{ width: '100%', paddingTop: 15, paddingBottom: 15, marginBottom: 10 }}>
@@ -17,7 +20,13 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
         <Grid item className={classes.videoCell}>
           <Grid container alignItems="center">
             <Grid item xs={6}>
-              <img src="" alt="thumbnail" className={classes.thumbnail} />
+              {video ? (
+                <video controls style={{ maxHeight: '100%' }}>
+                  <source src={video} type="video/mp4" />
+                </video>
+              ) : (
+                <CircularProgress />
+              )}
             </Grid>
             <Grid item xs={6}>
               {props.offersByToken.tokenName}

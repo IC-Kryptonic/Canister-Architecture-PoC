@@ -1,5 +1,10 @@
 import { OffersByToken, VideoToken } from './token_interface';
 
+export interface VideoMap {
+  timestamp: string;
+  map: Map<string, string>;
+}
+
 export interface TokenContextProperties {
   isLoading: boolean;
   setIsLoading: (input: boolean) => void;
@@ -10,4 +15,5 @@ export interface TokenContextProperties {
   nativeTokenBalance: Number | null;
   setNativeTokenBalance: (input: number) => void;
   setBalanceTrigger: (input: boolean) => void;
+  videoMap: VideoMap;
 }

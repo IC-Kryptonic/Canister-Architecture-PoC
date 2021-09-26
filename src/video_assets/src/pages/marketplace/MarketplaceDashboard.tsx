@@ -1,4 +1,4 @@
-import { Button, Card, Grid } from '@material-ui/core';
+import { Button, Card, Grid, CircularProgress } from '@material-ui/core';
 import React, { useContext } from 'react';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -14,7 +14,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import history from '../../components/History';
 
 const MarketplaceDashboard = () => {
-  const { videoTokensForCreator } = useContext(TokenContext);
+  const { videoTokensForCreator, videoMap } = useContext(TokenContext);
 
   const classes = marketplaceDashboardStyles();
   const statClasses = marketplaceStatStyles();
@@ -68,20 +68,20 @@ const MarketplaceDashboard = () => {
         </Grid>
         <Grid container justify="space-around" spacing={2} className={classes.cards}>
           {videoTokensForCreator.map((videoToken: VideoToken) => {
+            let video = videoMap.map.get(videoToken.storageCanisterId);
             return (
               <React.Fragment key={videoToken.canisterId}>
                 <Grid item xs={8}>
                   <Card style={{ marginBottom: 20, height: 300, width: '100%' }}>
                     <Grid container>
-                      <Grid item xs="auto">
-                        <iframe
-                          height="300"
-                          src={videoToken.link}
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          title="Embedded youtube"
-                        />
+                      <Grid item xs="auto" style={{ minWidth: 200 }}>
+                        {video ? (
+                          <video controls style={{ height: 300 }}>
+                            <source src={video} type="video/mp4" />
+                          </video>
+                        ) : (
+                          <CircularProgress />
+                        )}
                       </Grid>
                       <Grid item xs={7} style={{ padding: 15 }}>
                         <Grid item xs={12} className={classes.factTitle}>

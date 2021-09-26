@@ -27,11 +27,11 @@ export const createToken = async (
   post: CreateVideoPost,
   shareAmount: number
 ) => {
-  const videoId = video.toText();
+  const storageCanisterId = video.toText();
   const tokenBackend = await getTokenManagementActor(identity);
   const principal = identity.getPrincipal();
   const metadata = JSON.stringify({
-    videoId,
+    storageCanisterId,
     description: post.description,
     // TODO set creator with name
     creator: identity,

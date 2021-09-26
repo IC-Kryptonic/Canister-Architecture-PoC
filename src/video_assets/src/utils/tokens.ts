@@ -42,6 +42,7 @@ export function parseOffers(result: Array<VideoTokenOffer>): Array<OffersByToken
         offers: [entry],
         tokenName: entry.tokenName,
         canisterId: entry.canisterId,
+        storageCanisterId: entry.storageCanisterId,
       };
       offerMap.set(entry.token, newTokenOffers);
     }

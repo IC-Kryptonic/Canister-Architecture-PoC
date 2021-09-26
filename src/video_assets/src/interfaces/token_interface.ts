@@ -1,5 +1,6 @@
 export interface VideoToken {
   canisterId: string;
+  storageCanisterId: string;
   name: string;
   creator: string;
   thumbnail: string;
@@ -8,13 +9,13 @@ export interface VideoToken {
   viewsLastWeek: string;
   revenueLastWeek: string;
   priceChangeLastWeek: string;
-  link: string;
   supply: number;
   ownedAmount: number;
 }
 
 export interface VideoTokenResult {
   canisterId: string;
+  storageCanisterId: string;
   metadata: string;
   name: string;
   supply: BigInt;
@@ -27,6 +28,7 @@ export interface VideoTokenOffer {
   token: string;
   tokenName: string;
   canisterId: string;
+  storageCanisterId: string;
   pricePerShare: number;
   shareAmount: number;
   offerTimeStamp: string;
@@ -35,6 +37,7 @@ export interface VideoTokenOffer {
 export interface OffersByToken {
   tokenName: string;
   canisterId: string;
+  storageCanisterId: string;
   minPrice: number;
   maxPrice: number;
   offeredAmount: number;
