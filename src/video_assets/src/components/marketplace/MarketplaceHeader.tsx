@@ -54,6 +54,11 @@ const MarketplaceHeader = () => {
                 Dashboard
               </Button>
             </Grid>
+            <Grid item>
+              <Button onClick={() => history.push('/upload')} className={classes.textButton}>
+                Video Platform
+              </Button>
+            </Grid>
           </Grid>
         </Grid>
         <Grid item xs="auto">

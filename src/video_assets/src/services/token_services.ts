@@ -15,9 +15,28 @@ import {
 } from '../utils/actors';
 import canisterIds from '../../../../.dfx/local/canister_ids.json';
 import { parseOffers, parseTokenResult } from '../utils/tokens';
+import { CreateVideoPost } from '../interfaces/video_interface';
 
 type BigIntResult = {
   ok: BigInt;
+};
+
+export const createToken = async (
+  identity: Identity,
+  video: Principal,
+  post: CreateVideoPost,
+  shareAmount: number
+) => {
+  const videoId = video.toText();
+  const tokenBackend = await getTokenManagementActor(identity);
+  const principal = identity.getPrincipal();
+  const metadata = JSON.stringify({
+    videoId,
+    description: post.description,
+    // TODO set creator with name
+    creator: identity,
+  });
+  await tokenBackend.createToken(principal.toText(), post.name, '', 2, shareAmount, metadata);
 };
 
 export const getBalanceForIdentity = async (identity: Identity): Promise<Number> => {
