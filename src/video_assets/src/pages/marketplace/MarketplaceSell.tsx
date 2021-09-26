@@ -95,9 +95,13 @@ const MarketplaceSell = () => {
   const createOffer = async () => {
     try {
       setLoading(true);
+      const tokenToOffer = videoTokensForCreator.find(
+        (element: VideoToken) => element.canisterId === selectedToken.value
+      );
       await createShareOffer(
         identity,
         selectedToken.value,
+        tokenToOffer.storageCanisterId,
         selectedToken.label,
         parseInt(selectedAmount.value),
         price

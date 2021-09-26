@@ -93,6 +93,7 @@ export const receiveICPForIdentity = async (
 export const createShareOffer = async (
   identity: Identity,
   canisterId: string,
+  storageCanisterId: string,
   tokenName: string,
   amount: number,
   price: number
@@ -109,7 +110,14 @@ export const createShareOffer = async (
   // allow dex to transfer the token on video token canister
   await tokenActor.approve(identityPrincipal, dexPrincipal, amount);
   // create offer on dex canister
-  await dexActor.createOffer(identityPrincipal, canisterId, tokenName, price, amount);
+  await dexActor.createOffer(
+    identityPrincipal,
+    canisterId,
+    tokenName,
+    price,
+    amount,
+    storageCanisterId
+  );
 };
 
 export const realizeExchange = async (

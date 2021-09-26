@@ -99,7 +99,7 @@ const MarketplaceDashboard = () => {
                           Creator:
                         </Grid>
                         <Grid item xs={12} className={classes.factValue}>
-                          {videoToken.creator}
+                          Seeder
                         </Grid>
                         <Grid item xs={12} className={classes.factTitle}>
                           Shares (owned shares / existing shares):

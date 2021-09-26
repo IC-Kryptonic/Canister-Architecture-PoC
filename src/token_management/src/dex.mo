@@ -35,7 +35,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
 
   // TODO change back to msg.caller instead of caller as argument
   public shared(msg) func createOffer(
-    caller: Principal, tokenId: Text, tokenName: Text, pricePerShare: Nat, shareAmount: Nat
+    caller: Principal, tokenId: Text, tokenName: Text, pricePerShare: Nat, shareAmount: Nat, storageCanisterId: Text
   ): async Result.Result<(), ExchangeError> {
     let videoTokenActor = actor(tokenId) : TokenActor;
     let canisterPrincipal = await _getThisPrincipal();
@@ -46,6 +46,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
       token = videoTokenActor;
       tokenName = tokenName;
       canisterId = tokenId;
+      storageCanisterId = storageCanisterId;
       pricePerShare = pricePerShare;
       shareAmount = shareAmount;
       offerTimeStamp = Time.now();
@@ -158,6 +159,7 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
                   token = validExchange.token;
                   tokenName = validExchange.tokenName;
                   canisterId = tokenId;
+                  storageCanisterId = validExchange.storageCanisterId;
                   pricePerShare = validExchange.pricePerShare;
                   shareAmount = validExchange.shareAmount;
                   offerTimeStamp = validExchange.offerTimeStamp;
