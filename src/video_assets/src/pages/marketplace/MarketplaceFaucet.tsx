@@ -1,7 +1,6 @@
 import { Button, CircularProgress, Grid, TextField } from '@material-ui/core';
 import React, { useContext, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
-import MarketplaceFooter from '../../components/marketplace/MarketplaceFooter';
 import { AuthContext } from '../../contexts/AuthContext';
 import { receiveICPForIdentity } from '../../services/token_services';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -62,7 +61,6 @@ const MarketplaceFaucet = () => {
           </Grid>
         </Grid>
       </Grid>
-      <MarketplaceFooter />
     </>
   );
 };
