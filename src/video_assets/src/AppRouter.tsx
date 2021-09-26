@@ -2,7 +2,6 @@ import React from 'react';
 import { Redirect, Router, Switch, Route } from 'react-router-dom';
 import History from './components/History';
 import ProtectedRoute from './components/ProtectedRoute';
-import MarketplaceProtectedRoute from './components/marketplace/MarketplaceProtectedRoute';
 import { AuthContextState } from './contexts/AuthContextState';
 import { TokenContextState } from './contexts/TokenContextState';
 import Auth from './pages/Auth';
@@ -28,26 +27,14 @@ export const AppRouter = () => {
             <ProtectedRoute exact path="/video/:id" component={WatchVideo} />
             <ProtectedRoute exact path="/profile/:id" component={ProfilePage} />
             <ProtectedRoute exact path="/profile" component={ProfilePage} />
-            <MarketplaceProtectedRoute
-              exact
-              path="/marketplace/markets"
-              component={MarketplaceHome}
-            />
-            <MarketplaceProtectedRoute
-              exact
-              path="/marketplace/dashboard"
-              component={MarketplaceDashboard}
-            />
-            <MarketplaceProtectedRoute
-              exact
-              path="/marketplace/faucet"
-              component={MarketplaceFaucet}
-            />
-            <MarketplaceProtectedRoute
+            <ProtectedRoute exact path="/marketplace/markets" component={MarketplaceHome} />
+            <ProtectedRoute exact path="/marketplace/dashboard" component={MarketplaceDashboard} />
+            <ProtectedRoute exact path="/marketplace/faucet" component={MarketplaceFaucet} />
+            <ProtectedRoute
               path={['/marketplace/sell/:id', '/marketplace/sell']}
               component={MarketplaceSell}
             />
-            <MarketplaceProtectedRoute path="/marketplace/buy/:id" component={MarketplaceBuy} />
+            <ProtectedRoute path="/marketplace/buy/:id" component={MarketplaceBuy} />
             <Route exact path="/marketplace/login" component={MarketplaceAuth} />
             <Route exact path="/login" component={Auth} />
             <Redirect from="/" to="/feed" />
