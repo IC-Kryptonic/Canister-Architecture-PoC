@@ -10,6 +10,8 @@ import history from './History';
 
 import Search from './shared/Search';
 
+import { PurpleColor } from '../styles/shared_styles';
+
 const headerStyles = makeStyles({
   container: {
     maxHeight: '15vh',
@@ -18,12 +20,24 @@ const headerStyles = makeStyles({
     padding: 10,
     marginLeft: 20,
   },
+  headerButton: {
+    width: 40,
+    height: 40,
+  },
   logo: {
-    height: 20,
+    height: 40,
+  },
+  logo_button: {
+    marginTop: 0,
+    padding: 0
+  },
+  icon_color: {
+    color: PurpleColor
   },
   profile: {
     width: 40,
     height: 40,
+    color: PurpleColor
   },
 });
 
@@ -49,7 +63,9 @@ const Header = () => {
   return (
     <Grid container justify="space-between" alignItems="center" className={classes.container}>
       <Grid item className={classes.logo_wrapper}>
-        <img className={classes.logo} src={logo} alt="logo" />
+        <Button component="label" onClick={onClickFeedButton} className={classes.logo_button}>
+          <img className={classes.logo} src={logo} alt="logo" />
+        </Button>
       </Grid>
       <Grid item>
         <Search />
@@ -57,18 +73,18 @@ const Header = () => {
       <Grid item>
         <Grid container direction="row" alignItems="center">
           <Grid item>
-            <Button component="label" onClick={onClickMarketplaceButton}>
-              <MonetizationOnIcon />
+            <Button component="label" onClick={onClickMarketplaceButton} className={classes.headerButton}>
+              <MonetizationOnIcon className={classes.icon_color} />
             </Button>
           </Grid>
           <Grid item>
-            <Button component="label" onClick={onClickFeedButton}>
-              <DynamicFeedIcon />
+            <Button component="label" onClick={onClickFeedButton} className={classes.headerButton}>
+              <DynamicFeedIcon className={classes.icon_color} />
             </Button>
           </Grid>
           <Grid item>
-            <Button component="label" onClick={onClickUploadButton}>
-              <CloudUploadIcon />
+            <Button component="label" onClick={onClickUploadButton} className={classes.headerButton}>
+              <CloudUploadIcon className={classes.icon_color} />
             </Button>
           </Grid>
           <Grid item>
