@@ -26,7 +26,8 @@ function findId(id: string | null, tokens: Array<OffersByToken>): OffersByToken 
 }
 
 const MarketplaceBuy = () => {
-  const { tokenOffers, setTokenTrigger, setBalanceTrigger } = useContext(TokenContext);
+  const { tokenOffers, setTokenTrigger, setBalanceTrigger, nativeTokenBalance } =
+    useContext(TokenContext);
   const { identity } = useContext(AuthContext);
   let { id } = useParams<SellParams>();
 
@@ -63,7 +64,7 @@ const MarketplaceBuy = () => {
   };
 
   const buttonEnabled = () => {
-    return selectedAmount && price > 0 && !loading;
+    return selectedAmount && price > 0 && !loading && nativeTokenBalance >= price;
   };
 
   const buyShares = async () => {
