@@ -9,7 +9,7 @@ const MarketplaceFaucet = () => {
   const { isAuthenticated, identity } = useContext(AuthContext);
   const { setBalanceTrigger } = useContext(TokenContext);
 
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number | null>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const receiveICP = async () => {
@@ -44,7 +44,7 @@ const MarketplaceFaucet = () => {
               label="Amount [0, 100]"
               variant="outlined"
               type="number"
-              value={amount}
+              value={amount || ''}
               onChange={(event) => setAmount(parseFloat(event.target.value))}
               style={{ backgroundColor: 'white' }}
             />
