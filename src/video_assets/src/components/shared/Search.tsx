@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { Box, IconButton } from "@material-ui/core";
+import { Box, Button } from "@material-ui/core";
 import { useSearchStyles } from "../../styles/shared_styles";
 import SearchIcon from '@material-ui/icons/Search';
 
@@ -22,9 +22,9 @@ function Search() {
         <Box>
             <form onSubmit={handleSubmit} className={classes.form} >
                 <input id="search" type="text" placeholder="Search" className={classes.input} />
-                <IconButton aria-label="Search videos" type="submit" className={classes.button}>
-                    <SearchIcon/>
-                </IconButton>
+                <Button aria-label="Search videos" type="submit" className={classes.button}>
+                    <SearchIcon className={classes.icon}/>
+                </Button>
             </form>
         </Box>
     );

@@ -117,7 +117,7 @@ const MarketplaceBuy = () => {
             <Grid container item xs={12} justify="space-between" alignItems="center">
               <Grid item xs={6}>
                 <input
-                  value={price}
+                  value={price || ''}
                   disabled
                   type="number"
                   placeholder="Price per share"

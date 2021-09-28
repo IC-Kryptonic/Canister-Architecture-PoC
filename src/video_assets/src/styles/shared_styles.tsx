@@ -1,5 +1,11 @@
 import { makeStyles, withStyles, Tooltip } from "@material-ui/core";
 
+export const PurpleColor = "#5618F2";
+
+export const LighterPurpleColor = "#1876f2";
+
+export const DarkerPurpleColor = "#c318f2";
+
 export const useLayoutStyles = makeStyles((theme) => ({
   section: {
     display: "flex",
@@ -109,17 +115,21 @@ export const useSearchStyles = makeStyles((theme) => ({
   button: {
     marginTop: theme.spacing(0),
     marginBottom: theme.spacing(1),
-    width: 40,
-    height: 20,
-    border: "1px solid black",
+    width: 20,
+    height: 25,
+    border: `1px solid ${PurpleColor}`,
     borderRadius: 0
+  },
+  icon: {
+    color: PurpleColor
   },
   input: {
     marginTop: theme.spacing(0),
     marginBottom: theme.spacing(1),
     width: 300,
-    height: 20,
+    height: 21,
     fontSize: '15px',
+    border: `1px solid ${PurpleColor}`,
   },
   // @media screen and (max-width: 750px) {
   //   input#search,

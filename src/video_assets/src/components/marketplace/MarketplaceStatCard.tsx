@@ -3,6 +3,8 @@ import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 import React from 'react';
 import { marketplaceStatStyles } from '../../styles/marketplace/marketplace_stat_styles';
 
+import { PurpleColor } from "../../styles/shared_styles";
+
 interface MarketplaceStatCardProps {
   title: string;
   value: string;
@@ -23,7 +25,7 @@ const MarketplaceStatCard = (props: MarketplaceStatCardProps) => {
           </Grid>
         </Grid>
         <Grid item>
-          <props.icon color="secondary"></props.icon>
+          <props.icon style={{color: PurpleColor}}></props.icon>
         </Grid>
       </Grid>
     </Card>
