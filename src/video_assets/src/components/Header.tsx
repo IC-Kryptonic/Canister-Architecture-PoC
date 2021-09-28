@@ -15,6 +15,8 @@ import { PurpleColor } from '../styles/shared_styles';
 const headerStyles = makeStyles({
   container: {
     maxHeight: '15vh',
+    //borderBottom: `1px solid ${PurpleColor}`
+    backgroundColor: "white"
   },
   logo_wrapper: {
     padding: 10,

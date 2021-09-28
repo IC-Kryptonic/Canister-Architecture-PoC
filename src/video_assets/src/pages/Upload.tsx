@@ -193,7 +193,7 @@ const Upload = () => {
                 <Button
                   disabled={uploading || !canSubmit()}
                   variant="contained"
-                  color="secondary"
+                  color="primary"
                   onClick={executeUpload}
                 >Upload</Button>
               ) : (
