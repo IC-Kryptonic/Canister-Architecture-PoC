@@ -1,5 +1,6 @@
+import { ThemeProvider } from "@material-ui/core/styles";
 import React from "react";
-import { useLayoutStyles } from "../../styles/shared_styles";
+import { useLayoutStyles, themeProvider } from "../../styles/shared_styles";
 import Header from "../Header";
 
 interface LayoutProps {
@@ -16,12 +17,14 @@ function Layout({ children, minimalNavbar = false, title, marginTop = 60 }: Layo
     // <SEO title={title} />
     //   <Navbar minimalNavbar={minimalNavbar} />
     <section className={classes.section}>
-      <Header />
-      <main className={classes.main} style={{ marginTop }}>
-        <section className={classes.childrenWrapper}>
-          <div className={classes.children}>{children}</div>
-        </section>
-      </main>
+      <ThemeProvider theme={themeProvider}>
+        <Header />
+        <main className={classes.main} style={{ marginTop }}>
+          <section className={classes.childrenWrapper}>
+            <div className={classes.children}>{children}</div>
+          </section>
+        </main>
+      </ThemeProvider>
     </section>
   );
 }

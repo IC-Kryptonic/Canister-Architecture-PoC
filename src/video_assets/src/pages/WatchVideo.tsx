@@ -316,7 +316,7 @@ const OwnerBidSection = ({ profile }: OwnerBidSectionProps) => {
             </TabPanel>
             <PlaceBidDialog open={dialogOpen} handleClose={handleDialogClose} />
             <Box display="flex" justifyContent="center">
-                <Button variant="contained" color="secondary" className={classes.bidButton} onClick={() => setDialogOpen(true)}>
+                <Button variant="contained" color="primary" className={classes.bidButton} onClick={() => setDialogOpen(true)}>
                     <Typography align="center" variant="subtitle2">
                         Go to marketplace
                     </Typography>
