@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { useProfileTabsStyles } from "../../styles/profile_styles";
 import { Divider, Tabs, Tab, Hidden, Typography } from "@material-ui/core";
 
@@ -11,6 +11,7 @@ import GridPost from "../shared/GridPost";
 import { LazyProfilePost } from "../../interfaces/profile_interface";
 import { VideoPost } from "../../interfaces/video_interface";
 import { loadCreatorFeed } from '../../services/video_backend';
+import {AuthContext} from "../../contexts/AuthContext";
 
 interface ProfileTabsInterface {
     profile: LazyProfilePost,
@@ -18,6 +19,8 @@ interface ProfileTabsInterface {
 }
 
 function ProfileTabs({ profile, isOwner }: ProfileTabsInterface) {
+    const { identity } = useContext(AuthContext);
+
     const classes = useProfileTabsStyles();
     const [value, setValue] = useState(0);
 
@@ -25,12 +28,12 @@ function ProfileTabs({ profile, isOwner }: ProfileTabsInterface) {
     const [likedPosts, setLikedPosts] = useState<VideoPost[]>([]);
 
     const handleProfilePosts= async () => {
-        let profilePosts = await loadCreatorFeed(10, profile.principal);
+        let profilePosts = await loadCreatorFeed(identity, 10, profile.principal);
         setProfilePosts(profilePosts);
     }
 
     const handleLikedPosts= async () => {
-        let likedPosts = await loadCreatorFeed(10, profile.principal);
+        let likedPosts = await loadCreatorFeed(identity, 10, profile.principal);
         setLikedPosts(likedPosts);
     }
 

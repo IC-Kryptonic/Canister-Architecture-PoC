@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { useParams, useHistory, Link } from "react-router-dom";
 import { Box, makeStyles, Grid, CircularProgress, Typography, Divider, Button, Tabs, Tab, IconButton } from '@material-ui/core';
 import {
@@ -27,12 +27,15 @@ import PlaceBidDialog from "../components/watchvideo/PlaceBidDialog";
 import useQuery from '../utils/use_params';
 import { watchVideoStyles } from "../styles/watchvideo_styles";
 import { getLazyUserProfile } from "../services/profile_backend";
+import {AuthContext} from "../contexts/AuthContext";
 
 interface WatchVideoPathParam {
     id: string
 }
 
 const WatchVideo = () => {
+    const { identity } = useContext(AuthContext);
+
     const classes = watchVideoStyles();
     const [post, setPost] = useState<VideoPost | null>(null);
     const [videoNumber, setVideoNumber] = useState(0);
@@ -56,7 +59,7 @@ const WatchVideo = () => {
             try {
                 let videoPrincipal = Principal.fromText(id);
                 const loadedVideoInfo = (
-                    await loadVideoPost(videoPrincipal)
+                    await loadVideoPost(identity, videoPrincipal)
                 );
                 setPost(loadedVideoInfo);
                 // console.log(loadedVideoInfo);
@@ -72,7 +75,7 @@ const WatchVideo = () => {
         async function queryVideo() {
             try {
                 if (post) {
-                    const loadedVideo = await loadVideo(post);
+                    const loadedVideo = await loadVideo(identity, post);
                     setVideo(loadedVideo);
                 }
             } catch (error) {
@@ -86,7 +89,7 @@ const WatchVideo = () => {
         async function queryProfile() {
             try {
                 if (post) {
-                    const loadedProfile = await getLazyUserProfile(Principal.from(post.owner));
+                    const loadedProfile = await getLazyUserProfile(identity, Principal.from(post.owner));
                     setProfile(loadedProfile);
                 }
             } catch (error) {
@@ -104,7 +107,7 @@ const WatchVideo = () => {
         } else {
             videoToLoad = videoToLoad + 1;
         }
-        let {post, index} = (await getRandomNextVideoPost(videoToLoad, 10));
+        let {post, index} = (await getRandomNextVideoPost(identity, videoToLoad, 10));
         history.push(`/video/${post.storageType.canister}?id=${index}`);
         setPost(post);
         // Null other attributes to cause a rerender

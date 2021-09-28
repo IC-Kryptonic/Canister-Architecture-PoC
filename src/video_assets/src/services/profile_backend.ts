@@ -1,23 +1,15 @@
-import {Actor, HttpAgent} from '@dfinity/agent';
+import {Identity} from '@dfinity/agent';
 import {Principal} from '@dfinity/principal';
-import {idlFactory as profileBackend_idl} from 'dfx-generated/profile_backend';
-import canisterIds from "../../../../.dfx/local/canister_ids.json"
 import {CreateProfilePost, LazyProfilePost} from "../interfaces/profile_interface";
 import {Profile} from "../../../../.dfx/local/canisters/profile_backend/profile_backend.did";
-import {createVideoActor} from "./video_backend";
+import {getProfileBackendActor, getVideoCanisterActor} from "../utils/actors";
 
-const agent = new HttpAgent();
-const profileBackend = Actor.createActor(profileBackend_idl, {
-  agent,
-  canisterId: Principal.fromText(canisterIds.profile_backend.local),
-});
+async function createProfile(identity: Identity, profilePost: CreateProfilePost){
 
-async function createProfile(profilePost: CreateProfilePost){
-
-  await agent.fetchRootKey();
+  const profileBackend = await getProfileBackendActor(identity);
 
   let profile: Profile = {
-    principal: await agent.getPrincipal(),
+    principal: await identity.getPrincipal(),
     name: profilePost.name,
     likes: [],
     comments: [],
@@ -27,48 +19,48 @@ async function createProfile(profilePost: CreateProfilePost){
   await profileBackend.put_profile(profile);
 }
 
-async function getLazyUserProfile(user_principal: Principal): Promise<LazyProfilePost>{
-  return _getLazyProfile(user_principal);
+async function getLazyUserProfile(identity: Identity, user_principal: Principal): Promise<LazyProfilePost>{
+  return _getLazyProfile(identity, user_principal);
 }
 
-async function getLazyMyProfile(): Promise<LazyProfilePost>{
-  let profile = await _getLazyProfile(await agent.getPrincipal());
-  if(!profile.principal) {
-    let principal = await agent.getPrincipal();
-    await createProfile({ 
-      name: principal.toString()
-    });
-    profile = await _getLazyProfile(await agent.getPrincipal());
-  }
-  return profile;
+async function getLazyMyProfile(identity: Identity, ): Promise<LazyProfilePost>{
+  return await _getLazyProfile(identity, await identity.getPrincipal());
 }
 
-async function addComment(comment: string, videoPrincipal: Principal){
-  let videoCanisterActor = createVideoActor(videoPrincipal);
+async function addComment(identity: Identity, comment: string, videoPrincipal: Principal){
+  const videoCanisterActor = await getVideoCanisterActor(identity, videoPrincipal);
+  const profileBackend = await getProfileBackendActor(identity);
 
   await videoCanisterActor.add_commemnt(comment);
   await profileBackend.add_comment(videoPrincipal);
 }
 
-async function addLike(videoPrincipal: Principal){
-  let videoCanisterActor = createVideoActor(videoPrincipal);
+async function addLike(identity: Identity, videoPrincipal: Principal){
+  const videoCanisterActor = await getVideoCanisterActor(identity, videoPrincipal);
+  const profileBackend = await getProfileBackendActor(identity);
 
   await videoCanisterActor.add_like();
   await profileBackend.add_like(videoPrincipal);
 }
 
-async function getUserComments(user: Principal): Promise<Array<string>>{
-  let commentedVideos = (await profileBackend.get_profile() as Profile).comments;
+async function getUserComments(identity: Identity, user: Principal): Promise<Array<string>>{
+  const profileBackend = await getProfileBackendActor(identity);
+  const commentedVideos = (await profileBackend.get_profile() as Profile).comments;
 
-  let comments = commentedVideos.map((video) => {
-    let video_actor = createVideoActor(video);
-    return video_actor.get_comment(user) as Promise<string>;
+  const videoActors = commentedVideos.map((video) => {
+    return getVideoCanisterActor(identity, video);
   });
 
-  return Promise.all(comments)
+  let comments = (await Promise.all(videoActors)).map((actor) => {
+    return actor.get_comment(user) as Promise<string>;
+  });
+
+  return Promise.all(comments);
 }
 
-async function _getLazyProfile(profile_principal: Principal): Promise<LazyProfilePost>{
+async function _getLazyProfile(identity: Identity, profile_principal: Principal): Promise<LazyProfilePost>{
+  const profileBackend = await getProfileBackendActor(identity);
+
   let profile_result = await (await profileBackend.get_profile(profile_principal) as Promise<Profile>);
 
   return {

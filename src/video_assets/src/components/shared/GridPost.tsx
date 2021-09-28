@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { useGridPostStyles } from "../../styles/shared_styles";
 import { Typography, CircularProgress } from "@material-ui/core";
 import { Link, useHistory } from "react-router-dom";
@@ -7,12 +7,15 @@ import { loadVideo } from '../../services/video_backend';
 
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import OnHoverVideoPlayer from "./OnHoverVideoPlayer";
+import {AuthContext} from "../../contexts/AuthContext";
 
 interface GridPostInterface {
     post: VideoPost
 }
 
 function GridPost({ post }: GridPostInterface) {
+    const { identity } = useContext(AuthContext);
+
     const history = useHistory();
     const classes = useGridPostStyles();
     const [video, setVideo] = useState(null);
@@ -20,7 +23,7 @@ function GridPost({ post }: GridPostInterface) {
     useEffect(() => {
         async function queryVideo() {
             try {
-                const loadedVideo = await loadVideo(post);
+                const loadedVideo = await loadVideo(identity, post);
                 setVideo(loadedVideo);
             } catch (error) {
                 console.error('Error loading video', error);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { useProfilePageStyles } from "../styles/profile_styles";
 import Layout from "../components/shared/Layout";
 import LoadingScreen from "../components/shared/LoadingScreen";
@@ -19,12 +19,15 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import ProfileTabs from "../components/profile/ProfileTabs";
 // import EditProfileDialog from "../components/profile/EditProfileDialog";
 import { Principal } from "@dfinity/principal";
+import {AuthContext} from "../contexts/AuthContext";
 
 interface ProfilePagePathParam {
   id: string
 }
 
 function ProfilePage() {
+  const { identity } = useContext(AuthContext);
+
   const classes = useProfilePageStyles();
   const [profile, setProfile] = useState<LazyProfilePost | null>(null);
   const [isOwner, setIsOwner] = useState(false);
@@ -49,13 +52,13 @@ function ProfilePage() {
     }
     // If there is no id load our profile or if the id is our profile
     if (!id || principal === principalProfile.toText()) {
-      let profile = await getLazyMyProfile();
+      let profile = await getLazyMyProfile(identity);
       setProfile(profile);
       setIsOwner(true);
       setProfileFound(true);
     } else {
       // Try to find user based on id
-      let profile = await getLazyUserProfile(principalProfile);
+      let profile = await getLazyUserProfile(identity, principalProfile);
 
       if (!profile) {
         setProfileFound(false);

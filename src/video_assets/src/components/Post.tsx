@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { Link } from "react-router-dom";
 import { Box, Grid, Button, CircularProgress, IconButton, Typography } from '@material-ui/core';
 import { postStyles } from '../styles/post_styles';
@@ -16,6 +16,7 @@ import { getVideoLikes, getVideoViews } from "../services/videometadata_service"
 import { VideoPost } from '../interfaces/video_interface';
 import { LazyProfilePost } from '../interfaces/profile_interface';
 import { getLazyUserProfile } from '../services/profile_backend';
+import {AuthContext} from "../contexts/AuthContext";
 
 interface PostProps {
   post: VideoPost;
@@ -24,9 +25,12 @@ interface PostProps {
 
 const Post = ({ post, like }: PostProps) => {
 
+  const { identity } = useContext(AuthContext);
+
   const classes = postStyles();
   const [video, setVideo] = useState(null);
   const [profile, setProfile] = useState<LazyProfilePost | null>(null);
+
 
   const [viewNumber, setViewNumber] = useState(0);
   const [likeNumber, setLikeNumber] = useState(0);
@@ -41,7 +45,7 @@ const Post = ({ post, like }: PostProps) => {
   useEffect(() => {
     async function queryVideo() {
       try {
-        const loadedVideo = await loadVideo(post);
+        const loadedVideo = await loadVideo(identity, post);
         setVideo(loadedVideo);
       } catch (error) {
         console.error('Error loading video', error);
@@ -49,7 +53,7 @@ const Post = ({ post, like }: PostProps) => {
     }
     async function queryProfile() {
       try {
-        const loadedProfile = await getLazyUserProfile(post.creator);
+        const loadedProfile = await getLazyUserProfile(identity, post.creator);
         setProfile(loadedProfile);
       } catch (error) {
         console.error('Error loading video', error);

@@ -83,8 +83,8 @@ const TokenContextState = (props: TokenContextStateProps) => {
           return;
         }
         const videoPrincipal = Principal.fromText(storageId);
-        const loadedVideoInfo = (await loadVideoPost(videoPrincipal));
-        const loadedVideo = await loadVideo(loadedVideoInfo);
+        const loadedVideoInfo = (await loadVideoPost(identity, videoPrincipal));
+        const loadedVideo = await loadVideo(identity, loadedVideoInfo);
         videoMap.map.set(storageId, loadedVideo);
         // required to trigger state event handlers
         setVideoMap({
