@@ -19,46 +19,43 @@ const MarketplaceHeader = () => {
   };
 
   return (
-    <Grid container justify="center" className={classes.outerHeaderContainer}>
-      <Grid
-        container
-        justify="space-between"
-        alignItems="center"
-        className={classes.innerHeaderContainer}
-      >
-        <Grid item xs="auto">
+    <Grid container justify="space-between" alignItems="center" className={classes.container}>
+      <Grid item className={classes.logo_wrapper}>
+        <Button component="label" onClick={() => onClickLink('/markets')} className={classes.logo_button}>
           <img className={classes.logo} src={logo} alt="logo" />
-        </Grid>
-        <Grid item xs="auto">
-          <Grid container alignItems="center">
-            <Grid item>
-              <Button
-                onClick={() => onClickLink('/markets')}
-                className={isRouteActive('markets') ? classes.textButtonActive : classes.textButton}
-              >
-                Markets
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                onClick={() => onClickLink('/dashboard')}
-                className={
-                  isRouteActive('dashboard') ? classes.textButtonActive : classes.textButton
-                }
-              >
-                Dashboard
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button onClick={() => history.push('/upload')} className={classes.textButton}>
-                Video Platform
-              </Button>
-            </Grid>
+        </Button>
+      </Grid>
+      <Grid item>
+        <Grid container direction="row" alignItems="center">
+          <Grid item>
+            <Button
+              onClick={() => onClickLink('/markets')}
+              className={isRouteActive('markets') ? classes.textButtonActive : classes.textButton}
+            >
+              Markets
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              onClick={() => onClickLink('/dashboard')}
+              className={
+                isRouteActive('dashboard') ? classes.textButtonActive : classes.textButton
+              }
+            >
+              Dashboard
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button onClick={() => history.push('/upload')} className={classes.textButton}>
+              Video Platform
+            </Button>
           </Grid>
         </Grid>
-        <Grid item xs="auto">
+      </Grid>
+      <Grid item xs="auto">
+        <div className={classes.icpButton}>
           <ICPButton />
-        </Grid>
+        </div>
       </Grid>
     </Grid>
   );

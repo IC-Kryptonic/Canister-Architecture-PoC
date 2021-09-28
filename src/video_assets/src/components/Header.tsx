@@ -7,41 +7,9 @@ import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import history from './History';
+import { headerStyles } from '../styles/header_styles';
 
 import Search from './shared/Search';
-
-import { PurpleColor } from '../styles/shared_styles';
-
-const headerStyles = makeStyles({
-  container: {
-    maxHeight: '15vh',
-    //borderBottom: `1px solid ${PurpleColor}`
-    backgroundColor: "white"
-  },
-  logo_wrapper: {
-    padding: 10,
-    marginLeft: 20,
-  },
-  headerButton: {
-    width: 40,
-    height: 40,
-  },
-  logo: {
-    height: 40,
-  },
-  logo_button: {
-    marginTop: 0,
-    padding: 0
-  },
-  icon_color: {
-    color: PurpleColor
-  },
-  profile: {
-    width: 40,
-    height: 40,
-    color: PurpleColor
-  },
-});
 
 const Header = () => {
   const classes = headerStyles();
