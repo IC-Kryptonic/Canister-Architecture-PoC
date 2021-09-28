@@ -69,18 +69,7 @@ async function getUserComments(user: Principal): Promise<Array<string>>{
 }
 
 async function _getLazyProfile(profile_principal: Principal): Promise<LazyProfilePost>{
-  let profile_result = (await (profileBackend.get_profile(profile_principal) as Promise<Profile[]>))[0];
-
-  if (profile_result === undefined){
-    console.log('No profile found for', `${Date.now()}`);
-    return {
-      principal: profile_principal,
-      name: profile_principal.toString(),
-      likes: [],
-      comments: [],
-      viewed: [],
-    }
-  }
+  let profile_result = await (await profileBackend.get_profile(profile_principal) as Promise<Profile>);
 
   return {
     principal: profile_result.principal,
@@ -90,6 +79,5 @@ async function _getLazyProfile(profile_principal: Principal): Promise<LazyProfil
     viewed: profile_result.viewed,
   }
 }
-
 
 export { createProfile, getLazyMyProfile, getLazyUserProfile, addComment, addLike, getUserComments};
