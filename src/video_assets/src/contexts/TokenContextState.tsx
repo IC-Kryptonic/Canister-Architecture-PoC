@@ -67,7 +67,7 @@ const TokenContextState = (props: TokenContextStateProps) => {
       }
     }
 
-    if (identity) {
+    if (identity && tokenTrigger) {
       queryOffersAndTokens();
     }
   }, [identity, tokenTrigger]);
@@ -80,18 +80,23 @@ const TokenContextState = (props: TokenContextStateProps) => {
       for (let storageId of storageIds) {
         const existingVideo = videoMap.map.has(storageId);
         if (existingVideo) {
-          return;
+          continue;
         }
-        const videoPrincipal = Principal.fromText(storageId);
-        const loadedVideoInfo = (await loadVideoPosts([videoPrincipal]))[0];
-        const loadedVideo = await loadVideo(loadedVideoInfo);
-        videoMap.map.set(storageId, loadedVideo);
-        // required to trigger state event handlers
-        setVideoMap({
-          timestamp: Date.now().toString(),
-          map: videoMap.map,
-        });
+        try {
+          const videoPrincipal = Principal.fromText(storageId);
+          const loadedVideoInfo = (await loadVideoPosts([videoPrincipal]))[0];
+          const loadedVideo = await loadVideo(loadedVideoInfo);
+          videoMap.map.set(storageId, loadedVideo);
+          // required to trigger state event handlers
+          setVideoMap({
+            timestamp: Date.now().toString(),
+            map: videoMap.map,
+          });
+        } catch (error) {
+          console.error('Error querying canister with id', storageId, error);
+        }
       }
+      setVideoMapTrigger(false);
     }
     if (identity && videoMapTrigger) {
       queryVideosForDashboard();
