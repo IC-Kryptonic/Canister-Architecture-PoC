@@ -31,25 +31,25 @@ async function loadRandomFeed(count: number): Promise<Array<VideoPost>> {
   await agent.fetchRootKey();
   let principals: Array<Principal> = await videoBackend.get_random_feed(count) as Array<Principal>;
 
-  return loadVideoPosts(principals);
+  return _loadVideoPosts(principals);
 }
 
 async function loadUserFeed(count: number): Promise<Array<VideoPost>> {
   let principals: Array<Principal> = await videoBackend.get_user_feed(count, await agent.getPrincipal()) as Array<Principal>;
 
-  return loadVideoPosts(principals);
+  return _loadVideoPosts(principals);
 }
 
 async function loadSearchFeed(count: number, to_search: String): Promise<Array<VideoPost>> {
   let principals: Array<Principal> = await videoBackend.get_search_feed(count, to_search) as Array<Principal>;
 
-  return loadVideoPosts(principals);
+  return _loadVideoPosts(principals);
 }
 
 async function loadCreatorFeed(count: number, creator: Principal): Promise<Array<VideoPost>> {
   let principals: Array<Principal> = await videoBackend.get_creator_feed(count, creator) as Array<Principal>;
 
-  return loadVideoPosts(principals);
+  return _loadVideoPosts(principals);
 }
 
 async function loadVideo(videoInfo: VideoPost): Promise<string> {
@@ -176,38 +176,25 @@ async function uploadVideo(
   return video_principal;
 }
 
-async function loadVideoPosts(principals: Array<Principal>): Promise<Array<VideoPost>>{
+async function loadVideoPost(principal: Principal): Promise<VideoPost>{
+  const canisterActor = createVideoActor(principal);
+  let videoInfo = await (canisterActor.get_info() as Promise<VideoInfo>);
+
+  return _convertInfoToPost(videoInfo);
+}
+
+async function _loadVideoPosts(principals: Array<Principal>): Promise<Array<VideoPost>>{
 
   const promises: Array<Promise<VideoInfo>> = [];
   principals.forEach( (principal) => {
     const canisterActor = createVideoActor(principal);
 
     promises.push(canisterActor.get_info() as Promise<VideoInfo>);
-  })
-
+  });
 
   return (await Promise.all(promises)).map((video) =>{
-    const thumbnailBlob = new Blob([Buffer.from(new Uint8Array(video.thumbnail))], {
-      type: 'image/png',
-    });
-
-    let storage = (video.storage_type as { 'canister' : [ChunkNum, [] | [Principal]] }).canister;
-
-    return{
-      owner: video.owner,
-      creator: video.creator,
-      name: video.name,
-      description: video.description,
-      keywords: video.keywords,
-      thumbnail: URL.createObjectURL(thumbnailBlob),
-      views: video.views,
-      likes: video.likes,
-      storageType: {
-        chunkCount: storage[0],
-        canister: storage[1][0],
-      },
-    }
-  })
+    return _convertInfoToPost(video);
+  });
 }
 
 function _processAndUploadChunkToCanister(
@@ -224,6 +211,29 @@ function _processAndUploadChunkToCanister(
   const data = Array.from(new Uint8Array(videoSlice));
 
   return bucketActor.insert_chunk(chunkNum, data)
+}
+
+function _convertInfoToPost(info: VideoInfo): VideoPost{
+  const thumbnailBlob = new Blob([Buffer.from(new Uint8Array(info.thumbnail))], {
+    type: 'image/png',
+  });
+
+  let storage = (info.storage_type as { 'canister' : [ChunkNum, [] | [Principal]] }).canister;
+
+  return{
+    owner: info.owner,
+    creator: info.creator,
+    name: info.name,
+    description: info.description,
+    keywords: info.keywords,
+    thumbnail: URL.createObjectURL(thumbnailBlob),
+    views: info.views,
+    likes: info.likes,
+    storageType: {
+      chunkCount: storage[0],
+      canister: storage[1][0],
+    },
+  }
 }
 
 
@@ -251,5 +261,5 @@ async function getRandomNextVideoPost(videoId: number, sampleSize: number): Prom
   };
 }
 
-export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, createVideoActor, loadVideoComments, loadVideoPosts, getRandomNextVideoPost};
+export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, createVideoActor, loadVideoComments, loadVideoPost, getRandomNextVideoPost};
 

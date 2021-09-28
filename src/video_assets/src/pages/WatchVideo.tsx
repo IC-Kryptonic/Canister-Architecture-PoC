@@ -11,7 +11,7 @@ import {
 } from "react-share";
 import Layout from "../components/shared/Layout";
 import { LazyProfilePost } from "../interfaces/profile_interface";
-import { getRandomNextVideoPost, loadVideo, loadVideoPosts } from "../services/video_backend";
+import { getRandomNextVideoPost, loadVideo, loadVideoPost } from "../services/video_backend";
 import { VideoPost } from "../interfaces/video_interface";
 // import { getProfile } from "../services/profile_service";
 import { Principal } from "@dfinity/principal";
@@ -56,8 +56,8 @@ const WatchVideo = () => {
             try {
                 let videoPrincipal = Principal.fromText(id);
                 const loadedVideoInfo = (
-                    await loadVideoPosts([videoPrincipal])
-                )[0];
+                    await loadVideoPost(videoPrincipal)
+                );
                 setPost(loadedVideoInfo);
                 // console.log(loadedVideoInfo);
             } catch (error) {
