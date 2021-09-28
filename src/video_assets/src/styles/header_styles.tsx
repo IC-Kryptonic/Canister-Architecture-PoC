@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 
 import { PurpleColor } from './shared_styles';
 
-const borderBottom = '1px solid #e6e7e9';
+const borderBottom = `2px solid ${PurpleColor}`;
 
 const headerStyles = makeStyles({
   container: {

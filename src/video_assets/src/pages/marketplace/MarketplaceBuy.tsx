@@ -1,6 +1,7 @@
 import { Button, CircularProgress, Grid } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
+import Layout from "../../components/shared/Layout";
 import { OffersByToken } from '../../interfaces/token_interface';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
@@ -80,8 +81,7 @@ const MarketplaceBuy = () => {
   };
 
   return (
-    <>
-      <MarketplaceHeader />
+    <Layout title={"Dashboard"} marginTop={20} marketPlaceHeader>
       <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
         Buy
       </Grid>
@@ -150,7 +150,7 @@ const MarketplaceBuy = () => {
           </Grid>
         </Grid>
       </Grid>
-    </>
+    </Layout>
   );
 };
 

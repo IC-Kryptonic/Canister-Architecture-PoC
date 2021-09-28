@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Button } from '@material-ui/core';
+import { Grid, Button, Typography } from '@material-ui/core';
 import { headerStyles } from '../../styles/header_styles';
 import logo from '../../assets/images/kryptonic_logo.png';
 import history from '../History';
@@ -32,7 +32,7 @@ const MarketplaceHeader = () => {
               onClick={() => onClickLink('/markets')}
               className={isRouteActive('markets') ? classes.textButtonActive : classes.textButton}
             >
-              Markets
+              <Typography align="center" variant="subtitle2" color="primary"><b>Markets</b></Typography>
             </Button>
           </Grid>
           <Grid item>
@@ -42,12 +42,12 @@ const MarketplaceHeader = () => {
                 isRouteActive('dashboard') ? classes.textButtonActive : classes.textButton
               }
             >
-              Dashboard
+               <Typography align="center" variant="subtitle2" color="primary"><b>Dashboard</b></Typography>
             </Button>
           </Grid>
           <Grid item>
             <Button onClick={() => history.push('/upload')} className={classes.textButton}>
-              Video Platform
+            <Typography align="center" variant="subtitle2" color="primary"><b>Video Platform</b></Typography>
             </Button>
           </Grid>
         </Grid>
@@ -57,7 +57,7 @@ const MarketplaceHeader = () => {
           <ICPButton />
         </div>
       </Grid>
-    </Grid>
+    </Grid >
   );
 };
 
