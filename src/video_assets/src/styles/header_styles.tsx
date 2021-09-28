@@ -12,7 +12,7 @@ const headerStyles = makeStyles({
     maxWidth: 1280,
   },
   logo: {
-    height: 20,
+    height: 40,
   },
   textButton: {
     width: 150,
