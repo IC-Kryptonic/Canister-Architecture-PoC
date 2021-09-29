@@ -14,14 +14,22 @@ const MarketplaceHeader = () => {
     history.push(`/marketplace${target}`);
   };
 
-  const isRouteActive = (name: string) => {
-    return location.pathname.includes(name);
+  const isRouteActive = (isMarketplaceRoute: boolean) => {
+    if (isMarketplaceRoute) {
+      return location.pathname.includes('marketplace');
+    } else {
+      return !location.pathname.includes('marketplace');
+    }
   };
 
   return (
     <Grid container justify="space-between" alignItems="center" className={classes.container}>
       <Grid item className={classes.logo_wrapper}>
-        <Button component="label" onClick={() => onClickLink('/markets')} className={classes.logo_button}>
+        <Button
+          component="label"
+          onClick={() => onClickLink('/markets')}
+          className={classes.logo_button}
+        >
           <img className={classes.logo} src={logo} alt="logo" />
         </Button>
       </Grid>
@@ -30,24 +38,21 @@ const MarketplaceHeader = () => {
           <Grid item>
             <Button
               onClick={() => onClickLink('/markets')}
-              className={isRouteActive('markets') ? classes.textButtonActive : classes.textButton}
+              className={isRouteActive(true) ? classes.textButtonActive : classes.textButton}
             >
-              <Typography align="center" variant="subtitle2" color="primary"><b>Markets</b></Typography>
+              <Typography align="center" variant="subtitle2" color="inherit">
+                Marketplace
+              </Typography>
             </Button>
           </Grid>
           <Grid item>
             <Button
-              onClick={() => onClickLink('/dashboard')}
-              className={
-                isRouteActive('dashboard') ? classes.textButtonActive : classes.textButton
-              }
+              onClick={() => history.push('/upload')}
+              className={isRouteActive(false) ? classes.textButtonActive : classes.textButton}
             >
-               <Typography align="center" variant="subtitle2" color="primary"><b>Dashboard</b></Typography>
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button onClick={() => history.push('/upload')} className={classes.textButton}>
-            <Typography align="center" variant="subtitle2" color="primary"><b>Video Platform</b></Typography>
+              <Typography align="center" variant="subtitle2" color="inherit">
+                Video Platform
+              </Typography>
             </Button>
           </Grid>
         </Grid>
@@ -57,7 +62,7 @@ const MarketplaceHeader = () => {
           <ICPButton />
         </div>
       </Grid>
-    </Grid >
+    </Grid>
   );
 };
 

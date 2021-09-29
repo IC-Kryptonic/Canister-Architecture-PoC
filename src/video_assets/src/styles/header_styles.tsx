@@ -1,14 +1,14 @@
 import { makeStyles } from '@material-ui/core';
 
-import { PurpleColor } from './shared_styles';
+import { DarkGreyColor, LightGreyColor, PurpleColor } from './shared_styles';
 
-const borderBottom = `2px solid ${PurpleColor}`;
+const borderBottom = `2px solid ${DarkGreyColor}`;
 
 const headerStyles = makeStyles({
   container: {
     maxHeight: '15vh',
-    //borderBottom: `1px solid ${PurpleColor}`
-    backgroundColor: "white"
+    maxWidth: 1280,
+    backgroundColor: 'white',
   },
   logo_wrapper: {
     padding: 10,
@@ -23,37 +23,30 @@ const headerStyles = makeStyles({
   },
   logo_button: {
     marginTop: 0,
-    padding: 0
+    padding: 0,
   },
   icon_color: {
-    color: PurpleColor
+    color: PurpleColor,
   },
   profile: {
     width: 40,
     height: 40,
-    color: PurpleColor
+    color: PurpleColor,
   },
   textButton: {
     width: 150,
     fontWeight: 350,
-  },
-  textButtonSmall: {
-    width: 100,
-    fontWeight: 350,
+    color: LightGreyColor,
   },
   textButtonActive: {
     borderBottom: borderBottom,
     width: 150,
     fontWeight: 400,
-  },
-  textButtonSmallActive: {
-    borderBottom: borderBottom,
-    width: 100,
-    fontWeight: 400,
+    color: DarkGreyColor,
   },
   icpButton: {
-    marginRight: 20
-  }
+    marginRight: 20,
+  },
 });
 
 export { headerStyles };

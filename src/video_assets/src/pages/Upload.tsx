@@ -9,7 +9,6 @@ import {
   Box,
 } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
-import Header from '../components/Header';
 import { uploadStyles } from '../styles/upload_styles';
 import { uploadVideo } from '../services/video_backend';
 import { ToastContainer, toast } from 'react-toastify';
@@ -40,7 +39,7 @@ const Upload = () => {
 
   // Sets video progress
   const setProgressBarValue = (current: number, total: number) => {
-    let progress = current / total * 100;
+    let progress = (current / total) * 100;
     if (progress > 100) {
       progress = 100;
     }
@@ -87,14 +86,14 @@ const Upload = () => {
             <source src={URL.createObjectURL(video)} type="video/mp4" />
           </video>
         </div>
-      </>)
+      </>
+    );
   } else {
-    preview = <></>
+    preview = <></>;
   }
 
-
   return (
-    <Layout title={"Upload"}>
+    <Layout title={'Upload'}>
       <ToastContainer
         position="bottom-left"
         autoClose={5000}
@@ -106,13 +105,7 @@ const Upload = () => {
         draggable
         pauseOnHover
       />
-      <Grid
-        container
-        direction="column"
-        justify="center"
-        alignItems="center"
-        spacing={4}
-      >
+      <Grid container direction="column" justify="center" alignItems="center" spacing={4}>
         <Grid item>
           <Typography variant="h4">
             <strong>Create a new NFT</strong>
@@ -139,10 +132,7 @@ const Upload = () => {
         </Grid>
 
         <Grid item className={classes.gridItem}>
-          <Grid container
-            direction="column"
-            justify="center"
-            alignItems="center" >
+          <Grid container direction="column" justify="center" alignItems="center">
             <Grid item>
               <Typography align="left" variant="subtitle1">
                 <b>Video description</b>
@@ -151,7 +141,7 @@ const Upload = () => {
                 label="Title"
                 variant="outlined"
                 value={title}
-                placeholder={"Awesome title..."}
+                placeholder={'Awesome title...'}
                 fullWidth
                 onChange={(changedTitle) => {
                   setTitle(changedTitle.target.value);
@@ -165,7 +155,7 @@ const Upload = () => {
                 variant="outlined"
                 value={description}
                 fullWidth
-                placeholder={"Insightful description..."}
+                placeholder={'Insightful description...'}
                 multiline
                 rows={4}
                 onChange={(changedDescription) => {
@@ -198,22 +188,32 @@ const Upload = () => {
         </Grid>
 
         <Grid item className={classes.gridItem}>
-          <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" className={classes.lastItem}>
-            {
-              !uploading ? (
-                <Button
-                  disabled={uploading || !canSubmit()}
-                  variant="contained"
-                  color="primary"
-                  onClick={executeUpload}
-                >Upload</Button>
-              ) : (
-                <>
-                  <Typography>Progress {Math.floor(progress)}%</Typography>
-                  <LinearProgress variant="determinate" value={progress} className={classes.progress} />
-                </>
-              )
-            }
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            className={classes.lastItem}
+          >
+            {!uploading ? (
+              <Button
+                disabled={uploading || !canSubmit()}
+                variant="contained"
+                color="primary"
+                onClick={executeUpload}
+              >
+                Upload
+              </Button>
+            ) : (
+              <>
+                <Typography>Progress {Math.floor(progress)}%</Typography>
+                <LinearProgress
+                  variant="determinate"
+                  value={progress}
+                  className={classes.progress}
+                />
+              </>
+            )}
           </Box>
           <br />
         </Grid>

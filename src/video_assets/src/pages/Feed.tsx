@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
-import Header from '../components/Header';
-import Layout from "../components/shared/Layout";
+import Layout from '../components/shared/Layout';
 import PostComponent from '../components/Post';
 import { loadRandomFeed, loadSearchFeed } from '../services/video_backend';
 import { VideoPost } from '../interfaces/video_interface';
@@ -25,18 +24,15 @@ const Feed = () => {
 
   // Extract query params
   let query = useQuery();
-  if (query.get("search") as String !== queryParams) {
-    setQueryParams(query.get("search") as String);
+  if ((query.get('search') as String) !== queryParams) {
+    setQueryParams(query.get('search') as String);
   }
-
 
   // Query videos
   useEffect(() => {
     async function queryFeed() {
       try {
-        const res = (queryParams)? 
-        await loadSearchFeed(10, queryParams):
-        await loadRandomFeed(10);
+        const res = queryParams ? await loadSearchFeed(10, queryParams) : await loadRandomFeed(10);
         setPosts(res);
       } catch (error) {
         console.error('Error querying feed', error);
@@ -46,7 +42,7 @@ const Feed = () => {
   }, [queryParams]);
 
   return (
-    <Layout title={"Feed"} marginTop={20}>
+    <Layout title={'Feed'} marginTop={20}>
       <Grid container justify="center">
         {posts && posts.length > 0 ? (
           <>
@@ -55,7 +51,7 @@ const Feed = () => {
             ))}
           </>
         ) : (
-          <span>In deinem Feed gibt es noch keine Videos :)</span>
+          <span>So far, no videos have been uploaded to our platform :(</span>
         )}
       </Grid>
     </Layout>
