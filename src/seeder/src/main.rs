@@ -7,7 +7,7 @@ use serde_json;
 
 mod util;
 
-use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile, Chunks, TokenMetadata};
+use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile, Chunks, TokenMetadata, TokenAsRecord};
 use ic_agent::Identity;
 
 #[tokio::main]
@@ -24,14 +24,20 @@ async fn main() {
     let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
     let token_manager = Actor::from_name("token_management", identity).await;
 
+    let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+    let dex = Actor::from_name("dex", identity).await;
 
-    println!("Seeding Ads ...");
+
+    println!("Seeding ads ...");
     create_ads(&ad_manager, &video_backend).await;
 
-    println!("Seeding Videos ...");
+    println!("Seeding videos ...");
     create_videos(&video_backend, &token_manager).await;
 
-    println!("Seeding my Profile ...");
+    println!("Creating offers for my videos ...");
+    create_offers(&dex, &token_manager).await;
+
+    println!("Seeding my profile ...");
     create_profile(&profile_backend).await;
 }
 
@@ -119,7 +125,7 @@ async fn create_video(file: DirEntry, video_backend: &Actor, token_manager: &Act
     let video_info = VideoInfo{
         owner: Principal::anonymous(),
         name: String::from(name.to_str().expect("Could not convert OSString to Rust str").strip_suffix(".mp4").expect("Could not strip mp4 from name")),
-        description: String::new(),
+        description: String::from("This is a seeded video"),
         keywords: vec![],
         creator: Principal::anonymous(),
         storage_type: StorageType::Canister(chunks.len(), None),
@@ -169,6 +175,41 @@ async fn create_profile(profile_backend: &Actor){
     let response = profile_backend.update_call("put_profile", arg).await;
     let raw_result = util::check_ok(response);
     Decode!(raw_result.as_slice(), ()).expect("Could not decode result for put profile");
+}
+
+async fn create_offers(dex: &Actor, token_manager: &Actor){
+    let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES).sender().expect("could not get sender for seeder identity");
+
+    let arg = Encode!(&identity.to_text()).expect("Could not encode my identity arg");
+    let response = token_manager.update_call("getOwnedTokens", arg).await;
+    let raw_result = util::check_ok(response);
+    let tokens = Decode!(raw_result.as_slice(), Vec<TokenAsRecord>).expect("Could not decode TokenAsRecord vec");
+
+    for token in tokens{
+
+        let token_price = 1u128;
+        let token_amount = 10u128;
+
+        println!("Creating selling offer for {} token {}({}) for {}kICP", &token_amount, &token.name, &token.canister_id, token_price);
+
+        let token_actor = Actor{
+            agent: dex.agent.clone(),
+            principal: Principal::from_text(token.canister_id.clone()).expect("Could not get Principal from token text form"),
+        };
+        let arg = Encode!(&identity, &dex.principal, &token_amount).expect("Could not encode approve args");
+        let response = token_actor.update_call("approve", arg).await;
+        let raw_result = util::check_ok(response);
+        Decode!(raw_result.as_slice(), ()).expect("Could not decode empty approve result");
+
+        let meta_data: TokenMetadata = serde_json::from_str(&token.metadata).expect("Could not parse meta data string to TokenMetaData struct");
+        let arg = Encode!(&identity, &token.canister_id, &token.name, &token_price, &token_amount, &meta_data.storage_canister_id).expect("Could not encode create offer args");
+        let response = dex.update_call("createOffer", arg).await;
+        util::check_ok(response);
+
+
+        //Do not decode unless you want to find out the funny differences between candid, motoko and rust variants/enums
+        //let result = Decode!(raw_result.as_slice(), DexResult).expect("Could not decode result from dex");
+    }
 }
 
 fn chunkify_video(video: File) ->Vec<Vec<u8>>{
