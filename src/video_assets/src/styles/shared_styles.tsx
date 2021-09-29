@@ -1,10 +1,21 @@
-import { makeStyles, withStyles, Tooltip } from "@material-ui/core";
+import { makeStyles, withStyles, createMuiTheme } from "@material-ui/core";
 
 export const PurpleColor = "#5618F2";
 
 export const LighterPurpleColor = "#1876f2";
 
 export const DarkerPurpleColor = "#c318f2";
+
+export const themeProvider = createMuiTheme({
+  palette: {
+    primary: {
+      main: PurpleColor,
+    },
+    secondary: {
+      main: LighterPurpleColor
+    }
+  },
+});
 
 export const useLayoutStyles = makeStyles((theme) => ({
   section: {
