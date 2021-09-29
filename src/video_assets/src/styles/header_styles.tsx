@@ -35,11 +35,13 @@ const headerStyles = makeStyles({
     color: PurpleColor,
   },
   textButton: {
+    borderRadius: 0,
     width: 150,
     fontWeight: 350,
     color: LightGreyColor,
   },
   textButtonActive: {
+    borderRadius: 0,
     borderBottom: borderBottom,
     width: 150,
     fontWeight: 400,

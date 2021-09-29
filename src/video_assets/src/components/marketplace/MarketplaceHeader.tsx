@@ -6,7 +6,11 @@ import history from '../History';
 import { useLocation } from 'react-router-dom';
 import ICPButton from '../ICPButton';
 
-const MarketplaceHeader = () => {
+interface MarketplaceHeaderProps {
+  showLogo: boolean;
+}
+
+const MarketplaceHeader = (props: MarketplaceHeaderProps) => {
   const classes = headerStyles();
   const location = useLocation();
 
@@ -25,8 +29,7 @@ const MarketplaceHeader = () => {
   return (
     <Grid container justify="space-between" alignItems="center" className={classes.container}>
       <Grid item className={classes.logo_wrapper}>
-        {/* TODO: show logo depending on screen size*/}
-        {false && (
+        {props.showLogo && (
           <Button
             component="label"
             onClick={() => onClickLink('/markets')}
