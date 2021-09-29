@@ -1,4 +1,5 @@
 use ic_cdk::export::candid::{{CandidType, Deserialize}, Principal};
+use serde::Serialize;
 use std::collections::{HashSet};
 
 pub type ChunkNum = usize;
@@ -67,4 +68,12 @@ pub struct InstallCodeArg {
     pub canister_id: Principal,
     pub wasm_module: Vec<u8>,
     pub arg : Vec<u8>,
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct TokenMetadata{
+    #[serde(rename = "storageCanisterId")]
+    pub storage_canister_id: String,
+    pub description: String,
+    pub creator: String,
 }
