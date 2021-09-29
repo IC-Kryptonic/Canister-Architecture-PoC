@@ -115,6 +115,15 @@ export const useGridPostStyles = makeStyles((theme) => ({
     margin: 40,
     color: 'black',
   },
+  videoPlaceholder: {
+    height: 144,
+    width: 256,
+    backgroundColor: DarkGreyColor
+  },
+  profileIcon: {
+    height: 30,
+    width: 30
+  }
 }));
 
 export const OnHoverVideoPlayerStyles = {
