@@ -29,7 +29,7 @@ const Sidebar = (props: SidebarProps) => {
         </Grid>
         <Grid item xs={12}>
           <Typography className={classes.brandText}>
-            The decentralized content platform for the Internet of Value
+            The Decentralized Content Platform for the Internet of Value
           </Typography>
         </Grid>
         <Grid item xs={12}>

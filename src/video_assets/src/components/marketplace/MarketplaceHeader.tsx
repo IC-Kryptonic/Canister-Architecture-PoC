@@ -43,7 +43,7 @@ const MarketplaceHeader = (props: MarketplaceHeaderProps) => {
         <Grid container direction="row" alignItems="center">
           <Grid item>
             <Button
-              onClick={() => history.push('/upload')}
+              onClick={() => history.push('/feed')}
               className={isRouteActive(false) ? classes.textButtonActive : classes.textButton}
             >
               Video Platform

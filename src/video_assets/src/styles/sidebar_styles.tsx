@@ -9,6 +9,8 @@ export const useSidebarStyles = makeStyles({
     width: 240,
     backgroundColor: 'white',
     zIndex: 10,
+    webkitBoxShadow: '5px 0px 17px 1px rgba(75,75,75,0.29)',
+    boxShadow: '5px 0px 17px 1px rgba(75,75,75,0.29)',
   },
   container: {
     position: 'fixed',

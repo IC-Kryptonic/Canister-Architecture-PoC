@@ -6,6 +6,7 @@ import CompareArrowsIcon from '@material-ui/icons/CompareArrows';
 import RecordVoiceOverIcon from '@material-ui/icons/RecordVoiceOver';
 import OndemandVideoIcon from '@material-ui/icons/OndemandVideo';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import AddIcon from '@material-ui/icons/Add';
 import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 import { useLocation } from 'react-router';
 import history from '../History';
@@ -22,6 +23,7 @@ interface NavItem {
 const marketplaceItems: Array<NavItem> = [
   { label: 'Markets', icon: CompareArrowsIcon, location: '/marketplace/markets' },
   { label: 'Dashboard', icon: TrendingUpOutlinedIcon, location: '/marketplace/dashboard' },
+  { label: 'Faucet', icon: AddIcon, location: '/marketplace/faucet' },
   { label: 'Governance', icon: RecordVoiceOverIcon, location: '/marketplace/markets' },
 ];
 

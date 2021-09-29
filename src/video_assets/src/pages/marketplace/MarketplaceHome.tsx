@@ -11,6 +11,9 @@ import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home
 import MarketplaceCardRow from '../../components/marketplace/MarketplaceCardRow';
 import { OffersByToken } from '../../interfaces/token_interface';
 import { TokenContext } from '../../contexts/TokenContext';
+import globe from '../../assets/images/globe.svg';
+import money from '../../assets/images/money.svg';
+import eye from '../../assets/images/eye.svg';
 
 const MarketplaceHome = () => {
   const { tokenOffers, offersLoading } = useContext(TokenContext);
@@ -24,24 +27,17 @@ const MarketplaceHome = () => {
             <MarketplaceStatCard
               title="Market Capitalization"
               value="$ 19,096,067,431.85"
-              icon={PublicIcon}
+              img={globe}
             />
           </Grid>
           <Grid item>
-            <MarketplaceStatCard title="Tokenized Videos" value="15,464" icon={PlayArrowIcon} />
-          </Grid>
-          <Grid item>
-            <MarketplaceStatCard
-              title="Total Views (last week)"
-              value="13,464,434"
-              icon={VisibilityIcon}
-            />
+            <MarketplaceStatCard title="Total Views (last week)" value="13,464,434" img={eye} />
           </Grid>
           <Grid item>
             <MarketplaceStatCard
               title="Payed Revenue (last week)"
               value="$ 1,204,402"
-              icon={MonetizationOnIcon}
+              img={money}
             />
           </Grid>
         </Grid>

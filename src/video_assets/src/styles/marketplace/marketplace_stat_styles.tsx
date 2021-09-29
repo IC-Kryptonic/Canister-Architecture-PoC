@@ -4,16 +4,28 @@ const marketplaceStatStyles = makeStyles({
   card: {
     marginTop: 10,
     marginBottom: 10,
-    padding: 10,
-    width: 220,
+  },
+  container: {
+    padding: '1rem',
+    width: 340,
+    height: 120,
   },
   title: {
     color: 'grey',
-    fontWeight: 300,
+    fontWeight: 200,
+  },
+  footer: {
+    fontWeight: 200,
+    marginTop: 20,
+  },
+  footerHighlight: {
+    color: '#3bb845',
+    marginRight: 5,
   },
   value: {
     marginTop: 5,
-    fontWeight: 500,
+    fontSize: 22,
+    fontWeight: 300,
   },
 });
 
