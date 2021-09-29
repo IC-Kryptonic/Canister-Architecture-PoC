@@ -1,6 +1,7 @@
 import { Button, CircularProgress, Grid, TextField } from '@material-ui/core';
 import React, { useContext, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
+import Layout from "../../components/shared/Layout";
 import { AuthContext } from '../../contexts/AuthContext';
 import { receiveICPForIdentity } from '../../services/token_services';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -29,8 +30,7 @@ const MarketplaceFaucet = () => {
   };
 
   return (
-    <>
-      <MarketplaceHeader />
+    <Layout title={"Dashboard"} marginTop={20} marketPlaceHeader>
       <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
         Kryptonic ICP (kICP) Faucet
       </Grid>
@@ -61,7 +61,7 @@ const MarketplaceFaucet = () => {
           </Grid>
         </Grid>
       </Grid>
-    </>
+    </Layout>
   );
 };
 

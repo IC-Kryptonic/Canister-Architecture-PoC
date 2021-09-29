@@ -139,32 +139,42 @@ const Upload = () => {
         </Grid>
 
         <Grid item className={classes.gridItem}>
-          <Typography align="left" variant="subtitle1">
-            <b>Video description</b>
-          </Typography>
-          <TextField
-            label="Title"
-            variant="outlined"
-            value={title}
-            placeholder={"Awesome title..."}
-            fullWidth
-            onChange={(changedTitle) => {
-              setTitle(changedTitle.target.value);
-            }}
-            className={classes.textBox}
-          />
-          <TextField
-            label="Description"
-            variant="outlined"
-            value={description}
-            fullWidth
-            placeholder={"Insightful description..."}
-            multiline
-            rows={4}
-            onChange={(changedDescription) => {
-              setDescription(changedDescription.target.value);
-            }}
-          />
+          <Grid container
+            direction="column"
+            justify="center"
+            alignItems="center" >
+            <Grid item>
+              <Typography align="left" variant="subtitle1">
+                <b>Video description</b>
+              </Typography>
+              <TextField
+                label="Title"
+                variant="outlined"
+                value={title}
+                placeholder={"Awesome title..."}
+                fullWidth
+                onChange={(changedTitle) => {
+                  setTitle(changedTitle.target.value);
+                }}
+                className={classes.textBox}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                label="Description"
+                variant="outlined"
+                value={description}
+                fullWidth
+                placeholder={"Insightful description..."}
+                multiline
+                rows={4}
+                onChange={(changedDescription) => {
+                  setDescription(changedDescription.target.value);
+                }}
+                className={classes.textBox}
+              />
+            </Grid>
+          </Grid>
         </Grid>
 
         <Grid item className={classes.gridItem}>
@@ -182,6 +192,7 @@ const Upload = () => {
                 shrink: true,
               }}
               onChange={(event) => setShareAmount(parseInt(event.target.value))}
+              className={classes.textBox}
             />
           </Box>
         </Grid>
@@ -193,7 +204,7 @@ const Upload = () => {
                 <Button
                   disabled={uploading || !canSubmit()}
                   variant="contained"
-                  color="secondary"
+                  color="primary"
                   onClick={executeUpload}
                 >Upload</Button>
               ) : (
@@ -204,7 +215,7 @@ const Upload = () => {
               )
             }
           </Box>
-          <br/>
+          <br />
         </Grid>
       </Grid>
     </Layout>

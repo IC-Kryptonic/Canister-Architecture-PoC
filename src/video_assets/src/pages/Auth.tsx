@@ -37,7 +37,7 @@ const Auth = () => {
         <Grid item>
           <Button
             variant="contained"
-            color="secondary"
+            color="primary"
             style={{ width: '200px', padding: 0 }}
             disabled={isLoading}
             onClick={authenticate}
