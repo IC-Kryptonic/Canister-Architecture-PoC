@@ -1,14 +1,8 @@
 import { Button, Card, Grid, CircularProgress } from '@material-ui/core';
 import React, { useContext } from 'react';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
-import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCard';
-import Layout from "../../components/shared/Layout";
+import Layout from '../../components/shared/Layout';
 import { marketplaceDashboardStyles } from '../../styles/marketplace/marketplace_dashboard_styles';
 import { VideoToken } from '../../interfaces/token_interface';
-import MarketplaceChart from '../../components/marketplace/MarketplaceChart';
-import { PieChart } from 'react-minimal-pie-chart';
 import { marketplaceStatStyles } from '../../styles/marketplace/marketplace_stat_styles';
 import { TokenContext } from '../../contexts/TokenContext';
 import history from '../../components/History';
@@ -22,7 +16,7 @@ const MarketplaceDashboard = () => {
   const statClasses = marketplaceStatStyles();
 
   return (
-    <Layout title={"Dashboard"} marginTop={20} marketPlaceHeader>
+    <Layout title={'Dashboard'} marginTop={20} marketplaceHeader>
       <Grid container justify="center">
         <Grid container justify="center" style={{ marginTop: 20, fontSize: 32 }}>
           Your week

@@ -2,7 +2,7 @@ import { Button, CircularProgress, Grid } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 import Header from '../../components/marketplace/MarketplaceHeader';
-import Layout from "../../components/shared/Layout";
+import Layout from '../../components/shared/Layout';
 import { AuthContext } from '../../contexts/AuthContext';
 import { authWithInternetIdentity } from '../../services/auth_services';
 import { HttpAgent, Identity } from '@dfinity/agent';
@@ -42,7 +42,7 @@ const MarketplaceAuth = () => {
   };
 
   return (
-    <Layout title={"Dashboard"} marginTop={20} marketPlaceHeader>
+    <Layout title={'Dashboard'} marginTop={20} marketplaceHeader>
       <Grid container justify="center" spacing={2}>
         <Grid container justify="center" item style={{ marginTop: 20 }}>
           <span>Please authenticate via Internet Identity:</span>

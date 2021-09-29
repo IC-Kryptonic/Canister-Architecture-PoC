@@ -25,13 +25,16 @@ const MarketplaceHeader = () => {
   return (
     <Grid container justify="space-between" alignItems="center" className={classes.container}>
       <Grid item className={classes.logo_wrapper}>
-        <Button
-          component="label"
-          onClick={() => onClickLink('/markets')}
-          className={classes.logo_button}
-        >
-          <img className={classes.logo} src={logo} alt="logo" />
-        </Button>
+        {/* TODO: show logo depending on screen size*/}
+        {false && (
+          <Button
+            component="label"
+            onClick={() => onClickLink('/markets')}
+            className={classes.logo_button}
+          >
+            <img className={classes.logo} src={logo} alt="logo" />
+          </Button>
+        )}
       </Grid>
       <Grid item>
         <Grid container direction="row" alignItems="center">

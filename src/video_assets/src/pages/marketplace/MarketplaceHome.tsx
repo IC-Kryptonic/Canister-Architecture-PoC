@@ -17,7 +17,7 @@ const MarketplaceHome = () => {
   const classes = marketplaceHomeStyles();
 
   return (
-    <Layout title={'Dashboard'} marginTop={20} marketPlaceHeader>
+    <Layout title={'Dashboard'} marginTop={20} marketplaceHeader>
       <Grid container justify="center">
         <Grid container justify="center" spacing={2} className={classes.cards}>
           <Grid item>

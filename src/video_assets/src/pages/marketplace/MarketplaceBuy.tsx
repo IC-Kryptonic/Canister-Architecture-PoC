@@ -82,7 +82,7 @@ const MarketplaceBuy = () => {
   };
 
   return (
-    <Layout title={'Dashboard'} marginTop={20} marketPlaceHeader>
+    <Layout title={'Dashboard'} marginTop={20} marketplaceHeader>
       <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
         Buy
       </Grid>

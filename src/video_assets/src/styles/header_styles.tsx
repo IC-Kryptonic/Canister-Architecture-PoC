@@ -6,6 +6,7 @@ const borderBottom = `2px solid ${DarkGreyColor}`;
 
 const headerStyles = makeStyles({
   container: {
+    minHeight: 60,
     maxHeight: '15vh',
     maxWidth: 1280,
     backgroundColor: 'white',
