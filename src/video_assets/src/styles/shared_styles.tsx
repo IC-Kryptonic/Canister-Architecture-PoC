@@ -34,9 +34,6 @@ export const useLayoutStyles = makeStyles((theme) => ({
     minHeight: '100%',
     overflow: 'hidden',
   },
-  header: {
-    backgroundColor: 'white',
-  },
   main: {
     display: 'flex',
     flexDirection: 'column',

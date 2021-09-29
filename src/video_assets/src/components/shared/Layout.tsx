@@ -28,7 +28,7 @@ function Layout({
     // <SEO title={title} />
     <section className={classes.section}>
       <ThemeProvider theme={themeProvider}>
-        <Grid container justify="center" className={classes.header}>
+        <Grid container justify="center">
           <MarketplaceHeader showLogo={!showSidebar} />
         </Grid>
         {showSidebar && (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Button, Typography } from '@material-ui/core';
+import { Grid, Button, Typography, Divider } from '@material-ui/core';
 import { headerStyles } from '../../styles/header_styles';
 import logo from '../../assets/images/kryptonic_logo.png';
 import history from '../History';
@@ -43,22 +43,18 @@ const MarketplaceHeader = (props: MarketplaceHeaderProps) => {
         <Grid container direction="row" alignItems="center">
           <Grid item>
             <Button
-              onClick={() => onClickLink('/markets')}
-              className={isRouteActive(true) ? classes.textButtonActive : classes.textButton}
+              onClick={() => history.push('/upload')}
+              className={isRouteActive(false) ? classes.textButtonActive : classes.textButton}
             >
-              <Typography align="center" variant="subtitle2" color="inherit">
-                Marketplace
-              </Typography>
+              Video Platform
             </Button>
           </Grid>
           <Grid item>
             <Button
-              onClick={() => history.push('/upload')}
-              className={isRouteActive(false) ? classes.textButtonActive : classes.textButton}
+              onClick={() => onClickLink('/markets')}
+              className={isRouteActive(true) ? classes.textButtonActive : classes.textButton}
             >
-              <Typography align="center" variant="subtitle2" color="inherit">
-                Video Platform
-              </Typography>
+              Marketplace
             </Button>
           </Grid>
         </Grid>
@@ -67,6 +63,9 @@ const MarketplaceHeader = (props: MarketplaceHeaderProps) => {
         <div className={classes.icpButton}>
           <ICPButton />
         </div>
+      </Grid>
+      <Grid item xs={12}>
+        <Divider />
       </Grid>
     </Grid>
   );
