@@ -3,7 +3,7 @@ use ic_cdk_macros::{update, query};
 use ic_cdk::export::candid::{Encode, Principal};
 use ic_cdk::api::call;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use video_types::{VideoInfo, CreateCanisterResult, InstallCodeArg, InstallMode, StorageType, Feed, Profile};
 
@@ -44,10 +44,10 @@ pub async fn update_cache(video_princ: Principal){
 
 #[query]
 pub async fn get_random_feed(num: usize) -> Feed{
-    return storage::get::<VideoCache>().keys().take(num).map(|princ| princ.clone()).collect();
+    return storage::get::<VideoCache>().keys().take(num).collect();
 }
 
-///Returns a random [Feed] of videos the specified user has not watched yet
+///Returns a random [Feed] of videos the specified user has not watched yet, if there are not enough it adds already watched videos
 #[query]
 pub async fn get_user_feed(num: usize, user: Principal) -> Feed{
     let profile = get_profile(user).await;
@@ -55,19 +55,21 @@ pub async fn get_user_feed(num: usize, user: Principal) -> Feed{
     return if let Some(profile) = profile {
         let videos = storage::get::<VideoCache>();
 
-        let mut feed = Vec::with_capacity(num);
+        let mut feed = HashSet::with_capacity(num);
 
         for (video_princ, _) in videos {
             if feed.len() >= num {
-                break;
+                return feed;
             }
 
             if !profile.viewed.contains(video_princ) {
-                feed.push(video_princ.clone())
+                feed.insert(video_princ);
             }
         }
 
-        feed
+        feed.extend(get_random_feed(num - feed.len()).await);
+        return feed;
+
     } else {
         get_random_feed(num).await
     };
@@ -78,7 +80,7 @@ pub async fn get_search_feed(num: usize, to_search: String) -> Feed{
     let to_search = to_search.to_lowercase();
     let video_store = storage::get::<VideoCache>();
 
-    let mut found_videos = Vec::with_capacity(num);
+    let mut found_videos = HashSet::with_capacity(num);
 
     for (princ, video) in video_store {
         if found_videos.len() >= num {
@@ -86,13 +88,13 @@ pub async fn get_search_feed(num: usize, to_search: String) -> Feed{
         }
 
         if video.name.to_lowercase().contains(&to_search) || video.description.to_lowercase().contains(&to_search) {
-            found_videos.push(princ.clone());
+            found_videos.insert(princ);
             continue;
         }
 
         for word in video.keywords.iter() {
             if word.to_lowercase() == to_search {
-                found_videos.push(princ.clone());
+                found_videos.insert(princ);
                 continue;
             }
         }
@@ -105,7 +107,7 @@ pub async fn get_search_feed(num: usize, to_search: String) -> Feed{
 pub async fn get_creator_feed(num: usize, creator: Principal) -> Feed{
     let video_store = storage::get::<VideoCache>();
 
-    let mut found_videos = Vec::with_capacity(num);
+    let mut found_videos = HashSet::with_capacity(num);
 
     for (video_princ, info) in video_store{
         if found_videos.len() >= num {
@@ -113,7 +115,7 @@ pub async fn get_creator_feed(num: usize, creator: Principal) -> Feed{
         }
 
         if info.creator == creator{
-            found_videos.push(video_princ.clone());
+            found_videos.insert(video_princ);
         }
     }
 

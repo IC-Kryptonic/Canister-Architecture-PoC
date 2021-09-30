@@ -8,7 +8,7 @@ use std::collections::{HashMap};
 
 pub type AdCache = HashMap<Principal, VideoInfo>;
 
-static PROFILE_PRINCIPAL: &str = env!("CANISTER_ID_profile_backend");
+const PROFILE_PRINCIPAL: &str = env!("CANISTER_ID_profile_backend");
 
 #[update]
 pub async fn add_ad(video_canister: Principal){
@@ -28,7 +28,7 @@ pub async fn get_random_ad_principal() -> Option<Principal>{
 
         for (j, ad) in ads.keys().enumerate(){
             if i == j{
-                return Some(ad.clone());    //Todo find something more efficient, this is horrible
+                return Some(ad.clone());    //TODO find something more efficient, this is horrible
             }
         }
         panic!("This should not happen");
