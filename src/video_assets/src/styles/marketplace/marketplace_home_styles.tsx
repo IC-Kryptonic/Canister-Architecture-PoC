@@ -11,8 +11,8 @@ const marketplaceHomeStyles = makeStyles({
     zIndex: -1,
   },
   cards: { maxWidth: 1280, marginTop: '2%' },
-  table: { width: '100%', maxWidth: 1280, marginTop: '4%' },
-  tableContent: { width: '100%', maxWidth: 1280, marginTop: 15 },
+  table: { width: '100%', maxWidth: 980, marginTop: '4%' },
+  tableContent: { width: '100%', maxWidth: 980, marginTop: 15 },
   thumbnail: { height: 80 },
   tableRow: {
     marginBottom: 5,
