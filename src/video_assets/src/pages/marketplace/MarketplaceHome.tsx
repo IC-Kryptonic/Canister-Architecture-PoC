@@ -53,16 +53,16 @@ const MarketplaceHome = () => {
                 Market Cap.
               </Grid>
               <Grid item className={classes.tableCell}>
-                Share Price [min - max]
+                Share Price <p>[min - max, ICP]</p>
               </Grid>
               <Grid item className={classes.tableCell}>
                 Offered shares
               </Grid>
               <Grid item className={classes.tableCell}>
-                Revenues (last week)
+                Revenues <p>last week</p>
               </Grid>
               <Grid item className={classes.tableCell}>
-                Price change (last week)
+                Price change <p>last week</p>
               </Grid>
               <Grid item className={classes.buttonCell}></Grid>
             </Grid>

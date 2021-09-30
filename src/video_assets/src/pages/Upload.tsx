@@ -11,7 +11,7 @@ import {
 import { DropzoneArea } from 'material-ui-dropzone';
 import { uploadStyles } from '../styles/upload_styles';
 import { uploadVideo } from '../services/video_backend';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import Layout from '../components/shared/Layout';
 import { CreateVideoPost } from '../interfaces/video_interface';
 import { AuthContext } from '../contexts/AuthContext';
@@ -94,17 +94,6 @@ const Upload = () => {
 
   return (
     <Layout title={'Upload'}>
-      <ToastContainer
-        position="bottom-left"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
       <Grid container direction="column" justify="center" alignItems="center" spacing={4}>
         <Grid item>
           <Typography variant="h4">

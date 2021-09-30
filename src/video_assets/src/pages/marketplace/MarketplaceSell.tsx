@@ -8,6 +8,7 @@ import { useParams } from 'react-router-dom';
 import { TokenContext } from '../../contexts/TokenContext';
 import { createShareOffer } from '../../services/token_services';
 import { AuthContext } from '../../contexts/AuthContext';
+import { toast } from 'react-toastify';
 
 interface SelectOption {
   value: string;
@@ -107,8 +108,18 @@ const MarketplaceSell = () => {
         price
       );
       setTokenTrigger(true);
+      toast.success(`Your tokens are available on the market now!`, {
+        position: 'bottom-left',
+        autoClose: 5000,
+        hideProgressBar: true,
+      });
     } catch (error) {
       console.error('error creating offer on dex', error);
+      toast.error(`Oops, something went wrong. Sorry!`, {
+        position: 'bottom-left',
+        autoClose: 5000,
+        hideProgressBar: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -174,7 +185,7 @@ const MarketplaceSell = () => {
                   }}
                 />
               </Grid>
-              <Grid item>Current average: 1,32 kICP</Grid>
+              <Grid item>Current average: 1,32 ICP</Grid>
             </Grid>
             <Grid container item xs={12} justify="center">
               <Button

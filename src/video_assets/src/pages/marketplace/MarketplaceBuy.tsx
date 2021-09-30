@@ -8,6 +8,7 @@ import { useParams } from 'react-router-dom';
 import { TokenContext } from '../../contexts/TokenContext';
 import { realizeExchange } from '../../services/token_services';
 import { AuthContext } from '../../contexts/AuthContext';
+import { toast } from 'react-toastify';
 
 interface SelectOption {
   value: string;
@@ -74,8 +75,18 @@ const MarketplaceBuy = () => {
       await realizeExchange(identity, offersByToken.offers, parseInt(selectedAmount.value));
       setBalanceTrigger(true);
       setTokenTrigger(true);
+      toast.success(`Successfully purchased ${selectedAmount.value} share tokens`, {
+        position: 'bottom-left',
+        autoClose: 5000,
+        hideProgressBar: true,
+      });
     } catch (error) {
       console.error('error realizing exchange on dex', error);
+      toast.error(`Oops, something went wrong. Sorry!`, {
+        position: 'bottom-left',
+        autoClose: 5000,
+        hideProgressBar: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -135,7 +146,7 @@ const MarketplaceBuy = () => {
                   }}
                 />
               </Grid>
-              <Grid item>Current average: 1,32 kICP</Grid>
+              <Grid item>Current average: 1,32 ICP</Grid>
             </Grid>
             <Grid container item xs={12} justify="center">
               <Button
