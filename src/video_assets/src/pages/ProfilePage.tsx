@@ -13,6 +13,7 @@ import {
   Button,
   Typography,
   Divider,
+  Box,
 } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -79,7 +80,11 @@ function ProfilePage() {
   if (!profileFound) return <> Could not find profile </>;
 
   // if profile is still loading
-  if (!profile) return <LoadingScreen />;
+  if (!profile) return (
+    <Layout title={"Profile"} marginTop={20}>
+      <span>Profile loading...</span>
+    </Layout>
+  );
 
 
   function handleOptionsMenuClick() {
