@@ -18,20 +18,7 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
     <Paper style={{ width: '100%', paddingTop: 15, paddingBottom: 15, marginBottom: 10 }}>
       <Grid container alignItems="center">
         <Grid item className={classes.videoCell}>
-          <Grid container alignItems="center">
-            <Grid item xs={6}>
-              {video ? (
-                <video controls className={classes.video}>
-                  <source src={video} type="video/mp4" />
-                </video>
-              ) : (
-                <CircularProgress />
-              )}
-            </Grid>
-            <Grid item xs={6}>
-              {props.offersByToken.tokenName}
-            </Grid>
-          </Grid>
+          <b>{props.offersByToken.tokenName}</b>
         </Grid>
         <Grid item className={classes.tableCell}>
           {'$ 253,343'}
@@ -43,7 +30,7 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
           {`${props.offersByToken.offeredAmount}`}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {'50,000'}
+          {'$ 50,000'}
         </Grid>
         <Grid item className={classes.tableCell}>
           {'$ 7043'}

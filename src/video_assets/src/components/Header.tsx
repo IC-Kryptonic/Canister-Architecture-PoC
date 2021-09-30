@@ -19,7 +19,7 @@ const Header = () => {
   };
 
   const onClickFeedButton = () => {
-    history.push('/feed');
+    history.push('/home');
   };
 
   const onClickProfileButton = () => {
@@ -43,7 +43,11 @@ const Header = () => {
       <Grid item>
         <Grid container direction="row" alignItems="center">
           <Grid item>
-            <Button component="label" onClick={onClickMarketplaceButton} className={classes.headerButton}>
+            <Button
+              component="label"
+              onClick={onClickMarketplaceButton}
+              className={classes.headerButton}
+            >
               <MonetizationOnIcon className={classes.icon_color} />
             </Button>
           </Grid>
@@ -53,7 +57,11 @@ const Header = () => {
             </Button>
           </Grid>
           <Grid item>
-            <Button component="label" onClick={onClickUploadButton} className={classes.headerButton}>
+            <Button
+              component="label"
+              onClick={onClickUploadButton}
+              className={classes.headerButton}
+            >
               <CloudUploadIcon className={classes.icon_color} />
             </Button>
           </Grid>

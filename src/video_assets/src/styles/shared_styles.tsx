@@ -1,10 +1,10 @@
-import { makeStyles, withStyles, createMuiTheme } from "@material-ui/core";
+import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core';
 
-export const PurpleColor = "#5618F2";
-
-export const LighterPurpleColor = "#1876f2";
-
-export const DarkerPurpleColor = "#c318f2";
+export const PurpleColor = '#6126F3';
+export const FlirtColor = '#A9017E';
+export const LightGreyColor = '#949B96';
+export const DarkGreyColor = '#353535';
+export const BlackColor = '#000';
 
 export const themeProvider = createMuiTheme({
   palette: {
@@ -12,88 +12,97 @@ export const themeProvider = createMuiTheme({
       main: PurpleColor,
     },
     secondary: {
-      main: LighterPurpleColor
-    }
+      main: LightGreyColor,
+    },
+    error: {
+      main: FlirtColor,
+    },
+    warning: {
+      main: BlackColor,
+    },
+    info: {
+      main: DarkGreyColor,
+    },
   },
 });
 
 export const useLayoutStyles = makeStyles((theme) => ({
   section: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flexGrow: 1,
-    minHeight: "100%",
-    overflow: "hidden",
+    minHeight: '100%',
+    overflow: 'hidden',
   },
   main: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "stretch",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
     flexShrink: 0,
-    position: "relative",
+    position: 'relative',
     padding: 0,
     order: 4,
   },
   childrenWrapper: {
     paddingTop: 30,
-    display: "flex",
-    margin: "0 auto",
-    flexFlow: "row nowrap",
+    display: 'flex',
+    margin: '0 auto',
+    flexFlow: 'row nowrap',
     // maxWidth: "935px !important",
   },
   children: {
-    width: "100%",
+    width: '100%',
   },
 }));
 
 export const useLoadingScreenStyles = makeStyles({
   section: {
-    height: "100%",
-    position: "absolute",
-    width: "100%",
+    height: '100%',
+    position: 'absolute',
+    width: '100%',
     top: 0,
     zIndex: 9999,
-    background: "#fafafa",
-    display: "grid",
-    placeItems: "center",
+    background: '#fafafa',
+    display: 'grid',
+    placeItems: 'center',
   },
 });
 
 export const useGridPostStyles = makeStyles((theme) => ({
   image: {
-    width: "100%",
-    userSelect: "none",
+    width: '100%',
+    userSelect: 'none',
   },
   gridPostContainer: {
     margin: theme.spacing(1),
-    position: "relative"
+    position: 'relative',
   },
   gridPostOverlay: {
-    [theme.breakpoints.down("xs")]: {
-      gridAutoFlow: "row",
-      alignContent: "space-evenly",
+    [theme.breakpoints.down('xs')]: {
+      gridAutoFlow: 'row',
+      alignContent: 'space-evenly',
     },
-    position: "absolute",
-    display: "grid",
-    placeItems: "center",
-    gridAutoFlow: "column",
-    width: "100%",
-    height: "100%",
-    justifyContent: "space-evenly",
-    "&:hover": {
-      background: "rgba(0,0,0,0.6)",
-      cursor: "pointer",
-      "& > div": {
+    position: 'absolute',
+    display: 'grid',
+    placeItems: 'center',
+    gridAutoFlow: 'column',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'space-evenly',
+    '&:hover': {
+      background: 'rgba(0,0,0,0.6)',
+      cursor: 'pointer',
+      '& > div': {
         opacity: 1,
       },
     },
   },
   gridPostInfo: {
-    color: "#ffffff",
-    display: "grid",
-    gridAutoFlow: "column",
+    color: '#ffffff',
+    display: 'grid',
+    gridAutoFlow: 'column',
     gridGap: 5,
-    placeItems: "center",
+    placeItems: 'center',
     opacity: 0,
   },
   video: {
@@ -105,23 +114,32 @@ export const useGridPostStyles = makeStyles((theme) => ({
   loadingSpinner: {
     margin: 40,
     color: 'black',
+  },
+  videoPlaceholder: {
+    height: 144,
+    width: 256,
+    backgroundColor: DarkGreyColor
+  },
+  profileIcon: {
+    height: 30,
+    width: 30
   }
 }));
 
 export const OnHoverVideoPlayerStyles = {
   videoElem: {
     height: 144,
-    width: 256
-  }
+    width: 256,
+  },
 };
 
 export const useSearchStyles = makeStyles((theme) => ({
   form: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "nowrap",
-    justifyContent: "center",
-    alignItems: "center"
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
     marginTop: theme.spacing(0),
@@ -129,10 +147,10 @@ export const useSearchStyles = makeStyles((theme) => ({
     width: 20,
     height: 25,
     border: `1px solid ${PurpleColor}`,
-    borderRadius: 0
+    borderRadius: 0,
   },
   icon: {
-    color: PurpleColor
+    color: PurpleColor,
   },
   input: {
     marginTop: theme.spacing(0),

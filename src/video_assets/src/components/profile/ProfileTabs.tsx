@@ -25,12 +25,12 @@ function ProfileTabs({ profile, isOwner }: ProfileTabsInterface) {
     const [likedPosts, setLikedPosts] = useState<VideoPost[]>([]);
 
     const handleProfilePosts= async () => {
-        let profilePosts = await loadCreatorFeed(10, profile.principal);
+        let profilePosts = await loadCreatorFeed(100, profile.principal);
         setProfilePosts(profilePosts);
     }
 
     const handleLikedPosts= async () => {
-        let likedPosts = await loadCreatorFeed(10, profile.principal);
+        let likedPosts = await loadCreatorFeed(100, profile.principal);
         setLikedPosts(likedPosts);
     }
 
