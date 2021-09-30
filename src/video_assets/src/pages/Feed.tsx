@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Grid } from '@material-ui/core';
+import { CircularProgress } from '@material-ui/core';
 import Layout from '../components/shared/Layout';
-import PostComponent from '../components/Post';
 import { loadRandomFeed, loadSearchFeed } from '../services/video_backend';
 import { VideoPost } from '../interfaces/video_interface';
 import useQuery from '../utils/use_params';
@@ -13,6 +12,7 @@ import GridPost from '../components/shared/GridPost';
 const Feed = () => {
   const classes = useFeedStyles();
   const [posts, setPosts] = useState<Array<VideoPost>>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [profile, setProfile] = useState<LazyProfilePost | null>(null);
   const [queryParams, setQueryParams] = useState<String | null>(null);
 
@@ -35,10 +35,13 @@ const Feed = () => {
   useEffect(() => {
     async function queryFeed() {
       try {
+        setLoading(true);
         const res = queryParams ? await loadSearchFeed(10, queryParams) : await loadRandomFeed(100);
         setPosts(res);
       } catch (error) {
         console.error('Error querying feed', error);
+      } finally {
+        setLoading(false);
       }
     }
     queryFeed();
@@ -54,8 +57,10 @@ const Feed = () => {
             ))}
           </div>
         </article>
+      ) : loading ? (
+        <CircularProgress />
       ) : (
-        <span>So far, no videos have been uploaded to our platform :(</span>
+        <span>So far, no videos have been uploaded to our platform.</span>
       )}
     </Layout>
   );
