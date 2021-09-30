@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Grid } from '@material-ui/core';
+import { Button, CircularProgress, Grid, Paper } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import Layout from '../../components/shared/Layout';
@@ -107,59 +107,56 @@ const MarketplaceBuy = () => {
           >
             Acquire video share tokens
           </Grid>
-          <Grid
-            container
-            item
-            style={{ width: 500, border: '1px solid grey', borderRadius: 5 }}
-            spacing={2}
-          >
-            <Grid item xs={12}>
-              {offersByToken?.tokenName}
-            </Grid>
-            <Grid item xs={12}>
-              <Select
-                value={selectedAmount}
-                options={amountOptions}
-                isClearable
-                placeholder="Define amount ..."
-                isDisabled={!offersByToken}
-                onChange={onAmountValueChange}
-              />
-            </Grid>
-            <Grid container item xs={12} justify="space-between" alignItems="center">
-              <Grid item xs={6}>
-                <input
-                  value={price || ''}
-                  disabled
-                  type="number"
-                  placeholder="Price per share"
-                  style={{
-                    width: '100%',
-                    marginTop: 5,
-                    fontSize: 'inherit',
-                    fontFamily: 'inherit',
-                    fontWeight: 'inherit',
-                    borderRadius: 4,
-                    borderColor: 'rgb(204, 204, 204)',
-                    padding: 5,
-                    height: 41.5,
-                  }}
+          <Paper style={{ padding: 30 }}>
+            <Grid container item style={{ width: 500 }} spacing={2}>
+              <Grid item xs={12}>
+                {offersByToken?.tokenName}
+              </Grid>
+              <Grid item xs={12}>
+                <Select
+                  value={selectedAmount}
+                  options={amountOptions}
+                  isClearable
+                  placeholder="Define amount ..."
+                  isDisabled={!offersByToken}
+                  onChange={onAmountValueChange}
                 />
               </Grid>
-              <Grid item>Current average: 1,32 ICP</Grid>
+              <Grid container item xs={12} justify="space-between" alignItems="center">
+                <Grid item xs={6}>
+                  <input
+                    value={price || ''}
+                    disabled
+                    type="number"
+                    placeholder="Price per share"
+                    style={{
+                      width: '100%',
+                      marginTop: 5,
+                      fontSize: 'inherit',
+                      fontFamily: 'inherit',
+                      fontWeight: 'inherit',
+                      borderRadius: 4,
+                      borderColor: 'rgb(204, 204, 204)',
+                      padding: 5,
+                      height: 41.5,
+                    }}
+                  />
+                </Grid>
+                <Grid item>Current average: 1,32 ICP</Grid>
+              </Grid>
+              <Grid container item xs={12} justify="center">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  style={{ width: 150 }}
+                  disabled={!buttonEnabled()}
+                  onClick={() => buyShares()}
+                >
+                  {loading ? <CircularProgress /> : 'Buy shares'}
+                </Button>
+              </Grid>
             </Grid>
-            <Grid container item xs={12} justify="center">
-              <Button
-                variant="contained"
-                color="primary"
-                style={{ width: 150 }}
-                disabled={!buttonEnabled()}
-                onClick={() => buyShares()}
-              >
-                {loading ? <CircularProgress /> : 'Buy shares'}
-              </Button>
-            </Grid>
-          </Grid>
+          </Paper>
         </Grid>
       </Grid>
     </Layout>
