@@ -7,8 +7,11 @@ import { VideoPost } from '../interfaces/video_interface';
 import useQuery from '../utils/use_params';
 import { LazyProfilePost } from '../interfaces/profile_interface';
 import { getLazyMyProfile } from '../services/profile_backend';
+import { useFeedStyles } from '../styles/feed_styles';
+import GridPost from '../components/shared/GridPost';
 
 const Feed = () => {
+  const classes = useFeedStyles();
   const [posts, setPosts] = useState<Array<VideoPost>>([]);
   const [profile, setProfile] = useState<LazyProfilePost | null>(null);
   const [queryParams, setQueryParams] = useState<String | null>(null);
@@ -43,17 +46,17 @@ const Feed = () => {
 
   return (
     <Layout title={'Feed'} marginTop={20}>
-      <Grid container justify="center">
-        {posts && posts.length > 0 ? (
-          <>
+      {posts && posts.length > 0 ? (
+        <article className={classes.article}>
+          <div className={classes.gridContainer}>
             {posts.map((post, index) => (
-              <PostComponent key={index} post={post} like={true} />
+              <GridPost key={index} post={post} />
             ))}
-          </>
-        ) : (
-          <span>So far, no videos have been uploaded to our platform :(</span>
-        )}
-      </Grid>
+          </div>
+        </article>
+      ) : (
+        <span>So far, no videos have been uploaded to our platform :(</span>
+      )}
     </Layout>
   );
 };
