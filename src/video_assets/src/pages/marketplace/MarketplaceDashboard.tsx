@@ -25,21 +25,13 @@ const MarketplaceDashboard = () => {
         <Grid container justify="center">
           <Grid container justify="center" spacing={2} className={classes.cards}>
             <Grid item>
-              <MarketplaceStatCard
-                title="Market Capitalization"
-                value="$ 19,096,067,431.85"
-                img={globe}
-              />
+              <MarketplaceStatCard title="Transactions" value="23" img={globe} />
             </Grid>
             <Grid item>
-              <MarketplaceStatCard title="Total Views (last week)" value="13,464,434" img={eye} />
+              <MarketplaceStatCard title="Total Views (last week)" value="64,434" img={eye} />
             </Grid>
             <Grid item>
-              <MarketplaceStatCard
-                title="Payed Revenue (last week)"
-                value="$ 1,204,402"
-                img={money}
-              />
+              <MarketplaceStatCard title="Payed Revenue (last week)" value="$ 4,102" img={money} />
             </Grid>
           </Grid>
         </Grid>
@@ -72,7 +64,7 @@ const MarketplaceDashboard = () => {
                                 <source src={video} type="video/mp4" />
                               </video>
                             ) : (
-                              '...'
+                              <div style={{ margin: 10 }}>Querying video ...</div>
                             )}
                           </Grid>
                           <Grid item xs={7} style={{ padding: 15 }}>
