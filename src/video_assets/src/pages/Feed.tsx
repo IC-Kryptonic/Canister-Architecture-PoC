@@ -35,7 +35,7 @@ const Feed = () => {
   useEffect(() => {
     async function queryFeed() {
       try {
-        const res = queryParams ? await loadSearchFeed(10, queryParams) : await loadRandomFeed(10);
+        const res = queryParams ? await loadSearchFeed(10, queryParams) : await loadRandomFeed(100);
         setPosts(res);
       } catch (error) {
         console.error('Error querying feed', error);
