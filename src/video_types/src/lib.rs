@@ -1,4 +1,5 @@
 use ic_cdk::export::candid::{{CandidType, Deserialize}, Principal};
+use serde::Serialize;
 use std::collections::{HashSet};
 
 pub type ChunkNum = usize;
@@ -67,4 +68,48 @@ pub struct InstallCodeArg {
     pub canister_id: Principal,
     pub wasm_module: Vec<u8>,
     pub arg : Vec<u8>,
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct TokenMetadata{
+
+    #[serde(rename = "storageCanisterId")]
+    pub storage_canister_id: String,
+
+    pub description: String,
+    pub creator: String,
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct TokenAsRecord{
+
+    #[serde(rename = "canisterId")]
+    pub canister_id: String,
+
+    pub metadata: String,
+    pub name: String,
+
+    #[serde(rename = "ownedAmount")]
+    pub owned_amount: i128,
+
+    pub supply: u128,
+    pub symbol: String,
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub enum DexResult{
+    #[serde(rename = "err")]
+    Err(ExchangeError),
+    #[serde(rename = "ok")]
+    Ok,
+}
+
+#[derive(CandidType, Deserialize, Serialize, Debug)]
+pub enum ExchangeError{
+    InsufficientAllowance(u128),
+    InsufficientBalance(u128),
+    InternalError(String),
+    NoExistingOffersForm(Principal),
+    NoMatchingOffers,
+    TransferError,
 }
