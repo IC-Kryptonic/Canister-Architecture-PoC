@@ -60,7 +60,7 @@ const MarketplaceDashboard = () => {
                         <Grid container>
                           <Grid item xs="auto" style={{ minWidth: 200 }}>
                             {video ? (
-                              <video controls style={{ height: 290, maxWidth: 300 }}>
+                              <video controls style={{ height: 290, maxWidth: 200 }}>
                                 <source src={video} type="video/mp4" />
                               </video>
                             ) : (
@@ -86,19 +86,21 @@ const MarketplaceDashboard = () => {
                             <Grid item xs={12} className={classes.factValue}>
                               {`${videoToken.ownedAmount} / ${videoToken.supply}`}
                             </Grid>
-                            <Grid item xs={12} className={classes.factTitle}>
-                              Create an offer:
-                            </Grid>
-                            <Grid item xs={12} className={classes.factValue}>
-                              <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() =>
-                                  history.push(`/marketplace/sell/${videoToken.canisterId}`)
-                                }
-                              >
-                                Sell
-                              </Button>
+                            <Grid container item xs={12}>
+                              <Grid item xs={4} className={classes.factTitle}>
+                                Create an offer:
+                              </Grid>
+                              <Grid item xs={8} className={classes.factValue}>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={() =>
+                                    history.push(`/marketplace/sell/${videoToken.canisterId}`)
+                                  }
+                                >
+                                  Sell
+                                </Button>
+                              </Grid>
                             </Grid>
                           </Grid>
                         </Grid>

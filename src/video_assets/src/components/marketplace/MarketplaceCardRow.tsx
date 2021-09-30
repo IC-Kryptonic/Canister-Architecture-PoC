@@ -18,7 +18,7 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
     <Paper style={{ width: '100%', paddingTop: 15, paddingBottom: 15, marginBottom: 10 }}>
       <Grid container alignItems="center">
         <Grid item className={classes.videoCell}>
-          <b>{props.offersByToken.tokenName}</b>
+          {props.offersByToken.tokenName}
         </Grid>
         <Grid item className={classes.tableCell}>
           {'$ 253,343'}
