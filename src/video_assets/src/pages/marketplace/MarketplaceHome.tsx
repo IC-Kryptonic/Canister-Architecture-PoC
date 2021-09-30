@@ -1,10 +1,5 @@
 import { CircularProgress, Grid } from '@material-ui/core';
 import React, { useContext } from 'react';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import PublicIcon from '@material-ui/icons/Public';
-import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCard';
 import Layout from '../../components/shared/Layout';
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';

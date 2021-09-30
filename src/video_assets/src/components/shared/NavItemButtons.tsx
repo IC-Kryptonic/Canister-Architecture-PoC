@@ -28,7 +28,7 @@ const marketplaceItems: Array<NavItem> = [
 ];
 
 const platformItems: Array<NavItem> = [
-  { label: 'Feed', icon: OndemandVideoIcon, location: '/feed' },
+  { label: 'Home', icon: OndemandVideoIcon, location: '/home' },
   { label: 'Upload', icon: CloudUploadIcon, location: '/upload' },
   { label: 'Profile', icon: RecordVoiceOverIcon, location: '/profile' },
 ];
