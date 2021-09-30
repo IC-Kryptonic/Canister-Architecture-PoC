@@ -1,6 +1,7 @@
 import { Button, CircularProgress, Grid } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
+import Layout from "../../components/shared/Layout";
 import { OffersByToken } from '../../interfaces/token_interface';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
@@ -26,7 +27,8 @@ function findId(id: string | null, tokens: Array<OffersByToken>): OffersByToken 
 }
 
 const MarketplaceBuy = () => {
-  const { tokenOffers, setTokenTrigger, setBalanceTrigger } = useContext(TokenContext);
+  const { tokenOffers, setTokenTrigger, setBalanceTrigger, nativeTokenBalance } =
+    useContext(TokenContext);
   const { identity } = useContext(AuthContext);
   let { id } = useParams<SellParams>();
 
@@ -63,7 +65,7 @@ const MarketplaceBuy = () => {
   };
 
   const buttonEnabled = () => {
-    return selectedAmount && price > 0 && !loading;
+    return selectedAmount && price > 0 && !loading && nativeTokenBalance >= price;
   };
 
   const buyShares = async () => {
@@ -80,8 +82,7 @@ const MarketplaceBuy = () => {
   };
 
   return (
-    <>
-      <MarketplaceHeader />
+    <Layout title={"Dashboard"} marginTop={20} marketPlaceHeader>
       <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
         Buy
       </Grid>
@@ -150,7 +151,7 @@ const MarketplaceBuy = () => {
           </Grid>
         </Grid>
       </Grid>
-    </>
+    </Layout>
   );
 };
 

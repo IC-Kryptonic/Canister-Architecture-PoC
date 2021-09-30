@@ -28,6 +28,7 @@ import useQuery from '../utils/use_params';
 import { watchVideoStyles } from "../styles/watchvideo_styles";
 import { getLazyUserProfile } from "../services/profile_backend";
 import {AuthContext} from "../contexts/AuthContext";
+import history from '../components/History';
 
 interface WatchVideoPathParam {
     id: string
@@ -107,7 +108,7 @@ const WatchVideo = () => {
         } else {
             videoToLoad = videoToLoad + 1;
         }
-        let {post, index} = (await getRandomNextVideoPost(identity, videoToLoad, 10));
+        let { post, index } = (await getRandomNextVideoPost(identity, videoToLoad, 10));
         history.push(`/video/${post.storageType.canister}?id=${index}`);
         setPost(post);
         // Null other attributes to cause a rerender
@@ -263,23 +264,10 @@ const OwnerBidSection = ({ profile }: OwnerBidSectionProps) => {
     const [value, setValue] = useState(0);
     const [videoOwners, setVideoOwners] = useState(getVideoOwners());
     const [videoBidders, setVideoBidders] = useState(getVideoBidders());
-    const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>, newValue: number) => {
         setValue(newValue);
     };
-
-    const handleDialogClose = (bid: number) => {
-        if (bid > 0) {
-            setVideoBidders(oldBidders =>
-                [...oldBidders, {
-                    name: profile.name,
-                    bid: bid
-                }]
-            )
-        }
-        setDialogOpen(false);
-    }
 
     return (
         <Box>
@@ -289,14 +277,14 @@ const OwnerBidSection = ({ profile }: OwnerBidSectionProps) => {
             </Tabs>
             <TabPanel value={value} index={0}>
                 {
-                    videoOwners.map(owner => {
+                    videoOwners.map((owner, index) => {
                         return (
-                            <Box display="flex" justifyContent="space-between">
+                            <Box key={index} display="flex" justifyContent="space-between">
                                 <Box display="flex" alignItems="center">
                                     <AccountCircle />
-                                    <Typography align="left">{owner.name}</Typography>
+                                    <Typography component={'div'} align="left">{owner.name}</Typography>
                                 </Box>
-                                <Typography align="right">{owner.shares} {owner.shares > 1 ? "shares" : "share"}</Typography>
+                                <Typography component={'div'} align="right">{owner.shares} {owner.shares > 1 ? "shares" : "share"}</Typography>
                             </Box>
                         );
                     })
@@ -304,22 +292,21 @@ const OwnerBidSection = ({ profile }: OwnerBidSectionProps) => {
             </TabPanel>
             <TabPanel value={value} index={1}>
                 {
-                    videoBidders.map(bidder => {
+                    videoBidders.map((bidder, index) => {
                         return (
-                            <Box display="flex" justifyContent="space-between">
+                            <Box key={index} display="flex" justifyContent="space-between">
                                 <Box display="flex" alignItems="center">
                                     <AccountCircle />
-                                    <Typography align="left">{bidder.name}</Typography>
+                                    <Typography component={'div'} align="left">{bidder.name}</Typography>
                                 </Box>
-                                <Typography align="right">{bidder.bid}</Typography>
+                                <Typography component={'div'} align="right">{bidder.bid}</Typography>
                             </Box>
                         );
                     })
                 }
             </TabPanel>
-            <PlaceBidDialog open={dialogOpen} handleClose={handleDialogClose} />
             <Box display="flex" justifyContent="center">
-                <Button variant="contained" color="secondary" className={classes.bidButton} onClick={() => setDialogOpen(true)}>
+                <Button variant="contained" color="primary" className={classes.bidButton} onClick={() => history.push("/marketplace/markets")}>
                     <Typography align="center" variant="subtitle2">
                         Go to marketplace
                     </Typography>

@@ -64,7 +64,7 @@ const Post = ({ post, like }: PostProps) => {
   }, [post]);
 
   const likeButtonHandler = async (videoPrincipal: Principal) => {
-    
+
   }
 
   const followHandler = async () => {
@@ -85,7 +85,7 @@ const Post = ({ post, like }: PostProps) => {
         {/* Post header with user info & follow button */}
         <Grid container alignItems="center" justify="space-between">
           <Grid item>
-            <Link to={`/profile/${profile? profile.principal.toString(): ""}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
+            <Link to={`/profile/${profile ? profile.principal.toString() : ""}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
               <Box display="flex" justifyContent="left" alignItems="center">
                 <AccountCircle className={classes.userProfile} />
                 <strong>{profile?.name || '<<username>>'}</strong>
@@ -93,7 +93,7 @@ const Post = ({ post, like }: PostProps) => {
             </Link>
           </Grid>
           <Grid item className={classes.lightText}>
-            {post?
+            {post ?
               (
                 <Link to={`/video/${post.storageType.canister}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
                   {trimString(post.storageType.canister.toString(), 30)}
@@ -131,21 +131,19 @@ const Post = ({ post, like }: PostProps) => {
         {/* Post footer with likes and views */}
         <Grid container spacing={1}>
           <Grid item>
-            {
-              like ? (
-                <IconButton className={classes.bottomButton}>
-                  <FavoriteIcon /><Typography variant="body2">{likeNumber}</Typography>
-                </IconButton>
-              ) : (
-                <IconButton className={classes.bottomButton} onClick={() => likeButtonHandler(post?.storageType.canister)}>
-                  <FavoriteBorderIcon /><Typography variant="body2">{likeNumber}</Typography>
-                </IconButton>
-              )
-            }
+            <IconButton className={classes.bottomButton} onClick={() => likeButtonHandler(post?.storageType.canister)}>
+              <Box display="flex" justifyContent="center" alignItems="center" gridColumnGap="2px">
+                {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                <Typography variant="body2">{likeNumber}</Typography>
+              </Box>
+            </IconButton>
           </Grid>
           <Grid item>
             <IconButton className={classes.bottomButton}>
-              <VisibilityIcon /><Typography variant="body2">{viewNumber}</Typography>
+              <Box display="flex" justifyContent="center" alignItems="center" gridColumnGap="2px">
+                <VisibilityIcon />
+                <Typography variant="body2">{viewNumber}</Typography>
+              </Box>
             </IconButton>
           </Grid>
         </Grid>

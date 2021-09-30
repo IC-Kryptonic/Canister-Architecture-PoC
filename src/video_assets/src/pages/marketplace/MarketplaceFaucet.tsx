@@ -1,6 +1,7 @@
 import { Button, CircularProgress, Grid, TextField } from '@material-ui/core';
 import React, { useContext, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
+import Layout from "../../components/shared/Layout";
 import { AuthContext } from '../../contexts/AuthContext';
 import { receiveICPForIdentity } from '../../services/token_services';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -9,7 +10,7 @@ const MarketplaceFaucet = () => {
   const { isAuthenticated, identity } = useContext(AuthContext);
   const { setBalanceTrigger } = useContext(TokenContext);
 
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number | null>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const receiveICP = async () => {
@@ -29,8 +30,7 @@ const MarketplaceFaucet = () => {
   };
 
   return (
-    <>
-      <MarketplaceHeader />
+    <Layout title={"Dashboard"} marginTop={20} marketPlaceHeader>
       <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
         Kryptonic ICP (kICP) Faucet
       </Grid>
@@ -44,7 +44,7 @@ const MarketplaceFaucet = () => {
               label="Amount [0, 100]"
               variant="outlined"
               type="number"
-              value={amount}
+              value={amount || ''}
               onChange={(event) => setAmount(parseFloat(event.target.value))}
               style={{ backgroundColor: 'white' }}
             />
@@ -61,7 +61,7 @@ const MarketplaceFaucet = () => {
           </Grid>
         </Grid>
       </Grid>
-    </>
+    </Layout>
   );
 };
 

@@ -6,6 +6,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import PublicIcon from '@material-ui/icons/Public';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import MarketplaceStatCard from '../../components/marketplace/MarketplaceStatCard';
+import Layout from "../../components/shared/Layout";
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
 import MarketplaceCardRow from '../../components/marketplace/MarketplaceCardRow';
 import { OffersByToken } from '../../interfaces/token_interface';
@@ -16,8 +17,7 @@ const MarketplaceHome = () => {
   const classes = marketplaceHomeStyles();
 
   return (
-    <>
-      <MarketplaceHeader />
+    <Layout title={"Dashboard"} marginTop={20} marketPlaceHeader>
       <Grid container justify="center">
         <Grid container justify="center" spacing={2} className={classes.cards}>
           <Grid item>
@@ -86,7 +86,7 @@ const MarketplaceHome = () => {
           })}
         </Grid>
       </Grid>
-    </>
+    </Layout>
   );
 };
 
