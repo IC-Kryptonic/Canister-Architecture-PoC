@@ -31,7 +31,7 @@ export const useLayoutStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     flexGrow: 1,
-    minHeight: '100%',
+    minHeight: '100vh',
     overflow: 'hidden',
   },
   main: {
@@ -48,7 +48,6 @@ export const useLayoutStyles = makeStyles((theme) => ({
     display: 'flex',
     margin: '0 auto',
     flexFlow: 'row nowrap',
-    minHeight: '100vh',
     // maxWidth: "935px !important",
   },
   children: {
