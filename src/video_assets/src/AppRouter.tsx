@@ -37,7 +37,7 @@ export const AppRouter = () => {
             <ProtectedRoute path="/marketplace/buy/:id" component={MarketplaceBuy} />
             <Route exact path="/marketplace/login" component={MarketplaceAuth} />
             <Route exact path="/login" component={Auth} />
-            <Redirect from="/" to="/feed" />
+            <Redirect from="/" to="/home" />
           </Switch>
         </Router>
       </TokenContextState>
