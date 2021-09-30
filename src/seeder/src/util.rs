@@ -75,7 +75,7 @@ pub async fn build_agent(identity: BasicIdentity) -> Agent{
 pub fn default_waiter() -> garcon::Delay{
     garcon::Delay::builder()
         .throttle(std::time::Duration::from_millis(500))
-        .timeout(std::time::Duration::from_secs(30))
+        .timeout(std::time::Duration::from_secs(120))
         .build()
 }
 
