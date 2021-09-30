@@ -48,6 +48,7 @@ export const useLayoutStyles = makeStyles((theme) => ({
     display: 'flex',
     margin: '0 auto',
     flexFlow: 'row nowrap',
+    minHeight: '100vh',
     // maxWidth: "935px !important",
   },
   children: {
@@ -118,12 +119,12 @@ export const useGridPostStyles = makeStyles((theme) => ({
   videoPlaceholder: {
     height: 144,
     width: 256,
-    backgroundColor: DarkGreyColor
+    backgroundColor: DarkGreyColor,
   },
   profileIcon: {
     height: 30,
-    width: 30
-  }
+    width: 30,
+  },
 }));
 
 export const OnHoverVideoPlayerStyles = {
