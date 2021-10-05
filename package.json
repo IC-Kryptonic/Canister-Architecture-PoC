@@ -8,11 +8,11 @@
     "build": "NODE_ENV=production webpack"
   },
   "devDependencies": {
-    "@dfinity/agent": "0.10.0",
-    "@dfinity/authentication": "0.10.0",
-    "@dfinity/candid": "0.10.0",
-    "@dfinity/identity": "0.10.0",
-    "@dfinity/principal": "0.10.0",
+    "@dfinity/agent": "^0.10.0",
+    "@dfinity/authentication": "^0.10.0",
+    "@dfinity/candid": "^0.10.0",
+    "@dfinity/identity": "^0.10.0",
+    "@dfinity/principal": "^0.10.0",
     "@types/d3-array": "^3.0.1",
     "@types/d3-time-format": "^4.0.0",
     "@types/react-dom": "^17.0.8",
