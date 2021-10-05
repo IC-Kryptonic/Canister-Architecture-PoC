@@ -11,6 +11,8 @@ npm install
 popd
 
 # Update current repository
+git checkout package-lock.json
+git pull
 npm install
 
 # Setup clean replica with identity
