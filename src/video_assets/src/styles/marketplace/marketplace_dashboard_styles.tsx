@@ -17,7 +17,7 @@ const marketplaceDashboardStyles = makeStyles({
   },
   factValue: {
     fontWeight: 400,
-    marginBottom: 15,
+    marginBottom: 25,
   },
 });
 

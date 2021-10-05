@@ -1,13 +1,14 @@
-import { Button, CircularProgress, Grid } from '@material-ui/core';
+import { Button, CircularProgress, Grid, Paper } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
-import Layout from "../../components/shared/Layout";
+import Layout from '../../components/shared/Layout';
 import { VideoToken } from '../../interfaces/token_interface';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
 import { TokenContext } from '../../contexts/TokenContext';
 import { createShareOffer } from '../../services/token_services';
 import { AuthContext } from '../../contexts/AuthContext';
+import { toast } from 'react-toastify';
 
 interface SelectOption {
   value: string;
@@ -107,15 +108,25 @@ const MarketplaceSell = () => {
         price
       );
       setTokenTrigger(true);
+      toast.success(`Your tokens are available on the market now!`, {
+        position: 'bottom-left',
+        autoClose: 5000,
+        hideProgressBar: true,
+      });
     } catch (error) {
       console.error('error creating offer on dex', error);
+      toast.error(`Oops, something went wrong. Sorry!`, {
+        position: 'bottom-left',
+        autoClose: 5000,
+        hideProgressBar: true,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Layout title={"Dashboard"} marginTop={20} marketPlaceHeader>
+    <Layout title={'Dashboard'} marginTop={20} marketplaceHeader>
       <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
         Sell
       </Grid>
@@ -129,65 +140,62 @@ const MarketplaceSell = () => {
           >
             Offer your video share tokens
           </Grid>
-          <Grid
-            container
-            item
-            style={{ width: 500, border: '1px solid grey', borderRadius: 5 }}
-            spacing={2}
-          >
-            <Grid item xs={12}>
-              <Select
-                value={selectedToken}
-                options={tokenOptions}
-                isClearable
-                placeholder="Select Video ..."
-                onChange={onTokenValueChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Select
-                value={selectedAmount}
-                options={amountOptions}
-                isClearable
-                placeholder="Define amount ..."
-                isDisabled={!selectedToken}
-                onChange={onAmountValueChange}
-              />
-            </Grid>
-            <Grid container item xs={12} justify="space-between" alignItems="center">
-              <Grid item xs={6}>
-                <input
-                  value={price || ''}
-                  onChange={(event) => setPrice(parseFloat(event.target.value))}
-                  type="number"
-                  placeholder="Price per share"
-                  style={{
-                    width: '100%',
-                    marginTop: 5,
-                    fontSize: 'inherit',
-                    fontFamily: 'inherit',
-                    fontWeight: 'inherit',
-                    borderRadius: 4,
-                    borderColor: 'rgb(204, 204, 204)',
-                    padding: 5,
-                    height: 41.5,
-                  }}
+          <Paper style={{ padding: 30 }}>
+            <Grid container item style={{ width: 500 }} spacing={2}>
+              <Grid item xs={12}>
+                <Select
+                  value={selectedToken}
+                  options={tokenOptions}
+                  isClearable
+                  placeholder="Select Video ..."
+                  onChange={onTokenValueChange}
                 />
               </Grid>
-              <Grid item>Current average: 1,32 kICP</Grid>
+              <Grid item xs={12}>
+                <Select
+                  value={selectedAmount}
+                  options={amountOptions}
+                  isClearable
+                  placeholder="Define amount ..."
+                  isDisabled={!selectedToken}
+                  onChange={onAmountValueChange}
+                />
+              </Grid>
+              <Grid container item xs={12} justify="space-between" alignItems="center">
+                <Grid item xs={6}>
+                  <input
+                    value={price || ''}
+                    onChange={(event) => setPrice(parseFloat(event.target.value))}
+                    type="number"
+                    placeholder="Price per share"
+                    style={{
+                      width: '100%',
+                      marginTop: 5,
+                      fontSize: 'inherit',
+                      fontFamily: 'inherit',
+                      fontWeight: 'inherit',
+                      borderRadius: 4,
+                      borderColor: 'rgb(204, 204, 204)',
+                      padding: 5,
+                      height: 41.5,
+                    }}
+                  />
+                </Grid>
+                <Grid item>Current average: 1,32 ICP</Grid>
+              </Grid>
+              <Grid container item xs={12} justify="center">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  style={{ width: 150 }}
+                  disabled={!buttonEnabled()}
+                  onClick={() => createOffer()}
+                >
+                  {loading ? <CircularProgress /> : 'Create offer'}
+                </Button>
+              </Grid>
             </Grid>
-            <Grid container item xs={12} justify="center">
-              <Button
-                variant="contained"
-                color="primary"
-                style={{ width: 150 }}
-                disabled={!buttonEnabled()}
-                onClick={() => createOffer()}
-              >
-                {loading ? <CircularProgress /> : 'Create offer'}
-              </Button>
-            </Grid>
-          </Grid>
+          </Paper>
         </Grid>
       </Grid>
     </Layout>

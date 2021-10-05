@@ -1,14 +1,14 @@
 import { makeStyles } from '@material-ui/core';
 
-import { PurpleColor } from './shared_styles';
+import { DarkGreyColor, LightGreyColor, PurpleColor } from './shared_styles';
 
-const borderBottom = `2px solid ${PurpleColor}`;
+const borderBottom = `2px solid ${DarkGreyColor}`;
 
 const headerStyles = makeStyles({
   container: {
+    minHeight: 60,
     maxHeight: '15vh',
-    //borderBottom: `1px solid ${PurpleColor}`
-    backgroundColor: "white"
+    maxWidth: 1180,
   },
   logo_wrapper: {
     padding: 10,
@@ -23,37 +23,42 @@ const headerStyles = makeStyles({
   },
   logo_button: {
     marginTop: 0,
-    padding: 0
+    padding: 0,
   },
   icon_color: {
-    color: PurpleColor
+    color: PurpleColor,
   },
   profile: {
     width: 40,
     height: 40,
-    color: PurpleColor
+    color: PurpleColor,
   },
   textButton: {
-    width: 150,
-    fontWeight: 350,
-  },
-  textButtonSmall: {
-    width: 100,
-    fontWeight: 350,
+    borderRadius: 0,
+    width: 300,
+    fontSize: 28,
+    fontWeight: 200,
+    color: LightGreyColor,
+    paddingTop: 26,
+    paddingBottom: 26,
+    marginTop: 20,
+    marginBottom: 20,
   },
   textButtonActive: {
+    borderRadius: 0,
     borderBottom: borderBottom,
-    width: 150,
-    fontWeight: 400,
-  },
-  textButtonSmallActive: {
-    borderBottom: borderBottom,
-    width: 100,
-    fontWeight: 400,
+    width: 300,
+    fontSize: 28,
+    fontWeight: 300,
+    color: DarkGreyColor,
+    paddingTop: 26,
+    paddingBottom: 26,
+    marginTop: 20,
+    marginBottom: 20,
   },
   icpButton: {
-    marginRight: 20
-  }
+    marginRight: 20,
+  },
 });
 
 export { headerStyles };

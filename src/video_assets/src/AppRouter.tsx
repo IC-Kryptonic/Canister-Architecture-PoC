@@ -23,7 +23,7 @@ export const AppRouter = () => {
         <Router history={History}>
           <Switch>
             <ProtectedRoute exact path="/upload" component={Upload} />
-            <ProtectedRoute exact path="/feed" component={Feed} />
+            <ProtectedRoute exact path="/home" component={Feed} />
             <ProtectedRoute exact path="/video/:id" component={WatchVideo} />
             <ProtectedRoute exact path="/profile/:id" component={ProfilePage} />
             <ProtectedRoute exact path="/profile" component={ProfilePage} />
@@ -37,7 +37,7 @@ export const AppRouter = () => {
             <ProtectedRoute path="/marketplace/buy/:id" component={MarketplaceBuy} />
             <Route exact path="/marketplace/login" component={MarketplaceAuth} />
             <Route exact path="/login" component={Auth} />
-            <Redirect from="/" to="/feed" />
+            <Redirect from="/" to="/home" />
           </Switch>
         </Router>
       </TokenContextState>

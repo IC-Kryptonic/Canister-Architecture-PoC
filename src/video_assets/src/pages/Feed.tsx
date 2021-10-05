@@ -3,15 +3,22 @@ import { Grid } from '@material-ui/core';
 import Header from '../components/Header';
 import Layout from "../components/shared/Layout";
 import PostComponent from '../components/Post';
+import React, { useState, useEffect } from 'react';
+import { CircularProgress } from '@material-ui/core';
+import Layout from '../components/shared/Layout';
 import { loadRandomFeed, loadSearchFeed } from '../services/video_backend';
 import { VideoPost } from '../interfaces/video_interface';
 import useQuery from '../utils/use_params';
 import { LazyProfilePost } from '../interfaces/profile_interface';
 import { getLazyMyProfile } from '../services/profile_backend';
+import { useFeedStyles } from '../styles/feed_styles';
+import GridPost from '../components/shared/GridPost';
 import {AuthContext} from "../contexts/AuthContext";
 
 const Feed = () => {
+  const classes = useFeedStyles();
   const [posts, setPosts] = useState<Array<VideoPost>>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [profile, setProfile] = useState<LazyProfilePost | null>(null);
   const [queryParams, setQueryParams] = useState<String | null>(null);
   const { identity, isAuthenticated } = useContext(AuthContext);
@@ -27,39 +34,41 @@ const Feed = () => {
 
   // Extract query params
   let query = useQuery();
-  if (query.get("search") as String !== queryParams) {
-    setQueryParams(query.get("search") as String);
+  if ((query.get('search') as String) !== queryParams) {
+    setQueryParams(query.get('search') as String);
   }
-
 
   // Query videos
   useEffect(() => {
     async function queryFeed() {
       try {
-        const res = (queryParams)? 
-        await loadSearchFeed(identity, 10, queryParams):
-        await loadRandomFeed(identity, 10);
+        setLoading(true);
+        const res = queryParams ? await loadSearchFeed(identity, 10, queryParams) : await loadRandomFeed(identity, 100);
         setPosts(res);
       } catch (error) {
         console.error('Error querying feed', error);
+      } finally {
+        setLoading(false);
       }
     }
     if (identity) queryFeed();
   }, [queryParams, identity]);
 
   return (
-    <Layout title={"Feed"} marginTop={20}>
-      <Grid container justify="center">
-        {posts && posts.length > 0 ? (
-          <>
+    <Layout title={'Feed'} marginTop={20}>
+      {posts && posts.length > 0 ? (
+        <article className={classes.article}>
+          <div className={classes.gridContainer}>
             {posts.map((post, index) => (
-              <PostComponent key={index} post={post} like={true} />
+              <GridPost key={index} post={post} />
             ))}
-          </>
-        ) : (
-          <span>In deinem Feed gibt es noch keine Videos :)</span>
-        )}
-      </Grid>
+          </div>
+        </article>
+      ) : loading ? (
+        <CircularProgress />
+      ) : (
+        <span>So far, no videos have been uploaded to our platform.</span>
+      )}
     </Layout>
   );
 };
