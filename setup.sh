@@ -12,14 +12,37 @@ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 #Install wasm
 curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-#Install CMake
-sudo apt-get install cmake
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        #Update
+        sudo apt-get update
 
-#Install Node
-sudo apt-get install node.js
+        #Install CMake
+        sudo apt-get install cmake
 
-#Install OpenSSL
-sudo apt-get install openssl
+        #Install Node
+        sudo apt-get install node.js
+
+        #Install OpenSSL
+        sudo apt-get install openssl
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+        #Update
+        brew update
+
+        #Install CMake
+        brew install cmake
+
+        #Install Node
+        brew apt-get install node.js
+
+        #Install OpenSSL
+        brew apt-get install openssl
+else
+        echo "Unknown OS"
+        exit
+fi
+
+
+
 
 #Install DFINITY sdk
 DFX_VERSION=0.8.1 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
