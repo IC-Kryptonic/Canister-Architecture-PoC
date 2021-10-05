@@ -62,6 +62,13 @@ cargo install ic-cdk-optimizer
 
 ```
 
+Add wasm32 as a target for Rust
+```
+
+rustup target add wasm32-unknown-unknown
+
+```
+
 Checkout our video_nft project:
 
 ```
@@ -187,18 +194,6 @@ cargo run --release --bin=seeder
 If you want to add additional videos to be seeded just put them in the seed_data folder before running the seeder.
 
 # Troubleshooting
-
-If you get the error `error[E0463]: can't find crate for 'core'`, following the instruction in the terminal, e.g.
-
-```
-
-rustup target add wasm32-unknown-unknown
-
-cargo build --target wasm32-unknown-unknown
-
-```
-
-Then try to deploy again.
 
 # Testing
 
