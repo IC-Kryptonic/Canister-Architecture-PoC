@@ -7,7 +7,7 @@ mod video_backend_tests {
     use crate::util::Actor;
     use crate::util;
 
-    use video_types::{StorageType, VideoInfo, Feed, Profile};
+    use video_types::{StorageType, VideoInfo, Profile, TestFeed};
     use std::collections::HashSet;
 
     #[tokio::test]
@@ -62,7 +62,7 @@ mod video_backend_tests {
         let feed_args = Encode!(&1usize, &my_principal).expect("Could not encode feed args");
         let feed_response = actor.query_call("get_creator_feed", feed_args).await;
         let raw_feed = util::check_ok(feed_response);
-        let feed = Decode!(raw_feed.as_slice(), Feed).expect("Could not decode Feed");
+        let feed = Decode!(raw_feed.as_slice(), TestFeed).expect("Could not decode Feed");
 
         //Test
         assert_eq!(feed.len(), 1);
@@ -95,7 +95,7 @@ mod video_backend_tests {
         let feed_args = Encode!(&1usize, &searchable_name).expect("Could not encode feed args");
         let feed_response = actor.query_call("get_search_feed", feed_args).await;
         let raw_feed = util::check_ok(feed_response);
-        let feed = Decode!(raw_feed.as_slice(), Feed).expect("Could not decode Feed");
+        let feed = Decode!(raw_feed.as_slice(), TestFeed).expect("Could not decode Feed");
 
         //Test
         assert_eq!(feed.len(), 1);
@@ -127,7 +127,7 @@ mod video_backend_tests {
         let feed_args = Encode!(&2usize).expect("Could not encode feed args");
         let feed_response = actor.query_call("get_random_feed", feed_args).await;
         let raw_feed = util::check_ok(feed_response);
-        let feed = Decode!(raw_feed.as_slice(), Feed).expect("Could not decode Feed");
+        let feed = Decode!(raw_feed.as_slice(), TestFeed).expect("Could not decode Feed");
 
         //Test
         assert_eq!(feed.len(), 2);
@@ -163,10 +163,10 @@ mod video_backend_tests {
         let feed_args = Encode!(&100000usize, &my_principal).expect("Could not encode feed args");
         let feed_response = video_backend_actor.query_call("get_user_feed", feed_args).await;
         let raw_feed = util::check_ok(feed_response);
-        let feed = Decode!(raw_feed.as_slice(), Feed).expect("Could not decode Feed");
+        let feed1 = Decode!(raw_feed.as_slice(), TestFeed).expect("Could not decode Feed");
 
         //view videos
-        for video in feed{
+        for video in &feed1{
             let viewed_args = Encode!(&video).expect("Could not encode result princ");
             let viewed_response = profile_backend_actor.update_call("add_view", viewed_args).await;
             let raw_result = util::check_ok(viewed_response);
@@ -177,11 +177,9 @@ mod video_backend_tests {
         let feed_args = Encode!(&100000usize, &my_principal).expect("Could not encode feed args");
         let feed_response = video_backend_actor.query_call("get_user_feed", feed_args).await;
         let raw_feed = util::check_ok(feed_response);
-        let feed = Decode!(raw_feed.as_slice(), Feed).expect("Could not decode Feed");
+        let feed2 = Decode!(raw_feed.as_slice(), TestFeed).expect("Could not decode Feed");
 
-        //Test
-
-        assert_eq!(feed.len(), 0);
+        assert_eq!(feed1, feed2);
 
         Ok(())
     }
