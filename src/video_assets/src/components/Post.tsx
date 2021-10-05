@@ -1,70 +1,121 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, Button, CircularProgress } from '@material-ui/core';
+import React, {useState, useEffect, useContext} from 'react';
+import { Link } from "react-router-dom";
+import { Box, Grid, Button, CircularProgress, IconButton, Typography } from '@material-ui/core';
 import { postStyles } from '../styles/post_styles';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import Collapsible from "react-collapsible-paragraph";
+
+import { Principal } from "@dfinity/principal";
+
 import { trimString } from '../utils/texts';
 import { loadVideo } from '../services/video_backend';
-import { Post } from '../interfaces/video_interface';
-
-const defaultAvatar =
-  'https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg';
+import { getVideoLikes, getVideoViews } from "../services/videometadata_service";
+import { VideoPost } from '../interfaces/video_interface';
+import { LazyProfilePost } from '../interfaces/profile_interface';
+import { getLazyUserProfile } from '../services/profile_backend';
+import {AuthContext} from "../contexts/AuthContext";
 
 interface PostProps {
-  post: Post;
+  post: VideoPost;
+  like: Boolean;
 }
 
-const Post = ({ post }: PostProps) => {
+const Post = ({ post, like }: PostProps) => {
+
+  const { identity } = useContext(AuthContext);
+
   const classes = postStyles();
   const [video, setVideo] = useState(null);
+  const [profile, setProfile] = useState<LazyProfilePost | null>(null);
+
+
+  const [viewNumber, setViewNumber] = useState(0);
+  const [likeNumber, setLikeNumber] = useState(0);
+
+  useEffect(() => {
+    if (post) {
+      setViewNumber(getVideoViews(post.storageType.canister.toString()));
+      setLikeNumber(getVideoLikes(post.storageType.canister.toString()));
+    }
+  }, [post]);
 
   useEffect(() => {
     async function queryVideo() {
       try {
-        const loadedVideo = await loadVideo(post);
+        const loadedVideo = await loadVideo(identity, post);
         setVideo(loadedVideo);
       } catch (error) {
         console.error('Error loading video', error);
       }
     }
+    async function queryProfile() {
+      try {
+        const loadedProfile = await getLazyUserProfile(identity, post.creator);
+        setProfile(loadedProfile);
+      } catch (error) {
+        console.error('Error loading video', error);
+      }
+    }
     queryVideo();
+    queryProfile();
   }, [post]);
+
+  const likeButtonHandler = async (videoPrincipal: Principal) => {
+
+  }
+
+  const followHandler = async () => {
+    if (profile) {
+      // followProfile(Principal.from(profile.principal));
+    }
+  }
+
+  const unfollowHandler = async () => {
+    if (profile) {
+      // unfollowProfile(Principal.from(profile.principal));
+    }
+  }
+
   return (
     <Grid container justify="center">
       <Grid container className={classes.postContainer}>
         {/* Post header with user info & follow button */}
         <Grid container alignItems="center" justify="space-between">
           <Grid item>
-            <Grid container>
-              <Grid item>
-                <img
-                  className={classes.userProfile}
-                  src={defaultAvatar}
-                  width={'100%'}
-                />
-              </Grid>
-              <Grid item>
-                <Grid container spacing={1}>
-                  <Grid item>
-                    <strong>{'<<username>>'}</strong>
-                  </Grid>
-                  <Grid item className={classes.lightText}>
-                    {post?.video_id
-                      ? trimString(post.video_id, 15)
-                      : '<<video_id>>'}
-                  </Grid>
-                </Grid>
-                <Grid container spacing={1}>
-                  <Grid item>{post?.name || '<<name>>'}</Grid>
-                </Grid>
-                <Grid container spacing={1}>
-                  <Grid item>{post?.description || '<<description>>'}</Grid>
-                </Grid>
-              </Grid>
-            </Grid>
+            <Link to={`/profile/${profile ? profile.principal.toString() : ""}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
+              <Box display="flex" justifyContent="left" alignItems="center">
+                <AccountCircle className={classes.userProfile} />
+                <strong>{profile?.name || '<<username>>'}</strong>
+              </Box>
+            </Link>
+          </Grid>
+          <Grid item className={classes.lightText}>
+            {post ?
+              (
+                <Link to={`/video/${post.storageType.canister}`} style={{ color: 'inherit', textDecoration: 'inherit' }} >
+                  {trimString(post.storageType.canister.toString(), 30)}
+                </Link>
+              )
+              : '<<video_id>>'}
           </Grid>
           <Grid item>
-            <Button className={classes.followButton}>Follow</Button>
+            <Button className={classes.followButton} onClick={followHandler}>Follow</Button>
+          </Grid>
+        </Grid>
+        {/* Title and description */}
+        <Grid container direction="column" spacing={1}>
+          <Grid item>
+            <Typography align="left">
+              {post?.name || '<<name>>'}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Collapsible lines={2}>
+              {post?.description || '<<description>>'}
+            </Collapsible>
           </Grid>
         </Grid>
         {/* Post body with video */}
@@ -80,14 +131,24 @@ const Post = ({ post }: PostProps) => {
         {/* Post footer with likes and views */}
         <Grid container spacing={1}>
           <Grid item>
-            <FavoriteBorderIcon />
+            <IconButton className={classes.bottomButton} onClick={() => likeButtonHandler(post?.storageType.canister)}>
+              <Box display="flex" justifyContent="center" alignItems="center" gridColumnGap="2px">
+                {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                <Typography variant="body2">{likeNumber}</Typography>
+              </Box>
+            </IconButton>
           </Grid>
           <Grid item>
-            <VisibilityIcon />
+            <IconButton className={classes.bottomButton}>
+              <Box display="flex" justifyContent="center" alignItems="center" gridColumnGap="2px">
+                <VisibilityIcon />
+                <Typography variant="body2">{viewNumber}</Typography>
+              </Box>
+            </IconButton>
           </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      </Grid >
+    </Grid >
   );
 };
 

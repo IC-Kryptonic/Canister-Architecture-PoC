@@ -1,45 +1,60 @@
-import {Actor, ActorSubclass, HttpAgent} from '@dfinity/agent';
 import {Principal} from '@dfinity/principal';
-import {idlFactory as video_idl} from 'dfx-generated/backend';
-import {idlFactory as bucket_idl} from 'dfx-generated/bucket';
-import canisterIds from "../../../../.dfx/local/canister_ids.json"
 
-import {Post, SimpleDHT_Storage_Type} from '../interfaces/video_interface';
-import {Video_Info} from "../../../../.dfx/local/canisters/backend/backend.did";
-import {Chunk} from "../../../../.dfx/local/canisters/bucket/bucket.did";
-
-const agent = new HttpAgent();
-const videoBackend = Actor.createActor(video_idl, {
-  agent,
-  canisterId: Principal.fromText(canisterIds.backend.local),
-});
+import {VideoPost, CreateVideoPost} from '../interfaces/video_interface';
+import {
+  Chunk,
+  VideoInfo,
+  ChunkNum,
+  Comment
+} from "../../../../.dfx/local/canisters/video_backend/video_backend.did";
+import {UserComment} from "../interfaces/profile_interface";
+import {getLazyUserProfile} from "./profile_backend";
+import {getProfileBackendActor, getVideoBackendActor, getVideoCanisterActor} from "../utils/actors";
+import {ActorSubclass, Identity} from "@dfinity/agent";
 
 const maxChunkSize = 1024 * 500; // 500kb
 
-async function loadDefaultFeed(count: number): Promise<Array<Post>> {
-  return (await videoBackend.getDefaultFeed(count)) as Array<Post>;
+async function loadRandomFeed(identity: Identity, count: number): Promise<Array<VideoPost>> {
+  let videoBackend = await getVideoBackendActor(identity);
+  console.debug('Callind random feed with identity', identity)
+  let principals: Array<Principal> = await videoBackend.get_random_feed(count) as Array<Principal>;
+
+  return _loadVideoPosts(identity, principals);
 }
 
-async function loadVideo(videoInfo: Post): Promise<string> {
-  const { video_id, storage_type} = videoInfo;
-  let video_id_unpacked: string = video_id[0];
+async function loadUserFeed(identity: Identity, count: number): Promise<Array<VideoPost>> {
+  let videoBackend = await getVideoBackendActor(identity);
+  let principals: Array<Principal> = await videoBackend.get_user_feed(count, await identity.getPrincipal()) as Array<Principal>;
 
-  let dht_info = storage_type as SimpleDHT_Storage_Type;
+  return _loadVideoPosts(identity, principals);
+}
 
-  let chunk_count: bigint = dht_info.simpleDistMap[0];
-  let bucket_princ: Principal = dht_info.simpleDistMap[1][0];
+async function loadSearchFeed(identity: Identity, count: number, to_search: String): Promise<Array<VideoPost>> {
+  let videoBackend = await getVideoBackendActor(identity);
+  let principals: Array<Principal> = await videoBackend.get_search_feed(count, to_search) as Array<Principal>;
 
-  const bucketActor = Actor.createActor(
-      bucket_idl
-      , {
-        agent: agent,
-        canisterId: bucket_princ,
-      });
+  return _loadVideoPosts(identity, principals);
+}
+
+async function loadCreatorFeed(identity: Identity, count: number, creator: Principal): Promise<Array<VideoPost>> {
+  let videoBackend = await getVideoBackendActor(identity);
+  let principals: Array<Principal> = await videoBackend.get_creator_feed(count, creator) as Array<Principal>;
+
+  return _loadVideoPosts(identity, principals);
+}
+
+async function loadVideo(identity: Identity, videoInfo: VideoPost): Promise<string> {
+
+  const {storageType} = videoInfo;
+  let videoPrincipal = storageType.canister;
+  let chunkCount = storageType.chunkCount;
+
+  let videoActor = await getVideoCanisterActor(identity, videoPrincipal);
 
   const chunkBuffers: Uint8Array[] | Buffer[] = [];
   const chunksAsPromises = [];
-  for (let i = 0; i < chunk_count; i++) {
-    chunksAsPromises.push(bucketActor.getChunk(video_id_unpacked, i));
+  for (let i = 0; i < chunkCount; i++) {
+    chunksAsPromises.push(videoActor.get_chunk(i));
   }
   const nestedBytes = (await Promise.all(chunksAsPromises))
     .map((val: Array<Chunk>) => {
@@ -58,41 +73,124 @@ async function loadVideo(videoInfo: Post): Promise<string> {
     type: 'video/mp4',
   });
 
+
+  //Add view to profile backend
+  let profileBackend = await getProfileBackendActor(identity);
+  await profileBackend.add_view(videoPrincipal);
+
   return URL.createObjectURL(videoBlob);
 }
 
-function _processAndUploadChunk(
-  videoBuffer: ArrayBuffer,
-  byteStart: number,
-  videoSize: number,
-  videoId: string,
-  chunkNum: number
-) {
-  const videoSlice = videoBuffer.slice(
-    byteStart,
-    Math.min(videoSize, byteStart + maxChunkSize)
-  );
-  const data = Array.from(new Uint8Array(videoSlice));
+async function loadVideoComments(identity: Identity, post: VideoPost, count: bigint): Promise<Array<UserComment>>{
+  const {storageType} = post;
+  let videoPrincipal = storageType.canister;
+  let videoActor = await getVideoCanisterActor(identity, videoPrincipal);
 
+  let comments = await videoActor.get_comments(count) as Array<Comment>;
 
-  let chunk = {
-    "data" : data,
-    "num" : chunkNum,
-  };
-  let videoData = {
-    inCanister: chunk
-  };
+  let profiles = comments.map( (comment) => {
+    return getLazyUserProfile(identity, comment.commenter);
+  });
 
-  return videoBackend.storeVideo(videoId, videoData);
+  return (await Promise.all(profiles)).map(function(profile, i) {
+    return {
+      commenter: profile,
+      comment: comments[i].text,
+    }
+  });
+
 }
 
-function _processAndUploadChunkToBucket(
+async function uploadVideo(identity: Identity,
+    post: CreateVideoPost, save: Boolean, progressCallback: (current: number, total: number) => void
+): Promise<Principal> {
+
+  console.debug('starting upload');
+  if (!post.video.size) {
+    throw new Error('The video you are trying to upload has no size: ' + post.video);
+  }
+  const chunkCount = BigInt(Math.ceil(post.video.size / maxChunkSize));
+  console.debug('chunkCount:', chunkCount, `timestamp: ${Date.now()}`);
+
+
+  const thumbnailBuffer = (await post.thumbnail?.arrayBuffer()) || new ArrayBuffer(0);
+
+  let videoInfo: VideoInfo = {
+    storage_type: {canister: [chunkCount, []]},
+    creator: await identity.getPrincipal(),
+    thumbnail: Array.from(new Uint8Array(thumbnailBuffer)),
+    views: BigInt(0),
+    likes: BigInt(0),
+    owner: await identity.getPrincipal(),
+    name: post.name,
+    description: post.description,
+    keywords: post.keywords,
+  };
+
+  let videoBackend = await getVideoBackendActor(identity);
+
+  console.debug("Creating Video:", videoInfo);
+  const returnInfo = (await videoBackend.create_video(
+      videoInfo, save
+  )) as VideoInfo;
+
+  let videoPrincipal = (returnInfo.storage_type as { 'canister' : [ChunkNum, [] | [Principal]] }).canister[1][0];
+  console.debug('videoId:', videoPrincipal, `timestamp: ${Date.now()}`);
+
+  const videoBuffer = (await post.video?.arrayBuffer()) || new ArrayBuffer(0);
+  const putChunkPromises = [];
+
+  let videoActor = await getVideoCanisterActor(identity, videoPrincipal);
+
+  console.debug('video info: ', returnInfo);
+
+  let chunk = 0;
+  for (
+      let byteStart = 0;
+      byteStart < post.video.size;
+      byteStart += maxChunkSize, chunk++
+  ) {
+    progressCallback(chunk + 1, Number(chunkCount));
+    putChunkPromises.push(
+        _processAndUploadChunkToCanister(videoBuffer, byteStart, post.video.size, chunk, videoActor)
+    );
+  }
+  console.debug('starting to upload chunks', `timestamp: ${Date.now()}`);
+  await Promise.all(putChunkPromises);
+  console.debug('upload finished', `timestamp: ${Date.now()}`);
+
+  return videoPrincipal;
+}
+
+async function loadVideoPost(identity: Identity, principal: Principal): Promise<VideoPost>{
+  let videoActor = await getVideoCanisterActor(identity, principal);
+  let videoInfo = await (await videoActor.get_info() as Promise<VideoInfo>);
+
+  return _convertInfoToPost(videoInfo);
+}
+
+async function _loadVideoPosts(identity: Identity, principals: Array<Principal>): Promise<Array<VideoPost>>{
+
+  const actor_promises: Array<Promise<ActorSubclass>> = [];
+  principals.forEach( (principal) => {
+    actor_promises.push(getVideoCanisterActor(identity, principal));
+  });
+
+  const info_promises = (await Promise.all(actor_promises)).map((actor) =>{
+    return actor.get_info() as Promise<VideoInfo>
+  })
+
+  return (await Promise.all(info_promises)).map((video) =>{
+    return _convertInfoToPost(video);
+  });
+}
+
+function _processAndUploadChunkToCanister(
     videoBuffer: ArrayBuffer,
     byteStart: number,
     videoSize: number,
-    id: string,
     chunkNum: number,
-    bucketActor: ActorSubclass
+    videoActor: ActorSubclass
 ) {
   const videoSlice = videoBuffer.slice(
       byteStart,
@@ -100,74 +198,45 @@ function _processAndUploadChunkToBucket(
   );
   const data = Array.from(new Uint8Array(videoSlice));
 
-
-  let chunk = {
-    "data" : data,
-    "num" : chunkNum,
-  };
-  let videoData = {
-    inCanister: chunk
-  };
-
-  return bucketActor.insertChunk(id, chunkNum, data)
+  return videoActor.insert_chunk(chunkNum, data)
 }
 
-async function uploadVideo(
-  videoName: string,
-  videoDescription: string,
-  video: File
-) {
-  await agent.fetchRootKey();
-  console.debug('starting upload');
-  if (!video.size) {
-    throw new Error('The video you are trying to upload has no size: ' + video);
-  }
-  const chunkCount = BigInt(Math.ceil(video.size / maxChunkSize));
-  console.debug('chunkCount:', chunkCount, `timestamp: ${Date.now()}`);
-
-  let videoInfo: Video_Info = {
-    video_id: [],
-    name: videoName,
-    owner: Principal.anonymous(),
-    creator: Principal.anonymous(),
-    description: videoDescription,
-    keywords: [],
-    storage_type: { simpleDistMap : [chunkCount, []]},
-  }
-
-  const returnVideo = (await videoBackend.createVideo(
-      videoInfo
-  )) as Video_Info;
-
-  console.debug('videoId:', returnVideo.video_id, `timestamp: ${Date.now()}`);
-
-  const videoBuffer = (await video?.arrayBuffer()) || new ArrayBuffer(0);
-  const putChunkPromises = [];
-
-  const store_info = returnVideo.storage_type as SimpleDHT_Storage_Type;
-
-  const bucketActor = Actor.createActor(
-      bucket_idl
-  , {
-    agent: agent,
-    canisterId: store_info.simpleDistMap[1][0],
+function _convertInfoToPost(info: VideoInfo): VideoPost{
+  const thumbnailBlob = new Blob([Buffer.from(new Uint8Array(info.thumbnail))], {
+    type: 'image/png',
   });
 
-  console.debug('video info: ', returnVideo);
+  let storage = (info.storage_type as { 'canister' : [ChunkNum, [] | [Principal]] }).canister;
 
-  let chunk = 0;
-  for (
-    let byteStart = 0;
-    byteStart < video.size;
-    byteStart += maxChunkSize, chunk++
-  ) {
-    putChunkPromises.push(
-      _processAndUploadChunkToBucket(videoBuffer, byteStart, video.size, returnVideo.video_id[0], chunk, bucketActor)
-    );
+  return{
+    owner: info.owner,
+    creator: info.creator,
+    name: info.name,
+    description: info.description,
+    keywords: info.keywords,
+    thumbnail: URL.createObjectURL(thumbnailBlob),
+    views: info.views,
+    likes: info.likes,
+    storageType: {
+      chunkCount: storage[0],
+      canister: storage[1][0],
+    },
   }
-  console.debug('starting to upload chunks', `timestamp: ${Date.now()}`);
-  await Promise.all(putChunkPromises);
-  console.debug('upload finished', `timestamp: ${Date.now()}`);
 }
 
-export { loadDefaultFeed, loadVideo, uploadVideo };
+interface GetRandomNextVideoPostReturn {
+  post: VideoPost,
+  index: number
+}
+
+async function getRandomNextVideoPost(identity: Identity, videoId: number, sampleSize: number): Promise<GetRandomNextVideoPostReturn> {
+  let posts = (await loadRandomFeed(identity, sampleSize));
+  let index = Math.abs(videoId % Math.min(sampleSize, posts.length));
+  return {
+    post: posts[index],
+    index: index
+  };
+}
+
+export { loadCreatorFeed, loadRandomFeed, loadSearchFeed, loadUserFeed, loadVideo, uploadVideo, loadVideoComments, loadVideoPost, getRandomNextVideoPost};
+

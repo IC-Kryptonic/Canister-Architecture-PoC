@@ -36,7 +36,7 @@ Install the DFINITY SDK:
 
 ```
 
-DFX_VERSION=0.8.0 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
+DFX_VERSION=0.8.1 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
 
 ```
 
@@ -178,6 +178,18 @@ To restart the replica just use `dfx start` again or `dfx start --clean` to star
 If you start with a clean dfx replica, the deployment of the internet-identity canister might fail because it tries to upgrade a (now deleted) canister. 
 
 In that case, run `rm -rf .dfx` in the internet-identity repository and then deploy the canister.
+
+# Uploading Seed Videos
+
+To upload the seed video just run the seeder program
+
+```
+
+cargo run --release --bin=seeder
+
+```
+
+If you want to add additional videos to be seeded just put them in the seed_data folder before running the seeder.
 
 # Troubleshooting
 

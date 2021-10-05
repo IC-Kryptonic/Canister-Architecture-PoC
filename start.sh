@@ -14,7 +14,11 @@ popd
 echo $IDENTITY_CANISTER_ID > .env
 
 # Start
-dfx canister create bucket
-dfx build bucket
-ic-cdk-optimizer target/wasm32-unknown-unknown/release/bucket.wasm -o target/wasm32-unknown-unknown/release/bucket_opt.wasm
+dfx canister create video_canister
+dfx build video_canister
+ic-cdk-optimizer target/wasm32-unknown-unknown/release/video_canister.wasm -o target/wasm32-unknown-unknown/release/video_canister_opt.wasm
+
+dfx deploy native_token
+dfx deploy token_management
+dfx deploy dex --argument '('\"$(dfx canister id native_token)\"')'
 dfx deploy video_assets

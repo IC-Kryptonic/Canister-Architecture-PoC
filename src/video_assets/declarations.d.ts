@@ -10,5 +10,11 @@ declare module '*.png' {
 
 declare module '@material-ui/icons*';
 
-declare module 'dfx-generated/backend';
-declare module 'dfx-generated/bucket';
+declare module 'dfx-generated/video_backend';
+declare module 'dfx-generated/video_canister';
+declare module 'dfx-generated/ad_manager';
+declare module 'dfx-generated/profile_backend';
+
+declare module 'dfx-generated/dex';
+declare module 'dfx-generated/native_token';
+declare module 'dfx-generated/token_management';

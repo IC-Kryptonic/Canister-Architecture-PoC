@@ -1,26 +1,45 @@
 {
   "canisters": {
-    "bucket": {
-      "build": "cargo build --target wasm32-unknown-unknown --package  bucket --release",
-      "candid": "src/video_dht/bucket/bucket.did",
-      "wasm": "target/wasm32-unknown-unknown/release/bucket.wasm",
+    "video_canister": {
+      "build": "cargo build --target wasm32-unknown-unknown --package  video_canister --release",
+      "candid": "src/video_backend/video_canister/video_canister.did",
+      "wasm": "target/wasm32-unknown-unknown/release/video_canister.wasm",
       "type": "custom"
     },
-    "video_dht": {
-      "build": "cargo build --target wasm32-unknown-unknown --package  video_dht --release",
-      "candid": "src/video_dht/video_dht.did",
-      "wasm": "target/wasm32-unknown-unknown/release/video_dht.wasm",
+    "profile_backend": {
+      "build": "cargo build --target wasm32-unknown-unknown --package  profile_backend --release",
+      "candid": "src/profile_backend/profile_backend.did",
+      "wasm": "target/wasm32-unknown-unknown/release/profile_backend.wasm",
       "type": "custom"
     },
-    "backend": {
-      "dependencies": ["video_dht"],
-      "build": "cargo build --target wasm32-unknown-unknown --package  backend --release",
-      "candid": "src/backend/backend.did",
-      "wasm": "target/wasm32-unknown-unknown/release/backend.wasm",
+    "video_backend": {
+      "dependencies": ["profile_backend"],
+      "build": "cargo build --target wasm32-unknown-unknown --package  video_backend --release",
+      "candid": "src/video_backend/video_backend.did",
+      "wasm": "target/wasm32-unknown-unknown/release/video_backend.wasm",
       "type": "custom"
+    },
+    "ad_manager": {
+      "dependencies": ["profile_backend"],
+      "build": "cargo build --target wasm32-unknown-unknown --package  ad_manager --release",
+      "candid": "src/ad_manager/ad_manager.did",
+      "wasm": "target/wasm32-unknown-unknown/release/ad_manager.wasm",
+      "type": "custom"
+    },
+    "token_management": {
+      "main": "src/token_management/src/token_map.mo",
+      "type": "motoko"
+    },
+    "dex": {
+      "main": "src/token_management/src/dex.mo",
+      "type": "motoko"
+    },
+    "native_token": {
+      "main": "src/token_management/src/tokens/native_token.mo",
+      "type": "motoko"
     },
     "video_assets": {
-      "dependencies": ["backend"],
+      "dependencies": ["video_backend", "ad_manager", "profile_backend"],
       "frontend": {
         "entrypoint": "src/video_assets/src/index.html"
       },
@@ -35,5 +54,5 @@
     }
   },
   "version": 1,
-  "dfx": "0.8.0"
+  "dfx": "0.8.1"
 }

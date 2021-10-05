@@ -1,0 +1,37 @@
+type ChunkNum = nat64;
+type Chunk = blob;
+type Feed = vec principal;
+
+type Comment = record {
+    "commenter": principal;
+    "text": text;
+};
+
+type IpfsData = record {
+    "data": text;
+};
+
+type StorageType = variant {
+    canister: record{ChunkNum; opt principal};
+    ipfs: IpfsData;
+};
+
+type VideoInfo = record {
+    "owner": principal;
+    "creator": principal;
+    "name": text;
+    "description": text;
+    "keywords": vec text;
+    "thumbnail": blob;
+    "storage_type": StorageType;
+    "views": nat64;
+    "likes": nat64;
+};
+
+type Profile = record {
+        "principal": principal;
+        "name": text;
+        "likes": vec principal;
+        "comments": vec principal;
+        "viewed": vec principal;
+};

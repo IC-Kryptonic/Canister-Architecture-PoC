@@ -1,0 +1,20 @@
+@startuml
+activate Frontend
+alt like
+    Frontend ->> ProfileBackend: add_like(video_principal)
+    activate ProfileBackend
+    deactivate ProfileBackend
+    Frontend ->> VideoCanister: add_like()
+    activate VideoCanister
+    deactivate VideoCanister
+else comment
+    Frontend ->> ProfileBackend: add_commented(video_principal)
+    activate ProfileBackend
+    deactivate ProfileBackend
+    Frontend ->> VideoCanister: add_comment(comment)
+    activate VideoCanister
+    deactivate VideoCanister
+end
+@enduml
+
+restrict comment size to avoid memory flooding

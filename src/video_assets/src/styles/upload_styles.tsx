@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core';
 
-const maxWidth = 400;
+const gridItemWidth = 400;
 
 const uploadStyles = makeStyles({
   uploadContainer: {
@@ -11,10 +11,10 @@ const uploadStyles = makeStyles({
     borderRight: '1px solid rgb(227, 227, 228)',
   },
   dropzone: {
-    maxWidth,
+    width: gridItemWidth,
   },
   form: {
-    maxWidth,
+    width: gridItemWidth,
     marginLeft: 20,
   },
   uploadArea: {
@@ -23,12 +23,21 @@ const uploadStyles = makeStyles({
   headerText: {
     fontSize: 40,
   },
-  uploadButton: {
-    marginTop: 50,
-  },
   progress: {
-    maxHeight: '100%',
+    maxWidth: "500px",
+    width: '100%'
   },
+  gridItem: {
+    width: "100%"
+  },
+  textBox: {
+    marginBottom: "10px",
+    backgroundColor: "white",
+    width: gridItemWidth
+  },
+  lastItem: {
+    marginBot: "25px"
+  }
 });
 
 export { uploadStyles };

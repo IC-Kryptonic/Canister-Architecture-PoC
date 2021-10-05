@@ -1,0 +1,20 @@
+@startuml
+activate Frontend
+Frontend -> VideoCanister: get_info()
+activate VideoCanister
+Frontend <-- VideoCanister: get_info: video_info
+deactivate VideoCanister
+
+loop chunkNum times
+    Frontend -> VideoCanister: get_chunk(#)
+    activate VideoCanister
+    Frontend <-- VideoCanister: get_chunk: chunk
+    deactivate VideoCanister
+end
+
+Frontend ->> ProfileBackend: add_view(video_principal)
+activate ProfileBackend
+deactivate ProfileBackend
+
+deactivate Frontend
+@enduml
