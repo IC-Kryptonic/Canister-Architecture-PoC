@@ -8,7 +8,7 @@ import {
   getTokensForCreator,
 } from '../services/token_services';
 import { Principal } from '@dfinity/principal';
-import { loadVideo, loadVideoPosts } from '../services/video_backend';
+import { loadVideo, loadVideoPost } from '../services/video_backend';
 import { VideoMap } from '../interfaces/token_context_interfaces';
 
 interface TokenContextStateProps {
@@ -84,8 +84,8 @@ const TokenContextState = (props: TokenContextStateProps) => {
         }
         try {
           const videoPrincipal = Principal.fromText(storageId);
-          const loadedVideoInfo = (await loadVideoPosts([videoPrincipal]))[0];
-          const loadedVideo = await loadVideo(loadedVideoInfo);
+          const loadedVideoInfo = (await loadVideoPost(identity, videoPrincipal));
+          const loadedVideo = await loadVideo(identity, loadedVideoInfo);
           videoMap.map.set(storageId, loadedVideo);
           // required to trigger state event handlers
           setVideoMap({

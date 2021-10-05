@@ -8,10 +8,12 @@ use video_types::{Profile};
 
 pub type ProfileStore = HashMap<Principal, Profile>;
 
-///This function returns a wrapped Profile if there is one for the principal, otherwise it returns [None].
+///This function returns a Profile if there is one for the principal, otherwise it returns creates a new one just with the principal and the name as an empty string.
 #[query(name = "get_profile")]
-pub fn get_profile(id: Principal) -> Option<&'static Profile> {
-    return storage::get::<ProfileStore>().get(&id);
+pub fn get_profile(id: Principal) -> &'static Profile {
+    check_profile(&id);
+
+    return &storage::get::<ProfileStore>()[&id];
 }
 
 ///This function creates a new profile or replaces an old one
@@ -41,7 +43,7 @@ pub fn put_profile(mut profile: Profile){
 #[update(name = "add_like")]
 pub fn add_like(video_princ: Principal){
     let caller = ic_cdk::caller();
-    check_profile(caller);
+    check_profile(&caller);
 
     let profile_store = storage::get_mut::<ProfileStore>();
     profile_store.get_mut(&caller).expect("Profile not stored").likes.insert(video_princ);
@@ -51,7 +53,7 @@ pub fn add_like(video_princ: Principal){
 #[update(name = "add_comment")]
 pub fn add_comment(video_princ: Principal){
     let caller = ic_cdk::caller();
-    check_profile(caller);
+    check_profile(&caller);
 
     let profile_store = storage::get_mut::<ProfileStore>();
     profile_store.get_mut(&caller).expect("Profile not stored").comments.insert(video_princ);
@@ -61,23 +63,22 @@ pub fn add_comment(video_princ: Principal){
 #[update(name = "add_view")]
 pub fn add_view(video_princ: Principal){
     let caller = ic_cdk::caller();
-    check_profile(caller);
+    check_profile(&caller);
 
     let profile_store = storage::get_mut::<ProfileStore>();
     profile_store.get_mut(&caller).expect("Profile not stored").viewed.insert(video_princ);
 }
 
-fn check_profile(caller: Principal){
+fn check_profile(princ: &Principal){
     let profile_store = storage::get_mut::<ProfileStore>();
 
-    if !profile_store.contains_key(&caller) {
-        ic_cdk::api::print("Caller has not made a profile yet, creating a shadow profile");
+    if !profile_store.contains_key(princ) {
 
         profile_store.insert(
-            caller.clone(),
+            princ.clone(),
             Profile {
-                principal: caller,
-                name: "".to_string(),
+                principal: princ.clone(),
+                name: "anon".to_string(),
                 likes: Default::default(),
                 comments: Default::default(),
                 viewed: Default::default(),

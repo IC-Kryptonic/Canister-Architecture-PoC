@@ -1,7 +1,7 @@
 import "../../../../src/common_types.did"
 
 service : {
-    "get_profile": (principal) -> (opt Profile) query;
+    "get_profile": (principal) -> (Profile) query;
     "put_profile": (Profile) -> () oneway;
     "add_like": (principal) -> () oneway;
     "add_comment": (principal) -> () oneway;

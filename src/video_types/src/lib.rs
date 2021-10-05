@@ -5,7 +5,7 @@ use std::collections::{HashSet};
 pub type ChunkNum = usize;
 pub type Chunk = Vec<u8>;
 pub type Chunks = Vec<Chunk>;
-pub type Feed = Vec<Principal>;
+pub type Feed = HashSet<&'static Principal>;
 pub type Comment = (Principal, String);
 
 pub const MAX_CHUNK_SIZE: usize = 1024 * 500; // 500kb

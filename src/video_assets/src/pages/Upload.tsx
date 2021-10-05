@@ -56,7 +56,7 @@ const Upload = () => {
         thumbnail: undefined,
         video: video,
       };
-      const videoId = await uploadVideo(createPost, true, setProgressBarValue);
+      const videoId = await uploadVideo(identity, createPost, true, setProgressBarValue);
       await createToken(identity, videoId, createPost, shareAmount);
       setTokenTrigger(true);
       toast.success('Successfully uploaded video!', {

@@ -37,6 +37,7 @@ const AuthContextState = (props: AuthContextStateProps) => {
     async function getIdentity() {
       try {
         const authenticatedIdentity = await getAuthenticatedIdentity();
+        console.debug('Setting identity to ', authenticatedIdentity.getPrincipal().toString());
         setIdentity(authenticatedIdentity);
       } catch (error) {
         console.error('Error retrieving identity for authenticated user', error);
@@ -44,7 +45,8 @@ const AuthContextState = (props: AuthContextStateProps) => {
     }
 
     if (isAuthenticated && !identity) getIdentity();
-    else if (!isAuthenticated && identity) setIdentity(null);
+    //else if (!isAuthenticated && identity) setIdentity(null);
+
   }, [isAuthenticated]);
 
   return (
