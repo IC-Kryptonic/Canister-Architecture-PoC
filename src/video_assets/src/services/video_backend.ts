@@ -11,6 +11,7 @@ import {UserComment} from "../interfaces/profile_interface";
 import {getLazyUserProfile} from "./profile_backend";
 import {getProfileBackendActor, getVideoBackendActor, getVideoCanisterActor} from "../utils/actors";
 import {ActorSubclass, Identity} from "@dfinity/agent";
+import { getVideoFromCache, putVideoInCache } from './caching_service';
 
 const maxChunkSize = 1024 * 500; // 500kb
 
@@ -49,6 +50,11 @@ async function loadVideo(identity: Identity, videoInfo: VideoPost): Promise<stri
   let videoPrincipal = storageType.canister;
   let chunkCount = storageType.chunkCount;
 
+  // If video is cached
+  if(getVideoFromCache(videoPrincipal.toString())) {
+    return getVideoFromCache(videoPrincipal.toString());
+  }
+
   let videoActor = await getVideoCanisterActor(identity, videoPrincipal);
 
   const chunkBuffers: Uint8Array[] | Buffer[] = [];
@@ -78,7 +84,12 @@ async function loadVideo(identity: Identity, videoInfo: VideoPost): Promise<stri
   let profileBackend = await getProfileBackendActor(identity);
   await profileBackend.add_view(videoPrincipal);
 
-  return URL.createObjectURL(videoBlob);
+  let url = URL.createObjectURL(videoBlob);
+
+  // Cache video
+  putVideoInCache(videoPrincipal.toString(), url);
+
+  return url;
 }
 
 async function loadVideoComments(identity: Identity, post: VideoPost, count: bigint): Promise<Array<UserComment>>{
