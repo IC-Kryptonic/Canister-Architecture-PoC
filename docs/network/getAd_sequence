@@ -19,16 +19,28 @@ else random
     deactivate AdManager
 end
 
-Frontend -> VideoCanister: get_info()
-activate VideoCanister
-VideoCanister --> Frontend: get_info: video_info
-deactivate VideoCanister
+Frontend -> AdVideoCanister: get_info()
+activate AdVideoCanister
+AdVideoCanister --> Frontend: get_info: video_info
+deactivate AdVideoCanister
 
 loop chunk_num times
-    Frontend -> VideoCanister: get_chunk(#)
-    activate VideoCanister
-    Frontend <-- VideoCanister: get_chunk: chunk
-    deactivate VideoCanister
+    Frontend -> AdVideoCanister: get_chunk(#)
+    activate AdVideoCanister
+    Frontend <-- AdVideoCanister: get_chunk: chunk
+    deactivate AdVideoCanister
 end
+
+Frontend ->> AdManager: watched_ad(ad_principal, video_principal)
+activate AdManager
+AdManager -> VideoCanister: get_info()
+activate VideoCanister
+VideoCanister -> AdManager: get_info: video_info
+deactivate VideoCanister
+AdManager ->> NativeToken: transfer(transferRequest)
+activate NativeToken
+deactivate NativeToken
+deactivate AdManager
+
 
 @enduml
