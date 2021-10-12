@@ -4,7 +4,7 @@ mod ad_manager_tests {
     use crate::util::Actor;
     use ic_agent::export::Principal;
     use ic_cdk::export::candid::{Encode, Decode};
-    use video_types::{VideoInfo, StorageType, Profile};
+    use video_types::{VideoInfo, StorageType, Profile, AdMeta};
 
     use video_types::StorageType::Canister;
     use ic_agent::Identity;
@@ -42,9 +42,17 @@ mod ad_manager_tests {
             StorageType::Canister(_, princ) => princ.expect("Video id not in result"),
             _ => return Err(String::from("Returned storage type not same as send storage type")),
         };
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let ad_data = AdMeta{
+            principal: result_princ,
+            allowance: 10,
+            amount_per_view: 1,
+            advertiser: identity.sender().expect("Could not get principal from identity"),
+        };
+        
 
         //Act
-        let ad_arg = Encode!(&result_princ).expect("Could not encode ad principal");
+        let ad_arg = Encode!(&ad_data).expect("Could not encode ad principal");
         let response = ad_actor.update_call("add_ad", ad_arg).await;
 
         //Test
@@ -73,9 +81,16 @@ mod ad_manager_tests {
             StorageType::Canister(_, princ) => princ.expect("Video id not in result"),
             _ => return Err(String::from("Returned storage type not same as send storage type")),
         };
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let ad_data = AdMeta{
+            principal: result_princ,
+            allowance: 10,
+            amount_per_view: 1,
+            advertiser: identity.sender().expect("Could not get principal from identity"),
+        };
 
         //add ad to ad manager
-        let ad_arg = Encode!(&result_princ).expect("Could not encode ad principal");
+        let ad_arg = Encode!(&ad_data).expect("Could not encode ad principal");
         let response = ad_actor.update_call("add_ad", ad_arg).await;
         let raw_result = util::check_ok(response);
         Decode!(raw_result.as_slice(), ()).expect("Could not decode empty add_ad result");
@@ -97,7 +112,7 @@ mod ad_manager_tests {
     async fn test_get_user_ad() -> Result<(), String>{
 
         //Setup
-        let identity = util::generate_random_identity();
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
         let ad_actor = Actor::from_name("ad_manager", identity).await;
 
         let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
@@ -121,9 +136,16 @@ mod ad_manager_tests {
             StorageType::Canister(_, princ) => princ.expect("Video id not in result"),
             _ => return Err(String::from("Returned storage type not same as send storage type")),
         };
+        let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+        let ad_data = AdMeta{
+            principal: result_princ,
+            allowance: 10,
+            amount_per_view: 1,
+            advertiser: identity.sender().expect("Could not get principal from identity"),
+        };
 
         //add ad to ad manager
-        let ad_arg = Encode!(&result_princ).expect("Could not encode ad principal");
+        let ad_arg = Encode!(&ad_data).expect("Could not encode ad principal");
         let response = ad_actor.update_call("add_ad", ad_arg).await;
         let raw_result = util::check_ok(response);
         Decode!(raw_result.as_slice(), ()).expect("Could not decode empty add_ad result");
@@ -154,6 +176,4 @@ mod ad_manager_tests {
 
         Ok(())
     }
-
-
 }

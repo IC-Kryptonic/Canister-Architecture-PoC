@@ -4,5 +4,6 @@ export interface AdPost extends VideoPost{
 }
 
 export interface CreateAdPost extends CreateVideoPost{
-
+    allowance: bigint,
+    amountPerView: bigint,
 }

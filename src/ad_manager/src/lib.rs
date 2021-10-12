@@ -24,6 +24,7 @@ pub async fn add_ad(ad_meta: AdMeta){
 
 #[update]
 pub async fn watched_ad(ad_principal: Principal, earning_video: Principal){
+    //TODO restrict to once per msg caller
     let video_info = get_video_info(earning_video).await;
     let ad_data = storage::get_mut::<AdStore>().get_mut(&ad_principal).expect("Principal not a stored ad");
 
@@ -151,12 +152,13 @@ async fn pay_out_ad_rev(advertiser: Principal, receiver: AccountIdentifier, amou
 async fn get_profile(princ: Principal) -> Option<Profile>{
     let profile_canister = Principal::from_text(PROFILE_PRINCIPAL.clone()).expect("Couldn't deduce Principal from profile canister id text");
 
-    let response: Result<(Option<Profile>,), _> = call::call( profile_canister, "get_profile", (princ,)).await;
+    let response: Result<(Profile,), _> = call::call( profile_canister, "get_profile", (princ,)).await;
 
     match response{
-        Ok((profile_res,)) => return profile_res,
+        Ok((profile_res,)) => return Some(profile_res),
         Err((rej_code, msg)) => {
-            ic_cdk::api::trap(format!("Error getting profile with code {:?}, message: {}", rej_code, msg).as_str());
+            ic_cdk::print(format!("Error getting profile with code {:?}, message: {}", rej_code, msg).as_str());
+            return None;
         }
     }
 }
