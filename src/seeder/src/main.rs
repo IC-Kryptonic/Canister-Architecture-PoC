@@ -7,7 +7,7 @@ use serde_json;
 
 mod util;
 
-use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile, Chunks, TokenMetadata, TokenAsRecord};
+use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile, Chunks, TokenMetadata, TokenAsRecord, AdMeta};
 use ic_agent::Identity;
 
 #[tokio::main]
@@ -70,7 +70,28 @@ async fn create_ad(file: DirEntry, ad_manager: &Actor, video_backend: &Actor){
 
     let ad_canister = upload_video(ad_info, chunks, false, video_backend).await;
 
-    let ad_arg = Encode!(&ad_canister).expect("Could not encode ad principal");
+    //Set allowance for native token
+    let token_amount = 10000;
+    let tokens_per_view = 100;
+    let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+    let my_principal = identity.sender().expect("Could not deduce principal from identity");
+    let native_token = Actor::from_name("native_token", identity).await;
+    let arg = Encode!(&my_principal, &ad_manager.principal, &token_amount).expect("Could not encode approve args");
+    let response = native_token.update_call("approve", arg).await;
+    let raw_result = util::check_ok(response);
+    Decode!(raw_result.as_slice(), ()).expect("Could not decode empty approve result");
+
+    //add ad to ad_manager
+    let ad_meta = AdMeta{
+        principal: ad_canister,
+        allowance: token_amount,
+        amount_per_view: tokens_per_view,
+        advertiser: my_principal,
+    };
+
+
+
+    let ad_arg = Encode!(&ad_meta).expect("Could not encode ad principal");
     let response = ad_manager.update_call("add_ad", ad_arg).await;
     let raw_result = util::check_ok(response);
     Decode!(raw_result.as_slice(), ()).expect("Could not decode empty add_ad result");
