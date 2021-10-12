@@ -2,9 +2,9 @@ const VIDEO_LIMIT = 20;
 
 const videoCache: {
   [videoPrincipalString: string]: {
-    url: string,
-    date: number
-  }
+    url: string;
+    date: number;
+  };
 } = {};
 
 const getVideoFromCache = (videoPrincipalString: string): string => {
@@ -14,13 +14,13 @@ const getVideoFromCache = (videoPrincipalString: string): string => {
     return null;
   }
   return cacheEntry.url;
-}
+};
 
 const putVideoInCache = (videoPrincipalString: string, url: string) => {
   videoCache[videoPrincipalString] = {
     url: url,
-    date: Date.now()
-  }
+    date: Date.now(),
+  };
 
   // Remove oldest video if cache cap is reached
   if (Object.keys(videoCache).length > VIDEO_LIMIT) {
@@ -34,9 +34,6 @@ const putVideoInCache = (videoPrincipalString: string, url: string) => {
     }
     delete videoCache[principalIdToRemove];
   }
-}
+};
 
-export {
-  getVideoFromCache,
-  putVideoInCache
-}
+export { getVideoFromCache, putVideoInCache };
