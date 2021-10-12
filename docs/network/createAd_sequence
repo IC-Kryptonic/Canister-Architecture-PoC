@@ -17,7 +17,7 @@ Frontend ->> NativeToken: approve(ad_principal, allowance)
 activate NativeToken
 deactivate NativeToken
 
-Frontend ->> AdManager: add_ad(ad_principal, allowance)
+Frontend ->> AdManager: add_ad(ad_meta_data)
 activate AdManager
 deactivate AdManager
 deactivate Frontend

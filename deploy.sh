@@ -38,6 +38,8 @@ ic-cdk-optimizer target/wasm32-unknown-unknown/release/video_canister.wasm -o ta
 
 dfx deploy dex --argument '('\"$(dfx canister id native_token)\"')'
 
+
+export NATIVE_TOKEN_CANISTER_ID=$(dfx canister id native_token)
 dfx deploy video_assets
 
 # Seed data

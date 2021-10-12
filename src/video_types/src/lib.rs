@@ -8,6 +8,7 @@ pub type Chunks = Vec<Chunk>;
 pub type Feed = HashSet<&'static Principal>;
 pub type TestFeed = HashSet<Principal>;
 pub type Comment = (Principal, String);
+pub type Balance = u128;
 
 pub const MAX_CHUNK_SIZE: usize = 1024 * 500; // 500kb
 
@@ -113,4 +114,70 @@ pub enum ExchangeError{
     NoExistingOffersForm(Principal),
     NoMatchingOffers,
     TransferError,
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct AdMeta{
+    pub principal: Principal,
+    pub allowance: Balance,
+    pub amount_per_view: Balance,
+    pub advertiser: Principal,
+}
+
+pub type TokenOwners = Vec<BalanceForAddress>;
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct BalanceForAddress{
+    pub address: AccountIdentifier,
+    pub balance: usize,
+}
+
+pub type AccountIdentifier = String;
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub enum  User{
+    #[serde(rename = "address")]
+    Address(AccountIdentifier),
+    #[serde(rename = "principal")]
+    Principal(Principal),
+}
+
+pub type TokenIdentifier = String;
+pub type Memo = Vec<u8>;
+pub type SubAccount = Vec<u8>;
+
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct TransferRequest{
+    pub from: User,
+    pub to: User,
+    pub token: TokenIdentifier,
+    pub amount: Balance,
+    pub memo: Memo,
+    pub notify: bool,
+    pub subaccount: Option<SubAccount>,
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub enum TransferResponse{
+    #[serde(rename = "ok")]
+    Ok(Balance),
+    #[serde(rename = "err")]
+    Err(),
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub enum SupplyResponse{
+    #[serde(rename = "ok")]
+    Ok(Balance),
+    #[serde(rename = "err")]
+    Err(),
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub enum AllBalancesResponse{
+    #[serde(rename = "ok")]
+    Ok(Vec<BalanceForAddress>),
+    #[serde(rename = "err")]
+    Err(),
 }
