@@ -4,5 +4,5 @@ service : {
     "add_ad": (AdMeta) -> () oneway;
     "get_random_ad_principal": () -> (opt principal) query;
     "get_ad_principal_for_user": (principal) -> (opt principal) query;
-    "watched_ad": (principal, principal);
+    "watched_ad": (principal, principal) -> () oneway;
 }

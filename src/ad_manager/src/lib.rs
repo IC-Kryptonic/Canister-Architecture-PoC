@@ -3,9 +3,8 @@ use ic_cdk_macros::{update, query};
 use ic_cdk::storage;
 use ic_cdk::api::call;
 
-use video_types::{AccountIdentifier, AdMeta, AllBalancesResponse, Balance, BalanceForAddress, Profile, SupplyResponse, TokenOwners, TransferRequest, TransferResponse, User, VideoInfo};
+use video_types::{AccountIdentifier, AdMeta, AllBalancesResponse, Balance, BalanceForAddress, Profile, SupplyResponse, TransferRequest, TransferResponse, User, VideoInfo};
 use std::collections::{HashMap};
-use ic_cdk::api::call::RejectionCode;
 
 pub type AdStore = HashMap<Principal, (AdMeta, VideoInfo)>;
 pub type RevenueHistory = HashMap<Principal, HashMap<Principal, usize>>;
@@ -42,7 +41,7 @@ pub async fn watched_ad(ad_principal: Principal, earning_video: Principal){
     //TODO pay out to_distribute%token_supply to us
 
     for owner in owners{
-        pay_out_ad_rev(ad_data.0.advertiser, owner.address, amount_per_share*owner.balance);
+        pay_out_ad_rev(ad_data.0.advertiser, owner.address, amount_per_share*owner.balance).await;
     }
 }
 
@@ -73,8 +72,8 @@ pub async fn get_ad_principal_for_user(user: Principal) -> Option<Principal>{
     return if let Some(profile) = get_profile(user).await {
         let ads = storage::get::<AdStore>();
 
-        for (princ, info) in ads {
-            if profile.name == info.name {   //TODO make something less dumb
+        for (princ, infos) in ads {
+            if profile.name == infos.1.name {   //TODO make something less dumb
                 return Some(princ.clone());
             }
         }
@@ -90,13 +89,13 @@ async fn get_token_supply(token_canister: Principal) -> Balance {
     let response: Result<(SupplyResponse,), _> = call::call(token_canister, "supply", ("",)).await;
 
     match response{
-        Ok((supply_response)) => {
+        Ok((supply_response,)) => {
             match supply_response{
-                Ok(balance) => return balance,
-                Err(_) => ic_cdk::trap("Supply call returned err"),
+                SupplyResponse::Ok(supply) => return supply,
+                SupplyResponse::Err => ic_cdk::trap("Supply call returned err"),
             }
         }
-        Err(_) => {
+        Err((rej_code, msg)) => {
             ic_cdk::api::trap(format!("Error querying supply for for token {}. {:?}, message: {}", token_canister, rej_code, msg).as_str());
         }
     }
@@ -107,13 +106,13 @@ async fn get_token_owners(token_canister: Principal) -> Vec<BalanceForAddress> {
     let response: Result<(AllBalancesResponse,), _> = call::call(token_canister, "allBalances", ()).await;
 
     match response{
-        Ok((balances_response)) => {
+        Ok((balances_response,)) => {
             match balances_response{
-                Ok(balances) => return balances,
-                Err(_) => ic_cdk::trap("AllBalances call returned err"),
+                AllBalancesResponse::Ok(balances) => return balances,
+                AllBalancesResponse::Err => ic_cdk::trap("AllBalances call returned err"),
             }
         }
-        Err(_) => {
+        Err((rej_code, msg)) => {
             ic_cdk::api::trap(format!("Error querying all balances for for token {}. {:?}, message: {}", token_canister, rej_code, msg).as_str());
         }
     }
@@ -124,8 +123,8 @@ async fn pay_out_ad_rev(advertiser: Principal, receiver: AccountIdentifier, amou
     let native_token_canister = Principal::from_text(NATIVE_TOKEN_PRINCIPAL.clone()).expect("Couldn't deduce Principal from native token canister id text");
 
     let transfer_request = TransferRequest{
-        from: User::Principal(ad_owner),
-        to: User::Address(receiver),
+        from: User::Principal(advertiser),
+        to: User::Address(receiver.clone()),
         token: "".to_string(),
         amount,
         memo: vec![],
@@ -138,8 +137,8 @@ async fn pay_out_ad_rev(advertiser: Principal, receiver: AccountIdentifier, amou
     match response{
         Ok((transfer_response,)) => {
             match transfer_response{
-                Ok(_) => return,
-                Err(_) => ic_cdk::api::trap(format!("Something went wrong transferring {} from {} to {}", amount, ad_owner, receiver).to_str()),
+                TransferResponse::Ok(_) => return,
+                TransferResponse::Err => ic_cdk::api::trap(format!("Something went wrong transferring {} from {} to {}", amount, advertiser, receiver).as_str()),
             }
         }
         Err((rej_code, msg)) => {

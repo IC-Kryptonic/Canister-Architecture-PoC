@@ -129,7 +129,7 @@ pub type TokenOwners = Vec<BalanceForAddress>;
 #[derive(CandidType, Deserialize, Serialize)]
 pub struct BalanceForAddress{
     pub address: AccountIdentifier,
-    pub balance: usize,
+    pub balance: Balance,
 }
 
 pub type AccountIdentifier = String;
@@ -163,7 +163,7 @@ pub enum TransferResponse{
     #[serde(rename = "ok")]
     Ok(Balance),
     #[serde(rename = "err")]
-    Err(),
+    Err,
 }
 
 #[derive(CandidType, Deserialize, Serialize)]
@@ -171,7 +171,7 @@ pub enum SupplyResponse{
     #[serde(rename = "ok")]
     Ok(Balance),
     #[serde(rename = "err")]
-    Err(),
+    Err,
 }
 
 #[derive(CandidType, Deserialize, Serialize)]
@@ -179,5 +179,5 @@ pub enum AllBalancesResponse{
     #[serde(rename = "ok")]
     Ok(Vec<BalanceForAddress>),
     #[serde(rename = "err")]
-    Err(),
+    Err,
 }
