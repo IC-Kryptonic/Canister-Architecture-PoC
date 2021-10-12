@@ -6,6 +6,7 @@ ERC20 - note the following:
 -Memo is ignored
 -No transferFrom (as transfer includes a from field)
 */
+import Array "mo:base/Array";
 import Cycles "mo:base/ExperimentalCycles";
 import HashMap "mo:base/HashMap";
 import Principal "mo:base/Principal";
@@ -32,6 +33,8 @@ actor class native_token() {
   
   type BalanceRequest = ExtCore.BalanceRequest;
   type BalanceResponse = ExtCore.BalanceResponse;
+  type BalanceForAddress = ExtCore.BalanceForAddress;
+  type AllBalancesResponse = ExtCore.AllBalancesResponse;
   type TransferRequest = ExtCore.TransferRequest;
   type TransferResponse = ExtCore.TransferResponse;
   type AllowanceRequest = ExtAllowance.AllowanceRequest;
@@ -187,6 +190,18 @@ actor class native_token() {
         return #ok(0);
       };
     }
+  };
+
+  public query func allBalances() : async AllBalancesResponse {
+    var result: [BalanceForAddress] = [];
+    for(balanceForAccount in _balances.entries()) {
+        let balanceForAddress: BalanceForAddress = {
+          address = balanceForAccount.0;
+          balance = balanceForAccount.1;
+        };
+        result := Array.append(result, [balanceForAddress]);        
+      };
+    return #ok(result);
   };
 
   public query func supply(token : TokenIdentifier) : async Result.Result<Balance, CommonError> {
