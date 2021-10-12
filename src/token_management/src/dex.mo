@@ -153,18 +153,34 @@ actor class DecentralizedExchange(_nativeTokenCanisterId: Text) = this {
               case null {
                 return #err(#InternalError("error removing entry from offer map"));
               };
-              case (?validExchange) {
+              case (?usedOffer) {
                 let newExchange = {
-                  from = validExchange.from;
-                  token = validExchange.token;
-                  tokenName = validExchange.tokenName;
+                  from = usedOffer.from;
+                  token = usedOffer.token;
+                  tokenName = usedOffer.tokenName;
                   canisterId = tokenId;
-                  storageCanisterId = validExchange.storageCanisterId;
-                  pricePerShare = validExchange.pricePerShare;
-                  shareAmount = validExchange.shareAmount;
-                  offerTimeStamp = validExchange.offerTimeStamp;
+                  storageCanisterId = usedOffer.storageCanisterId;
+                  pricePerShare = usedOffer.pricePerShare;
+                  shareAmount = shareAmount;
+                  offerTimeStamp = usedOffer.offerTimeStamp;
                   to = ?caller;
                   fulfillmentTimeStamp = ?Time.now();
+                };
+                // if purchased amount is smaller than offer amount, put rest of offer back in the map
+                if(shareAmount < usedOffer.shareAmount) {
+                  let remainingOffer = {
+                    from = usedOffer.from;
+                    token = usedOffer.token;
+                    tokenName = usedOffer.tokenName;
+                    canisterId = tokenId;
+                    storageCanisterId = usedOffer.storageCanisterId;
+                    pricePerShare = usedOffer.pricePerShare;
+                    shareAmount = usedOffer.shareAmount - shareAmount;
+                    offerTimeStamp = usedOffer.offerTimeStamp;
+                    to = null;
+                    fulfillmentTimeStamp = null;
+                  };
+                  offers.put(offers.size(), remainingOffer);
                 };
                 // add completed exchange to exchange map
                 switch(exchangeMap.get(caller)) {
