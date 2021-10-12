@@ -14,7 +14,12 @@ import {
   getDexActor,
 } from '../utils/actors';
 import canisterIds from '../../../../.dfx/local/canister_ids.json';
-import { parseOffers, parseTokenResult } from '../utils/tokens';
+import {
+  addDecimalPlace,
+  parseOffers,
+  parseTokenResult,
+  removeDecimalPlace,
+} from '../utils/tokens';
 import { CreateVideoPost } from '../interfaces/video_interface';
 
 type BigIntResult = {
@@ -36,7 +41,7 @@ export const createToken = async (
     // TODO set creator with name
     creator: identity,
   });
-  await tokenBackend.createToken(principal.toText(), post.name, '', 2, shareAmount, metadata);
+  await tokenBackend.createToken(principal.toText(), post.name, '', shareAmount, metadata);
 };
 
 export const getBalanceForIdentity = async (identity: Identity): Promise<Number> => {
@@ -47,7 +52,7 @@ export const getBalanceForIdentity = async (identity: Identity): Promise<Number>
     token: '',
     user: { principal },
   })) as BigIntResult;
-  if ('ok' in result) return Number(result.ok);
+  if ('ok' in result) return addDecimalPlace(Number(result.ok));
   throw new Error(JSON.stringify(result));
 };
 
@@ -76,12 +81,13 @@ export const receiveICPForIdentity = async (
 ): Promise<Number> => {
   const actor = await getNativeTokenActor(identity);
   const principal = identity.getPrincipal();
+  let amountWithoutDecimalPlace = removeDecimalPlace(amount);
 
   const result = (await actor.acquireFromFaucet({
     from: { principal },
     to: { principal },
     token: '',
-    amount: amount,
+    amount: amountWithoutDecimalPlace,
     memo: [],
     notify: false,
     subaccount: [],
@@ -107,6 +113,8 @@ export const createShareOffer = async (
   const dexPrincipal = Principal.fromText(canisterIds.dex.local);
   const identityPrincipal = identity.getPrincipal();
 
+  let priceWithoutDecimalPlace = removeDecimalPlace(price);
+
   // allow dex to transfer the token on video token canister
   await tokenActor.approve(identityPrincipal, dexPrincipal, amount);
   // create offer on dex canister
@@ -114,7 +122,7 @@ export const createShareOffer = async (
     identityPrincipal,
     canisterId,
     tokenName,
-    price,
+    priceWithoutDecimalPlace,
     amount,
     storageCanisterId
   );
@@ -137,7 +145,7 @@ export const realizeExchange = async (
   await nativeTokenActor.approve(
     identityPrincipal,
     dexPrincipal,
-    amount * parseInt(offer.pricePerShare.toString())
+    amount * removeDecimalPlace(parseFloat(offer.pricePerShare.toString()))
   );
   // realize exchanges on dex canister for each offer
   await dexActor.realizeExchange(

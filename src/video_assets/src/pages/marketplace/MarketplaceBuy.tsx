@@ -57,7 +57,7 @@ const MarketplaceBuy = () => {
       case 'select-option':
         setSelectedAmount(value);
         // TODO actually calculate the total price
-        setPrice(parseInt(value.value) * parseInt(offersByToken.minPrice.toString()));
+        setPrice(parseInt(value.value) * parseFloat(offersByToken.minPrice.toString()));
         break;
       default:
         setSelectedAmount(null);
