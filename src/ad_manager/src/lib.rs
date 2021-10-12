@@ -14,9 +14,10 @@ const NATIVE_TOKEN_PRINCIPAL: &'static str = env!("NATIVE_TOKEN_CANISTER_ID");
 
 #[update]
 pub async fn add_ad(ad_meta: AdMeta){
-    let video_info = get_video_info(ad_meta.principal.clone()).await;
+    let caller = ic_cdk::caller();
+    assert_eq!(ad_meta.advertiser, caller);
 
-    assert_eq!(ad_meta.advertiser, ic_cdk::caller());
+    let video_info = get_video_info(ad_meta.principal.clone()).await;
 
     storage::get_mut::<AdStore>().insert(ad_meta.principal.clone(), (ad_meta, video_info));
 }
