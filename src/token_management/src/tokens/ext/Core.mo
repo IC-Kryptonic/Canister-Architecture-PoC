@@ -41,6 +41,12 @@ module ExtCore = {
   };
   public type BalanceResponse = Result.Result<Balance, CommonError>;
 
+  public type BalanceForAddress = {
+    address: AccountIdentifier;
+    balance: Balance;
+  };
+  public type AllBalancesResponse = Result.Result<[BalanceForAddress], CommonError>;
+
   public type TransferRequest = {
     from : User;
     to : User;
