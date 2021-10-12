@@ -51,8 +51,9 @@ async function loadVideo(identity: Identity, videoInfo: VideoPost): Promise<stri
   let chunkCount = storageType.chunkCount;
 
   // If video is cached
-  if(getVideoFromCache(videoPrincipal.toString())) {
-    return getVideoFromCache(videoPrincipal.toString());
+  let cachedVideo = getVideoFromCache(videoPrincipal.toString());
+  if (cachedVideo) {
+    return cachedVideo;
   }
 
   let videoActor = await getVideoCanisterActor(identity, videoPrincipal);
