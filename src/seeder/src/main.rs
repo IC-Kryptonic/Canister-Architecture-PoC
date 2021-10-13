@@ -7,7 +7,7 @@ use serde_json;
 
 mod util;
 
-use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile, Chunks, TokenMetadata, TokenAsRecord, AdMeta, TransferRequest, User};
+use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile, Chunks, TokenMetadata, TokenAsRecord, AdMeta, TransferRequest, User, TokenInput};
 use ic_agent::Identity;
 
 #[tokio::main]
@@ -189,7 +189,18 @@ async fn create_token(info: VideoInfo, video_canister: Principal, token_manger: 
 
     let metadata_string = serde_json::to_string(&metadata).expect("Could not stringify metadata");
 
-    let arg = Encode!(&identity.to_text(), &info.name, &String::new(), &2u8, &20u128, &metadata_string).expect("Could not encode create token args");
+    let token_input = TokenInput{
+        owner: identity.to_text(),
+        name: info.name,
+        symbol: "".to_string(),
+        supply: 20u128,
+        storage_canister_id: video_canister.to_text(),
+        metadata: metadata_string
+    };
+
+
+
+    let arg = Encode!(&token_input).expect("Could not encode create token args");
 
     let response = token_manger.update_call("createToken", arg).await;
     let raw_result = util::check_ok(response);

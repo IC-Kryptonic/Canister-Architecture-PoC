@@ -201,3 +201,15 @@ pub enum CommonError{
     #[serde(rename = "Other")]
     Other(String),
 }
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct TokenInput{
+    pub owner: String,
+    pub name: String,
+    pub symbol: String,
+    pub supply: u128,
+
+    #[serde(rename = "storageCanisterId")]
+    pub storage_canister_id: String,
+    pub metadata: String,
+}
