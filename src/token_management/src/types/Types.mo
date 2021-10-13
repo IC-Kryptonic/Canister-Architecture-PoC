@@ -58,4 +58,13 @@ module Types {
     tokenId: Text;
     ownedAmount: Int;
   };
+
+  public type TokenInput = {
+    owner: Text;
+    name: Text;
+    symbol: Text;
+    supply: Nat;
+    storageCanisterId: Text;
+    metadata: Text;
+  };
 };
