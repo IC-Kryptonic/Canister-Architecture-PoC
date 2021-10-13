@@ -19,6 +19,7 @@ const ICPButton = () => {
           backgroundColor: 'white',
           color: 'black',
           fontWeight: 400,
+          width: 150,
         }}
         onClick={() => history.push('/marketplace/faucet')}
       >

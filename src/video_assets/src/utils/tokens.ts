@@ -5,6 +5,8 @@ import {
   VideoTokenResult,
 } from '../interfaces/token_interface';
 
+const nativeTokenDecimals = 4;
+
 export function parseTokenResult(result: Array<VideoTokenResult>): Array<VideoToken> {
   const parsedResult: Array<VideoToken> = [];
   for (let entry of result) {
@@ -49,7 +51,17 @@ export function parseOffers(result: Array<VideoTokenOffer>): Array<OffersByToken
   }
   const parsedResult: Array<OffersByToken> = [];
   for (let entry of offerMap.entries()) {
+    entry[1].maxPrice = addDecimalPlace(Number(entry[1].maxPrice));
+    entry[1].minPrice = addDecimalPlace(Number(entry[1].minPrice));
     parsedResult.push(entry[1]);
   }
   return parsedResult;
+}
+
+export function removeDecimalPlace(amount: number) {
+  return amount * Math.pow(10, nativeTokenDecimals);
+}
+
+export function addDecimalPlace(amount: number) {
+  return amount / Math.pow(10, nativeTokenDecimals);
 }
