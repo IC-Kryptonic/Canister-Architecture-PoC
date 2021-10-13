@@ -125,6 +125,7 @@ pub struct AdMeta{
 }
 
 pub type TokenOwners = Vec<BalanceForAddress>;
+pub type AccountIdentifier = String;
 
 #[derive(CandidType, Deserialize, Serialize)]
 pub struct BalanceForAddress{
@@ -132,7 +133,7 @@ pub struct BalanceForAddress{
     pub balance: Balance,
 }
 
-pub type AccountIdentifier = String;
+
 
 #[derive(CandidType, Deserialize, Serialize)]
 pub enum  User{
@@ -163,15 +164,26 @@ pub enum TransferResponse{
     #[serde(rename = "ok")]
     Ok(Balance),
     #[serde(rename = "err")]
-    Err,
+    Err(TransferError),
 }
+
+#[derive(CandidType, Deserialize, Serialize, Debug)]
+pub enum TransferError{
+    Unauthorized(AccountIdentifier),
+    InsufficientBalance,
+    Rejected,
+    InvalidToken(TokenIdentifier),
+    CannotNotify(AccountIdentifier),
+    Other(String),
+}
+
 
 #[derive(CandidType, Deserialize, Serialize)]
 pub enum SupplyResponse{
     #[serde(rename = "ok")]
     Ok(Balance),
     #[serde(rename = "err")]
-    Err,
+    Err(CommonError),
 }
 
 #[derive(CandidType, Deserialize, Serialize)]
@@ -179,5 +191,13 @@ pub enum AllBalancesResponse{
     #[serde(rename = "ok")]
     Ok(Vec<BalanceForAddress>),
     #[serde(rename = "err")]
-    Err,
+    Err(CommonError),
+}
+
+#[derive(CandidType, Deserialize, Serialize, Debug)]
+pub enum CommonError{
+    #[serde(rename = "InvalidToken")]
+    InvalidToken(String),
+    #[serde(rename = "Other")]
+    Other(String),
 }

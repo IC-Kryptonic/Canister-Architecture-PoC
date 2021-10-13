@@ -94,4 +94,4 @@ async function _loadAdPostFromCanister(identity: Identity, principal: Principal)
 }
 
 
-export { createAd, loadRandomAdPost, loadTargetedAdPost, loadAdVideo};
+export { createAd, watchedAd, loadRandomAdPost, loadTargetedAdPost, loadAdVideo};

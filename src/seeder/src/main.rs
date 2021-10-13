@@ -7,7 +7,7 @@ use serde_json;
 
 mod util;
 
-use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile, Chunks, TokenMetadata, TokenAsRecord, AdMeta};
+use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile, Chunks, TokenMetadata, TokenAsRecord, AdMeta, TransferRequest, User};
 use ic_agent::Identity;
 
 #[tokio::main]
@@ -76,6 +76,21 @@ async fn create_ad(file: DirEntry, ad_manager: &Actor, video_backend: &Actor){
     let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
     let my_principal = identity.sender().expect("Could not deduce principal from identity");
     let native_token = Actor::from_name("native_token", identity).await;
+    
+    let faucet_req = TransferRequest{
+        from: User::Principal(Principal::anonymous()),
+        to: User::Principal(my_principal),
+        token: "".to_string(),
+        amount: token_amount,
+        memo: vec![],
+        notify: false,
+        subaccount: None
+    };
+    let faucet_arg = Encode!(&faucet_req).expect("Could not encode faucet req");
+    let response = native_token.update_call("acquireFromFaucet", faucet_arg).await;
+    util::check_ok(response);
+    //better not decode because enums
+
     let arg = Encode!(&my_principal, &ad_manager.principal, &token_amount).expect("Could not encode approve args");
     let response = native_token.update_call("approve", arg).await;
     let raw_result = util::check_ok(response);

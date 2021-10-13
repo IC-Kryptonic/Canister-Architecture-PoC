@@ -28,7 +28,7 @@ pub async fn watched_ad(ad_principal: Principal, earning_video: Principal){
     let video_info = get_video_info(earning_video).await;
     let ad_data = storage::get_mut::<AdStore>().get_mut(&ad_principal).expect("Principal not a stored ad");
 
-    if ad_data.0.amount_per_view < ad_data.0.allowance{
+    if ad_data.0.amount_per_view > ad_data.0.allowance{
         ic_cdk::trap("Allowance lower than amount to be paid per view")
     }
 
@@ -94,7 +94,7 @@ async fn get_token_supply(token_canister: Principal) -> Balance {
         Ok((supply_response,)) => {
             match supply_response{
                 SupplyResponse::Ok(supply) => return supply,
-                SupplyResponse::Err => ic_cdk::trap("Supply call returned err"),
+                SupplyResponse::Err(_) => ic_cdk::trap("Supply call returned err"),
             }
         }
         Err((rej_code, msg)) => {
@@ -111,7 +111,7 @@ async fn get_token_owners(token_canister: Principal) -> Vec<BalanceForAddress> {
         Ok((balances_response,)) => {
             match balances_response{
                 AllBalancesResponse::Ok(balances) => return balances,
-                AllBalancesResponse::Err => ic_cdk::trap("AllBalances call returned err"),
+                AllBalancesResponse::Err(_) => ic_cdk::trap("AllBalances call returned err"),
             }
         }
         Err((rej_code, msg)) => {
@@ -140,7 +140,7 @@ async fn pay_out_ad_rev(advertiser: Principal, receiver: AccountIdentifier, amou
         Ok((transfer_response,)) => {
             match transfer_response{
                 TransferResponse::Ok(_) => return,
-                TransferResponse::Err => ic_cdk::api::trap(format!("Something went wrong transferring {} from {} to {}", amount, advertiser, receiver).as_str()),
+                TransferResponse::Err(_) => ic_cdk::api::trap(format!("Something went wrong transferring {} from {} to {}", amount, advertiser, receiver).as_str()),
             }
         }
         Err((rej_code, msg)) => {

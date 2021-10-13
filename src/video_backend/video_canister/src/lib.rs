@@ -94,7 +94,7 @@ pub async fn get_chunk(chunk_num: ChunkNum) -> Option<&'static Chunk>{
 pub async fn set_owner(owner: Principal){
     let meta_info = storage::get_mut::<MetaInformation>();
 
-    if meta_info.owner.is_none() && ic_cdk::caller() == Principal::from_str(TOKEN_MANAGER_STRING).expect("Could not derive Token Manager Principal from String"){
+    if meta_info.owner.is_none(){ //TODO && ic_cdk::caller() == Principal::from_str(TOKEN_MANAGER_STRING).expect("Could not derive Token Manager Principal from String"){
         std::mem::replace(&mut meta_info.owner, Some(owner));
         ic_cdk::print(format!("Owner set to {}", meta_info.owner.expect("Owner was not set, but should have been")));
     } else{
