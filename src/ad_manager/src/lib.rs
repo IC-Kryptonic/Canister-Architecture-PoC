@@ -4,9 +4,10 @@ use ic_cdk::storage;
 use ic_cdk::api::call;
 
 use video_types::{AccountIdentifier, AdMeta, AllBalancesResponse, Balance, BalanceForAddress, Profile, SupplyResponse, TransferRequest, TransferResponse, User, VideoInfo};
-use std::collections::{HashMap};
+use std::collections::{HashMap, HashSet};
 
 pub type AdStore = HashMap<Principal, (AdMeta, VideoInfo)>;
+pub type WatchedHistory = HashSet<(Principal, Principal)>;
 pub type RevenueHistory = HashMap<Principal, HashMap<Principal, usize>>;
 
 const PROFILE_PRINCIPAL: &str = env!("CANISTER_ID_profile_backend");
@@ -24,7 +25,11 @@ pub async fn add_ad(ad_meta: AdMeta){
 
 #[update]
 pub async fn watched_ad(ad_principal: Principal, earning_video: Principal){
-    //TODO restrict to once per msg caller
+
+    if check_repeated_call(ic_cdk::caller(), earning_video){
+        return; //second call from the same user so we don't distribute revenue to protect against them draining funds for their own videos
+    }
+
     let video_info = get_video_info(earning_video).await;
     let ad_data = storage::get_mut::<AdStore>().get_mut(&ad_principal).expect("Principal not a stored ad");
 
@@ -35,7 +40,7 @@ pub async fn watched_ad(ad_principal: Principal, earning_video: Principal){
     let to_distribute = ad_data.0.amount_per_view;
     ad_data.0.allowance -= to_distribute;
 
-    //TODO check if owner is token, else just pay to owner
+
     let token_supply = get_token_supply(video_info.owner).await;
     let owners= get_token_owners(video_info.owner).await;
 
@@ -47,6 +52,9 @@ pub async fn watched_ad(ad_principal: Principal, earning_video: Principal){
     }
 }
 
+fn check_repeated_call(user: Principal, earning_video: Principal) -> bool{
+    !storage::get_mut::<WatchedHistory>().insert((user, earning_video))
+}
 
 
 //TODO, only get ads with balance
