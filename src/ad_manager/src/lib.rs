@@ -40,15 +40,19 @@ pub async fn watched_ad(ad_principal: Principal, earning_video: Principal){
     let to_distribute = ad_data.0.amount_per_view;
     ad_data.0.allowance -= to_distribute;
 
+    if video_info.owner == video_info.creator{ //Video is not yet tokenized //TODO do we really need this case?
+        ic_cdk::trap("Not implemented yet")
+    } else{
+        let token_supply = get_token_supply(video_info.owner).await;
+        let owners= get_token_owners(video_info.owner).await;
 
-    let token_supply = get_token_supply(video_info.owner).await;
-    let owners= get_token_owners(video_info.owner).await;
+        let amount_per_share = to_distribute / token_supply;
 
-    let amount_per_share = to_distribute / token_supply;
-    //TODO pay out to_distribute%token_supply to us
+        //TODO pay out to_distribute%token_supply to us
 
-    for owner in owners{
-        pay_out_ad_rev(ad_data.0.advertiser, owner.address, amount_per_share*owner.balance).await;
+        for owner in owners{
+            pay_out_ad_rev(ad_data.0.advertiser, owner.address, amount_per_share*owner.balance).await;
+        }
     }
 }
 
