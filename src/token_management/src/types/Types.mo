@@ -67,4 +67,9 @@ module Types {
     storageCanisterId: Text;
     metadata: Text;
   };
+
+  public type StorageActor = actor {
+      set_owner: (token: Principal) -> async ();
+    };
 };
+

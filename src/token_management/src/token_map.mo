@@ -18,6 +18,7 @@ actor TokenMap {
   type TokenAsRecord = Types.TokenAsRecord;
   type Ownership = Types.Ownership;
   type TokenInput = Types.TokenInput;
+  type StorageActor = Types.StorageActor;
 
   let tokenMap = HashMap.HashMap<Text, Token>(0, Text.equal, Text.hash);
   let tokenOwners = HashMap.HashMap<Principal, [Ownership]>(0, Principal.equal, Principal.hash);
@@ -41,6 +42,10 @@ actor TokenMap {
         tokenOwners.put(ownerPrincipal, Array.append(ownerships, [newOwnership]));
       };
     };
+
+    let storageCanister = actor(input.storageCanisterId) : StorageActor;
+    await storageCanister.set_owner(Principal.fromText(canisterId));
+
     Debug.print("Token <" # input.name # "> was created successfully");
   };
 
