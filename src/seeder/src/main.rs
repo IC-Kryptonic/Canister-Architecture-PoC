@@ -234,7 +234,7 @@ async fn create_offers(dex: &Actor, token_manager: &Actor){
 
     for token in tokens{
 
-        let token_price = 1u128;
+        let token_price = 1000u128;
         let token_amount = 10u128;
 
         println!("Creating selling offer for {} token {}({}) for {}kICP", &token_amount, &token.name, &token.canister_id, token_price);
