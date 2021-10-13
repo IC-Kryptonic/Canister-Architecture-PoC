@@ -94,7 +94,7 @@ async fn get_token_supply(token_canister: Principal) -> Balance {
         Ok((supply_response,)) => {
             match supply_response{
                 SupplyResponse::Ok(supply) => return supply,
-                SupplyResponse::Err(_) => ic_cdk::trap("Supply call returned err"),
+                SupplyResponse::Err(err) => ic_cdk::trap(format!("Supply call returned err: {:?}",err).as_str()),
             }
         }
         Err((rej_code, msg)) => {
@@ -111,7 +111,7 @@ async fn get_token_owners(token_canister: Principal) -> Vec<BalanceForAddress> {
         Ok((balances_response,)) => {
             match balances_response{
                 AllBalancesResponse::Ok(balances) => return balances,
-                AllBalancesResponse::Err(_) => ic_cdk::trap("AllBalances call returned err"),
+                AllBalancesResponse::Err(err) => ic_cdk::trap(format!("AllBalances call returned err: {:?}", err).as_str()),
             }
         }
         Err((rej_code, msg)) => {
@@ -140,7 +140,7 @@ async fn pay_out_ad_rev(advertiser: Principal, receiver: AccountIdentifier, amou
         Ok((transfer_response,)) => {
             match transfer_response{
                 TransferResponse::Ok(_) => return,
-                TransferResponse::Err(_) => ic_cdk::api::trap(format!("Something went wrong transferring {} from {} to {}", amount, advertiser, receiver).as_str()),
+                TransferResponse::Err(err) => ic_cdk::api::trap(format!("Something went wrong transferring {} from {} to {}, error: {:?}", amount, advertiser, receiver, err).as_str()),
             }
         }
         Err((rej_code, msg)) => {

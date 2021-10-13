@@ -71,8 +71,8 @@ async fn create_ad(file: DirEntry, ad_manager: &Actor, video_backend: &Actor){
     let ad_canister = upload_video(ad_info, chunks, false, video_backend).await;
 
     //Set allowance for native token
-    let token_amount = 10000;
-    let tokens_per_view = 100;
+    let token_amount = 100000;
+    let tokens_per_view = 2000;
     let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
     let my_principal = identity.sender().expect("Could not deduce principal from identity");
     let native_token = Actor::from_name("native_token", identity).await;
