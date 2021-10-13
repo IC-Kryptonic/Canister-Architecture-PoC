@@ -61,9 +61,9 @@ actor class native_token() {
   
     //Initial state - could set via class setter
   private stable let METADATA : Metadata = #fungible({
-    name = "TUM";
-    symbol = "TUM";
-    decimals = 2;
+    name = "kICP";
+    symbol = "kICP";
+    decimals = 4;
     metadata = "";
   }); 
   private stable var _supply : Balance  = 1000000000;

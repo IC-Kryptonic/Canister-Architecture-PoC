@@ -20,7 +20,7 @@ import ExtCore "./ext/Core";
 import ExtCommon "./ext/Common";
 import ExtAllowance "./ext/Allowance";
 
-actor class video_token(init_name: Text, init_symbol: Text, init_decimals: Nat8, init_supply: ExtCore.Balance, init_owner: Principal, init_metadata: Text) {
+actor class video_token(init_name: Text, init_symbol: Text, init_supply: ExtCore.Balance, init_owner: Principal, init_metadata: Text) {
   
   // Types
   type AccountIdentifier = ExtCore.AccountIdentifier;
@@ -63,7 +63,7 @@ actor class video_token(init_name: Text, init_symbol: Text, init_decimals: Nat8,
   private stable let METADATA : Metadata = #fungible({
     name = init_name;
     symbol = init_symbol;
-    decimals = init_decimals;
+    decimals = 0;
     metadata = init_metadata;
   }); 
   private stable var _supply : Balance  = init_supply;
