@@ -6,15 +6,33 @@ import {VideoInfo} from "../../../../.dfx/local/canisters/ad_manager/ad_manager.
 
 import {uploadVideo, loadVideo} from "./video_backend";
 import {ChunkNum} from "../../../../.dfx/local/canisters/video_canister/video_canister.did";
+import {AdMeta} from "../../../../.dfx/local/canisters/ad_manager/ad_manager.did";
 import {Identity} from "@dfinity/agent";
-import {getAdManagerActor, getVideoCanisterActor} from "../utils/actors";
+import {getAdManagerActor, getNativeTokenActor, getVideoCanisterActor} from "../utils/actors";
 
 
 async function createAd(identity: Identity, post: CreateAdPost){
   let created_principal = await uploadVideo(identity, post, false, (current: number, total: number) => {});
 
+  let adMeta: AdMeta = {
+    principal: created_principal,
+    allowance: post.allowance,
+    amount_per_view: post.amountPerView,
+    advertiser: identity.getPrincipal(),
+  }
+
+  const tokenActor = await getNativeTokenActor(identity);
   const adManager = await getAdManagerActor(identity);
-  await adManager.add_ad(created_principal);
+
+  await tokenActor.approve(identity.getPrincipal(), adManager, adMeta.allowance);
+
+  await adManager.add_ad(adMeta);
+}
+
+async function watchedAd(identity: Identity, adPrincipal: Principal, videoPrincipal: Principal){
+  const adManager = await getAdManagerActor(identity);
+
+  await adManager.watched_ad(adPrincipal, videoPrincipal);
 }
 
 async function loadRandomAdPost(identity: Identity): Promise<AdPost> {
@@ -76,4 +94,4 @@ async function _loadAdPostFromCanister(identity: Identity, principal: Principal)
 }
 
 
-export { createAd, loadRandomAdPost, loadTargetedAdPost, loadAdVideo};
+export { createAd, watchedAd, loadRandomAdPost, loadTargetedAdPost, loadAdVideo};

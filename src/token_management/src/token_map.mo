@@ -17,20 +17,22 @@ actor TokenMap {
   type Token = VideoToken.video_token;
   type TokenAsRecord = Types.TokenAsRecord;
   type Ownership = Types.Ownership;
+  type TokenInput = Types.TokenInput;
+  type StorageActor = Types.StorageActor;
 
   let tokenMap = HashMap.HashMap<Text, Token>(0, Text.equal, Text.hash);
   let tokenOwners = HashMap.HashMap<Principal, [Ownership]>(0, Principal.equal, Principal.hash);
 
-  public shared(msg) func createToken(owner: Text, name: Text, symbol: Text, supply: Nat, metadata: Text) : async() {
-    let ownerPrincipal = Principal.fromText(owner);
-    let newToken = await VideoToken.video_token(name, symbol, supply, ownerPrincipal, metadata);
+  public shared(msg) func createToken(input: TokenInput) : async() {
+    let ownerPrincipal = Principal.fromText(input.owner);
+    let newToken = await VideoToken.video_token(input.name, input.symbol, input.supply, ownerPrincipal, input.metadata);
     let canisterId = Principal.toText(Principal.fromActor(newToken));
 
     tokenMap.put(canisterId, newToken);
 
     let newOwnership = {
       tokenId = canisterId;
-      ownedAmount = supply;
+      ownedAmount = input.supply;
     };
     switch(tokenOwners.get(ownerPrincipal)) {
       case null {
@@ -40,7 +42,11 @@ actor TokenMap {
         tokenOwners.put(ownerPrincipal, Array.append(ownerships, [newOwnership]));
       };
     };
-    Debug.print("Token <" # name # "> was created successfully");
+
+    let storageCanister = actor(input.storageCanisterId) : StorageActor;
+    await storageCanister.set_owner(Principal.fromText(canisterId));
+
+    Debug.print("Token <" # input.name # "> was created successfully");
   };
 
   public shared(msg) func getAllTokens() : async [TokenAsRecord] {

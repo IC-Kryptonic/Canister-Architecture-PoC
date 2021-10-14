@@ -7,7 +7,7 @@ use serde_json;
 
 mod util;
 
-use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile, Chunks, TokenMetadata, TokenAsRecord};
+use video_types::{VideoInfo, StorageType, MAX_CHUNK_SIZE, Profile, Chunks, TokenMetadata, TokenAsRecord, AdMeta, TransferRequest, User, TokenInput};
 use ic_agent::Identity;
 
 #[tokio::main]
@@ -70,7 +70,43 @@ async fn create_ad(file: DirEntry, ad_manager: &Actor, video_backend: &Actor){
 
     let ad_canister = upload_video(ad_info, chunks, false, video_backend).await;
 
-    let ad_arg = Encode!(&ad_canister).expect("Could not encode ad principal");
+    //Set allowance for native token
+    let token_amount = 100000;
+    let tokens_per_view = 2000;
+    let identity = util::generate_pkcs8_identity(&util::PEKCS8_BYTES);
+    let my_principal = identity.sender().expect("Could not deduce principal from identity");
+    let native_token = Actor::from_name("native_token", identity).await;
+    
+    let faucet_req = TransferRequest{
+        from: User::Principal(Principal::anonymous()),
+        to: User::Principal(my_principal),
+        token: "".to_string(),
+        amount: token_amount,
+        memo: vec![],
+        notify: false,
+        subaccount: None
+    };
+    let faucet_arg = Encode!(&faucet_req).expect("Could not encode faucet req");
+    let response = native_token.update_call("acquireFromFaucet", faucet_arg).await;
+    util::check_ok(response);
+    //better not decode because enums
+
+    let arg = Encode!(&my_principal, &ad_manager.principal, &token_amount).expect("Could not encode approve args");
+    let response = native_token.update_call("approve", arg).await;
+    let raw_result = util::check_ok(response);
+    Decode!(raw_result.as_slice(), ()).expect("Could not decode empty approve result");
+
+    //add ad to ad_manager
+    let ad_meta = AdMeta{
+        principal: ad_canister,
+        allowance: token_amount,
+        amount_per_view: tokens_per_view,
+        advertiser: my_principal,
+    };
+
+
+
+    let ad_arg = Encode!(&ad_meta).expect("Could not encode ad principal");
     let response = ad_manager.update_call("add_ad", ad_arg).await;
     let raw_result = util::check_ok(response);
     Decode!(raw_result.as_slice(), ()).expect("Could not decode empty add_ad result");
@@ -153,7 +189,18 @@ async fn create_token(info: VideoInfo, video_canister: Principal, token_manger: 
 
     let metadata_string = serde_json::to_string(&metadata).expect("Could not stringify metadata");
 
-    let arg = Encode!(&identity.to_text(), &info.name, &String::new(), &2u8, &20u128, &metadata_string).expect("Could not encode create token args");
+    let token_input = TokenInput{
+        owner: identity.to_text(),
+        name: info.name,
+        symbol: "".to_string(),
+        supply: 20u128,
+        storage_canister_id: video_canister.to_text(),
+        metadata: metadata_string
+    };
+
+
+
+    let arg = Encode!(&token_input).expect("Could not encode create token args");
 
     let response = token_manger.update_call("createToken", arg).await;
     let raw_result = util::check_ok(response);
@@ -187,7 +234,7 @@ async fn create_offers(dex: &Actor, token_manager: &Actor){
 
     for token in tokens{
 
-        let token_price = 1u128;
+        let token_price = 1000u128;
         let token_amount = 10u128;
 
         println!("Creating selling offer for {} token {}({}) for {}kICP", &token_amount, &token.name, &token.canister_id, token_price);

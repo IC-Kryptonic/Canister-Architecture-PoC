@@ -41,7 +41,14 @@ export const createToken = async (
     // TODO set creator with name
     creator: identity,
   });
-  await tokenBackend.createToken(principal.toText(), post.name, '', shareAmount, metadata);
+  await tokenBackend.createToken({
+    owner: principal.toText(),
+    name: post.name,
+    symbol: '',
+    supply: shareAmount,
+    storageCanisterId: storageCanisterId,
+    metadata: metadata,
+  });
 };
 
 export const getBalanceForIdentity = async (identity: Identity): Promise<Number> => {

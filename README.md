@@ -1,3 +1,17 @@
+# Quick start
+
+0. Update the IDENTITY_PATH variable in all scripts if the internet identity is not in the neighbouring directory
+
+1. Run `bash setup.sh` once to install all the required dependencies
+
+2. Run `bash deploy.sh` once everytime the code changes or you want a clean state
+
+3. Use `bash start.sh` to start the network and open the frontend
+
+4. Use `bash stop.sh` to stop the dfx network
+
+In case of errors refer to manual project setup
+
 # Technical prerequisites
 
 Install Rust
@@ -71,18 +85,6 @@ Checkout the internet identity project, preferably in a neighboring directory:
 git clone https://github.com/dfinity/internet-identity.git
 
 ```
-
-# Quick start
-
-0. Update the IDENTITY_PATH variable in all scripts if the internet identity is not in the neighbouring directory
-
-1. Run `bash setup.sh` once to install all the required dependencies
-
-2. Use `bash start.sh` to start the dfx network
-
-3. Use `bash stop.sh` to stop the dfx network
-
-In case of errors refer to manual project setup
 
 # Manual project Setup
 

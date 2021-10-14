@@ -6,7 +6,9 @@ pub type ChunkNum = usize;
 pub type Chunk = Vec<u8>;
 pub type Chunks = Vec<Chunk>;
 pub type Feed = HashSet<&'static Principal>;
+pub type TestFeed = HashSet<Principal>;
 pub type Comment = (Principal, String);
+pub type Balance = u128;
 
 pub const MAX_CHUNK_SIZE: usize = 1024 * 500; // 500kb
 
@@ -112,4 +114,102 @@ pub enum ExchangeError{
     NoExistingOffersForm(Principal),
     NoMatchingOffers,
     TransferError,
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct AdMeta{
+    pub principal: Principal,
+    pub allowance: Balance,
+    pub amount_per_view: Balance,
+    pub advertiser: Principal,
+}
+
+pub type TokenOwners = Vec<BalanceForAddress>;
+pub type AccountIdentifier = String;
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct BalanceForAddress{
+    pub address: AccountIdentifier,
+    pub balance: Balance,
+}
+
+
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub enum  User{
+    #[serde(rename = "address")]
+    Address(AccountIdentifier),
+    #[serde(rename = "principal")]
+    Principal(Principal),
+}
+
+pub type TokenIdentifier = String;
+pub type Memo = Vec<u8>;
+pub type SubAccount = Vec<u8>;
+
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct TransferRequest{
+    pub from: User,
+    pub to: User,
+    pub token: TokenIdentifier,
+    pub amount: Balance,
+    pub memo: Memo,
+    pub notify: bool,
+    pub subaccount: Option<SubAccount>,
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub enum TransferResponse{
+    #[serde(rename = "ok")]
+    Ok(Balance),
+    #[serde(rename = "err")]
+    Err(TransferError),
+}
+
+#[derive(CandidType, Deserialize, Serialize, Debug)]
+pub enum TransferError{
+    Unauthorized(AccountIdentifier),
+    InsufficientBalance,
+    Rejected,
+    InvalidToken(TokenIdentifier),
+    CannotNotify(AccountIdentifier),
+    Other(String),
+}
+
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub enum SupplyResponse{
+    #[serde(rename = "ok")]
+    Ok(Balance),
+    #[serde(rename = "err")]
+    Err(CommonError),
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub enum AllBalancesResponse{
+    #[serde(rename = "ok")]
+    Ok(Vec<BalanceForAddress>),
+    #[serde(rename = "err")]
+    Err(CommonError),
+}
+
+#[derive(CandidType, Deserialize, Serialize, Debug)]
+pub enum CommonError{
+    #[serde(rename = "InvalidToken")]
+    InvalidToken(String),
+    #[serde(rename = "Other")]
+    Other(String),
+}
+
+#[derive(CandidType, Deserialize, Serialize)]
+pub struct TokenInput{
+    pub owner: String,
+    pub name: String,
+    pub symbol: String,
+    pub supply: u128,
+
+    #[serde(rename = "storageCanisterId")]
+    pub storage_canister_id: String,
+    pub metadata: String,
 }
