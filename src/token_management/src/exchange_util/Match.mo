@@ -19,7 +19,7 @@ module Match {
           if(
             offer.1.token == token and 
             offer.1.pricePerShare == pricePerShare and
-            offer.1.shareAmount == shareAmount
+            offer.1.shareAmount >= shareAmount
           ) {
             return ?(offer.0, offer.1);
           };

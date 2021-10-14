@@ -153,11 +153,11 @@ export const realizeExchange = async (
     offer.from,
     offer.canisterId,
     offer.pricePerShare,
-    offer.shareAmount
+    amount
   );
   // change ownership
-  await tokenBackend.changeOwnership(offer.from, offer.canisterId, -offer.shareAmount);
-  await tokenBackend.changeOwnership(identityPrincipal, offer.canisterId, offer.shareAmount);
+  await tokenBackend.changeOwnership(offer.from, offer.canisterId, -amount);
+  await tokenBackend.changeOwnership(identityPrincipal, offer.canisterId, amount);
 };
 
 export const getAllOffers = async (identity: Identity): Promise<VideoTokenOffer[]> => {
