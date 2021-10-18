@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Grid, Paper } from '@material-ui/core';
+import { Button, CircularProgress, Grid, Input, InputAdornment, Paper } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import Layout from '../../components/shared/Layout';
@@ -9,6 +9,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { realizeExchange } from '../../services/token_services';
 import { AuthContext } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
+import { parseToDollar } from '../../utils/currency';
 
 interface SelectOption {
   value: string;
@@ -125,9 +126,9 @@ const MarketplaceBuy = () => {
               <Grid container item xs={12} justify="space-between" alignItems="center">
                 <Grid item xs={6}>
                   <input
-                    value={price || ''}
+                    value={price ? `${price} ICP` : ''}
                     disabled
-                    type="number"
+                    type="string"
                     placeholder="Price per share"
                     style={{
                       width: '100%',
@@ -142,7 +143,9 @@ const MarketplaceBuy = () => {
                     }}
                   />
                 </Grid>
-                <Grid item>Current average: 1,32 ICP</Grid>
+                <Grid item>
+                  <p style={{ fontSize: 16 }}>{`$ ${parseToDollar(price)}`}</p>
+                </Grid>
               </Grid>
               <Grid container item xs={12} justify="center">
                 <Button

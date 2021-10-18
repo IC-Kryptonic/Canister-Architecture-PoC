@@ -129,14 +129,19 @@ export const createShareOffer = async (
   // allow dex to transfer the token on video token canister
   await tokenActor.approve(identityPrincipal, dexPrincipal, amount);
   // create offer on dex canister
-  await dexActor.createOffer(
+  const result = (await dexActor.createOffer(
     identityPrincipal,
     canisterId,
     tokenName,
     priceWithoutDecimalPlace,
     amount,
     storageCanisterId
-  );
+  )) as EmptyResult;
+  if ('ok' in result) {
+    return;
+  } else {
+    throw new Error(JSON.stringify(result));
+  }
 };
 
 export const realizeExchange = async (
