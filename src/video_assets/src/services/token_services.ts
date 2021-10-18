@@ -26,6 +26,10 @@ type BigIntResult = {
   ok: BigInt;
 };
 
+type EmptyResult = {
+  ok: null;
+};
+
 export const createToken = async (
   identity: Identity,
   video: Principal,
@@ -155,16 +159,20 @@ export const realizeExchange = async (
     amount * removeDecimalPlace(parseFloat(offer.pricePerShare.toString()))
   );
   // realize exchanges on dex canister for each offer
-  await dexActor.realizeExchange(
+  const result = (await dexActor.realizeExchange(
     identityPrincipal,
     offer.from,
     offer.canisterId,
     offer.pricePerShare,
     amount
-  );
-  // change ownership
-  await tokenBackend.changeOwnership(offer.from, offer.canisterId, -amount);
-  await tokenBackend.changeOwnership(identityPrincipal, offer.canisterId, amount);
+  )) as EmptyResult;
+  if ('ok' in result) {
+    // change ownership
+    await tokenBackend.changeOwnership(offer.from, offer.canisterId, -amount);
+    await tokenBackend.changeOwnership(identityPrincipal, offer.canisterId, amount);
+  } else {
+    throw new Error(JSON.stringify(result));
+  }
 };
 
 export const getAllOffers = async (identity: Identity): Promise<VideoTokenOffer[]> => {

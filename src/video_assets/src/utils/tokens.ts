@@ -5,7 +5,7 @@ import {
   VideoTokenResult,
 } from '../interfaces/token_interface';
 
-const nativeTokenDecimals = 4;
+export const nativeTokenDecimals = 4;
 
 export function parseTokenResult(result: Array<VideoTokenResult>): Array<VideoToken> {
   const parsedResult: Array<VideoToken> = [];
@@ -64,4 +64,9 @@ export function removeDecimalPlace(amount: number) {
 
 export function addDecimalPlace(amount: number) {
   return amount / Math.pow(10, nativeTokenDecimals);
+}
+
+export function countDecimals(value: number): number {
+  if (value % 1 != 0) return value.toString().split('.')[1].length;
+  return 0;
 }
