@@ -231,10 +231,10 @@ async fn create_offers(dex: &Actor, token_manager: &Actor){
     let response = token_manager.update_call("getOwnedTokens", arg).await;
     let raw_result = util::check_ok(response);
     let tokens = Decode!(raw_result.as_slice(), Vec<TokenAsRecord>).expect("Could not decode TokenAsRecord vec");
+    let mut token_price = 1000u128;
 
     for token in tokens{
 
-        let token_price = 1000u128;
         let token_amount = 10u128;
 
         println!("Creating selling offer for {} token {}({}) for {}kICP", &token_amount, &token.name, &token.canister_id, token_price);
@@ -252,6 +252,8 @@ async fn create_offers(dex: &Actor, token_manager: &Actor){
         let arg = Encode!(&identity, &token.canister_id, &token.name, &token_price, &token_amount, &meta_data.storage_canister_id).expect("Could not encode create offer args");
         let response = dex.update_call("createOffer", arg).await;
         util::check_ok(response);
+
+        token_price = token_price + 100u128 ;
 
 
         //Do not decode unless you want to find out the funny differences between candid, motoko and rust variants/enums

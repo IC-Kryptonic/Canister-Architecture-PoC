@@ -20,6 +20,7 @@ const marketplaceHomeStyles = makeStyles({
   videoCell: {
     maxHeight: 60,
     paddingLeft: 5,
+    paddingRight: 5,
     width: '27%',
     fontSize: 16,
   },

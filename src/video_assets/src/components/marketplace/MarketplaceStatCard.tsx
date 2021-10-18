@@ -6,6 +6,7 @@ import { marketplaceStatStyles } from '../../styles/marketplace/marketplace_stat
 interface MarketplaceStatCardProps {
   title: string;
   value: string;
+  footer?: string;
   img: string;
 }
 
@@ -28,7 +29,7 @@ const MarketplaceStatCard = (props: MarketplaceStatCardProps) => {
           </Grid>
         </Grid>
         <Grid container item className={classes.footer}>
-          <span className={classes.footerHighlight}>{'+ 3,2%'}</span>
+          <span className={classes.footerHighlight}>{props.footer || '+ 3.2%'}</span>
           {'from last week'}
         </Grid>
       </Grid>

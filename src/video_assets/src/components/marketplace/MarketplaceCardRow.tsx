@@ -2,6 +2,7 @@ import { Paper, Grid, Button } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { TokenContext } from '../../contexts/TokenContext';
 import { OffersByToken } from '../../interfaces/token_interface';
+import { tokenStats } from '../../mocks/marketplace/tokenStats';
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
 import { parseToDollar } from '../../utils/currency';
 import history from '../History';
@@ -14,6 +15,8 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
   const { showValuesInIcp } = useContext(TokenContext);
   const classes = marketplaceHomeStyles();
 
+  const stats = tokenStats.get(props.offersByToken.tokenName);
+
   return (
     <Paper style={{ width: '100%', paddingTop: 15, paddingBottom: 15, marginBottom: 10 }}>
       <Grid container alignItems="center">
@@ -21,7 +24,11 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
           {props.offersByToken.tokenName}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {showValuesInIcp ? 2 : `$ ${parseToDollar(2)}`}
+          {stats
+            ? showValuesInIcp
+              ? stats.marketCap
+              : `$ ${parseToDollar(stats.marketCap)}`
+            : '-'}
         </Grid>
         <Grid item className={classes.tableCell}>
           {showValuesInIcp
@@ -33,10 +40,14 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
           {`${props.offersByToken.offeredAmount}`}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {showValuesInIcp ? 5 : `$ ${parseToDollar(5)}`}
+          {stats
+            ? showValuesInIcp
+              ? stats.revenueLastWeek
+              : `$ ${parseToDollar(stats.revenueLastWeek)}`
+            : '-'}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {showValuesInIcp ? 7 : `$ ${parseToDollar(7)}`}
+          {stats ? stats.priceChangeLastWeek : '-'}
         </Grid>
         <Grid item className={classes.buttonCell}>
           <Grid container justify="center" spacing={1}>

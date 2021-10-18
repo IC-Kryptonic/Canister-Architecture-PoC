@@ -315,9 +315,9 @@ let chartExample1 = {
       },
     },
   },
-  data1: () => {
+  data0: () => {
     return {
-      labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      labels: ['March', 'April', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
       datasets: [
         {
           label: 'Performance',
@@ -326,13 +326,57 @@ let chartExample1 = {
       ],
     };
   },
-  data2: () => {
+  data1: () => {
     return {
-      labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      labels: ['March', 'April', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
       datasets: [
         {
           label: 'Performance',
-          data: [0, 20, 5, 25, 10, 30, 15, 40, 40],
+          data: [0, 5, 5, 10, 5, 30, 15, 30, 30],
+        },
+      ],
+    };
+  },
+  data2: () => {
+    return {
+      labels: ['March', 'April', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+      datasets: [
+        {
+          label: 'Performance',
+          data: [0, 5, 6, 7, 15, 30, 20, 22, 24],
+        },
+      ],
+    };
+  },
+  data3: () => {
+    return {
+      labels: ['March', 'April', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+      datasets: [
+        {
+          label: 'Performance',
+          data: [0, 5, 10, 15, 20, 22, 17, 15, 35],
+        },
+      ],
+    };
+  },
+  data4: () => {
+    return {
+      labels: ['March', 'April', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+      datasets: [
+        {
+          label: 'Performance',
+          data: [0, 25, 22, 20, 22, 26, 27, 28, 27],
+        },
+      ],
+    };
+  },
+  data5: () => {
+    return {
+      labels: ['March', 'April', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+      datasets: [
+        {
+          label: 'Performance',
+          data: [0, 13, 26, 25, 10, 30, 12, 12, 20],
         },
       ],
     };

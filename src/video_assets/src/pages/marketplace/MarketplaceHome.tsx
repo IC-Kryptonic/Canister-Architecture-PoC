@@ -24,16 +24,23 @@ const MarketplaceHome = () => {
               <MarketplaceStatCard
                 title="Market Capitalization"
                 value="$ 19,096,067,431.85"
+                footer="+ 10.5%"
                 img={globe}
               />
             </Grid>
             <Grid item>
-              <MarketplaceStatCard title="Total Views (last week)" value="13,464,434" img={eye} />
+              <MarketplaceStatCard
+                title="Total Views (last week)"
+                value="13,464,434"
+                img={eye}
+                footer="+ 7.1%"
+              />
             </Grid>
             <Grid item>
               <MarketplaceStatCard
                 title="Payed Revenue (last week)"
-                value="$ 1,204,402"
+                value="$ 161,573.21"
+                footer="+ 8.4%"
                 img={money}
               />
             </Grid>
