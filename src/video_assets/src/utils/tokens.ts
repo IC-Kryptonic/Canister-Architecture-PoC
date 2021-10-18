@@ -5,7 +5,7 @@ import {
   VideoTokenResult,
 } from '../interfaces/token_interface';
 
-const nativeTokenDecimals = 4;
+export const nativeTokenDecimals = 4;
 
 export function parseTokenResult(result: Array<VideoTokenResult>): Array<VideoToken> {
   const parsedResult: Array<VideoToken> = [];
@@ -25,8 +25,9 @@ export function parseTokenResult(result: Array<VideoTokenResult>): Array<VideoTo
 export function parseOffers(result: Array<VideoTokenOffer>): Array<OffersByToken> {
   const offerMap = new Map<string, OffersByToken>();
   for (let entry of result) {
-    if (offerMap.has(entry.token)) {
-      const existingOffers = offerMap.get(entry.token);
+    const tokenAsString = entry.token.toString();
+    if (offerMap.has(tokenAsString)) {
+      const existingOffers = offerMap.get(tokenAsString);
       if (existingOffers.minPrice > entry.pricePerShare) {
         existingOffers.minPrice = entry.pricePerShare;
       }
@@ -35,7 +36,7 @@ export function parseOffers(result: Array<VideoTokenOffer>): Array<OffersByToken
       }
       existingOffers.offeredAmount += entry.shareAmount;
       existingOffers.offers.push(entry);
-      offerMap.set(entry.token, existingOffers);
+      offerMap.set(tokenAsString, existingOffers);
     } else {
       const newTokenOffers: OffersByToken = {
         minPrice: entry.pricePerShare,
@@ -46,7 +47,7 @@ export function parseOffers(result: Array<VideoTokenOffer>): Array<OffersByToken
         canisterId: entry.canisterId,
         storageCanisterId: entry.storageCanisterId,
       };
-      offerMap.set(entry.token, newTokenOffers);
+      offerMap.set(tokenAsString, newTokenOffers);
     }
   }
   const parsedResult: Array<OffersByToken> = [];
@@ -64,4 +65,9 @@ export function removeDecimalPlace(amount: number) {
 
 export function addDecimalPlace(amount: number) {
   return amount / Math.pow(10, nativeTokenDecimals);
+}
+
+export function countDecimals(value: number): number {
+  if (value % 1 != 0) return value.toString().split('.')[1].length;
+  return 0;
 }

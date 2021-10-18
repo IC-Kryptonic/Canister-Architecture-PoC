@@ -9,6 +9,8 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { createShareOffer } from '../../services/token_services';
 import { AuthContext } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
+import { countDecimals, nativeTokenDecimals } from '../../utils/tokens';
+import { parseToDollar } from '../../utils/currency';
 
 interface SelectOption {
   value: string;
@@ -89,6 +91,17 @@ const MarketplaceSell = () => {
     }
   };
 
+  const onPriceChange = (value: string) => {
+    if (value === '') {
+      setPrice(null);
+      return;
+    }
+    let newPrice = parseFloat(value);
+    if (countDecimals(newPrice) <= nativeTokenDecimals) {
+      setPrice(newPrice);
+    }
+  };
+
   const buttonEnabled = () => {
     return selectedToken && selectedAmount && price > 0 && !loading;
   };
@@ -165,9 +178,9 @@ const MarketplaceSell = () => {
                 <Grid item xs={6}>
                   <input
                     value={price || ''}
-                    onChange={(event) => setPrice(parseFloat(event.target.value))}
+                    onChange={(event) => onPriceChange(event.target.value)}
                     type="number"
-                    placeholder="Price per share"
+                    placeholder="Price per share [ICP]"
                     style={{
                       width: '100%',
                       marginTop: 5,
@@ -181,7 +194,9 @@ const MarketplaceSell = () => {
                     }}
                   />
                 </Grid>
-                <Grid item>Current average: 1,32 ICP</Grid>
+                <Grid item>
+                  <p style={{ fontSize: 16 }}>{`$ ${parseToDollar(price)}`}</p>
+                </Grid>
               </Grid>
               <Grid container item xs={12} justify="center">
                 <Button

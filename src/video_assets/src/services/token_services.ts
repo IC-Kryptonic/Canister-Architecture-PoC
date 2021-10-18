@@ -26,6 +26,10 @@ type BigIntResult = {
   ok: BigInt;
 };
 
+type EmptyResult = {
+  ok: null;
+};
+
 export const createToken = async (
   identity: Identity,
   video: Principal,
@@ -125,14 +129,19 @@ export const createShareOffer = async (
   // allow dex to transfer the token on video token canister
   await tokenActor.approve(identityPrincipal, dexPrincipal, amount);
   // create offer on dex canister
-  await dexActor.createOffer(
+  const result = (await dexActor.createOffer(
     identityPrincipal,
     canisterId,
     tokenName,
     priceWithoutDecimalPlace,
     amount,
     storageCanisterId
-  );
+  )) as EmptyResult;
+  if ('ok' in result) {
+    return;
+  } else {
+    throw new Error(JSON.stringify(result));
+  }
 };
 
 export const realizeExchange = async (
@@ -155,16 +164,20 @@ export const realizeExchange = async (
     amount * removeDecimalPlace(parseFloat(offer.pricePerShare.toString()))
   );
   // realize exchanges on dex canister for each offer
-  await dexActor.realizeExchange(
+  const result = (await dexActor.realizeExchange(
     identityPrincipal,
     offer.from,
     offer.canisterId,
     offer.pricePerShare,
     amount
-  );
-  // change ownership
-  await tokenBackend.changeOwnership(offer.from, offer.canisterId, -amount);
-  await tokenBackend.changeOwnership(identityPrincipal, offer.canisterId, amount);
+  )) as EmptyResult;
+  if ('ok' in result) {
+    // change ownership
+    await tokenBackend.changeOwnership(offer.from, offer.canisterId, -amount);
+    await tokenBackend.changeOwnership(identityPrincipal, offer.canisterId, amount);
+  } else {
+    throw new Error(JSON.stringify(result));
+  }
 };
 
 export const getAllOffers = async (identity: Identity): Promise<VideoTokenOffer[]> => {

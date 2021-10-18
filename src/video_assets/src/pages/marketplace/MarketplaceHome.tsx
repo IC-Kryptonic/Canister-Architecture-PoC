@@ -9,6 +9,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import globe from '../../assets/images/globe.svg';
 import money from '../../assets/images/money.svg';
 import eye from '../../assets/images/eye.svg';
+import CurrencySwitch from '../../components/CurrencySwitch';
 
 const MarketplaceHome = () => {
   const { tokenOffers, offersLoading } = useContext(TokenContext);
@@ -16,73 +17,80 @@ const MarketplaceHome = () => {
 
   return (
     <Layout title={'Dashboard'} marginTop={20} marketplaceHeader>
-      <Grid container justify="center">
-        <Grid container justify="center" spacing={2} className={classes.cards}>
-          <Grid item>
-            <MarketplaceStatCard
-              title="Market Capitalization"
-              value="$ 19,096,067,431.85"
-              img={globe}
-            />
-          </Grid>
-          <Grid item>
-            <MarketplaceStatCard title="Total Views (last week)" value="13,464,434" img={eye} />
-          </Grid>
-          <Grid item>
-            <MarketplaceStatCard
-              title="Payed Revenue (last week)"
-              value="$ 1,204,402"
-              img={money}
-            />
-          </Grid>
-        </Grid>
-      </Grid>
-      {!offersLoading && tokenOffers.length === 0 ? (
-        <Grid container justify="center" style={{ marginTop: 50 }}>
-          No offers on the market.
-        </Grid>
-      ) : (
+      <Grid container>
         <Grid container justify="center">
-          <Grid container className={classes.table}>
-            {/* table header */}
-            <Grid container>
-              <Grid item className={classes.videoCell}>
-                Video
-              </Grid>
-              <Grid item className={classes.tableCell}>
-                Market Cap.
-              </Grid>
-              <Grid item className={classes.tableCell}>
-                Share Price <p>[min - max, ICP]</p>
-              </Grid>
-              <Grid item className={classes.tableCell}>
-                Offered shares
-              </Grid>
-              <Grid item className={classes.tableCell}>
-                Revenues <p>last week</p>
-              </Grid>
-              <Grid item className={classes.tableCell}>
-                Price change <p>last week</p>
-              </Grid>
-              <Grid item className={classes.buttonCell}></Grid>
+          <Grid container justify="center" spacing={2} className={classes.cards}>
+            <Grid item>
+              <MarketplaceStatCard
+                title="Market Capitalization"
+                value="$ 19,096,067,431.85"
+                img={globe}
+              />
             </Grid>
-          </Grid>
-          {/* table content */}
-          {offersLoading && (
-            <Grid container justify="center">
-              <CircularProgress style={{ marginTop: 30 }} />
+            <Grid item>
+              <MarketplaceStatCard title="Total Views (last week)" value="13,464,434" img={eye} />
             </Grid>
-          )}
-          <Grid container></Grid>
-          <Grid container className={classes.tableContent}>
-            {tokenOffers.map((offersByToken: OffersByToken) => {
-              return (
-                <MarketplaceCardRow offersByToken={offersByToken} key={offersByToken.tokenName} />
-              );
-            })}
+            <Grid item>
+              <MarketplaceStatCard
+                title="Payed Revenue (last week)"
+                value="$ 1,204,402"
+                img={money}
+              />
+            </Grid>
           </Grid>
         </Grid>
-      )}
+        <Grid container justify="center">
+          <Grid container style={{ maxWidth: 980, marginTop: 30 }}>
+            <CurrencySwitch />
+          </Grid>
+        </Grid>
+        {!offersLoading && tokenOffers.length === 0 ? (
+          <Grid container justify="center" style={{ marginTop: 10 }}>
+            No offers on the market.
+          </Grid>
+        ) : (
+          <Grid container justify="center">
+            <Grid container className={classes.table}>
+              {/* table header */}
+              <Grid container>
+                <Grid item className={classes.videoCell}>
+                  Video
+                </Grid>
+                <Grid item className={classes.tableCell}>
+                  Market Cap.
+                </Grid>
+                <Grid item className={classes.tableCell}>
+                  Share Price <p>[min - max]</p>
+                </Grid>
+                <Grid item className={classes.tableCell}>
+                  Offered shares
+                </Grid>
+                <Grid item className={classes.tableCell}>
+                  Revenues <p>last week</p>
+                </Grid>
+                <Grid item className={classes.tableCell}>
+                  Price change <p>last week</p>
+                </Grid>
+                <Grid item className={classes.buttonCell}></Grid>
+              </Grid>
+            </Grid>
+            {/* table content */}
+            {offersLoading && (
+              <Grid container justify="center">
+                <CircularProgress style={{ marginTop: 30 }} />
+              </Grid>
+            )}
+            <Grid container></Grid>
+            <Grid container className={classes.tableContent}>
+              {tokenOffers.map((offersByToken: OffersByToken) => {
+                return (
+                  <MarketplaceCardRow offersByToken={offersByToken} key={offersByToken.tokenName} />
+                );
+              })}
+            </Grid>
+          </Grid>
+        )}
+      </Grid>
     </Layout>
   );
 };

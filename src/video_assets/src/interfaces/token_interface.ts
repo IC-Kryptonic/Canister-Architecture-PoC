@@ -1,3 +1,5 @@
+import { Principal } from '@dfinity/principal';
+
 export interface VideoToken {
   canisterId: string;
   storageCanisterId: string;
@@ -25,7 +27,7 @@ export interface VideoTokenResult {
 
 export interface VideoTokenOffer {
   from: string;
-  token: string;
+  token: Principal;
   tokenName: string;
   canisterId: string;
   storageCanisterId: string;

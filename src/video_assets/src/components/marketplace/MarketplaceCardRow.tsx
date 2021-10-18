@@ -1,8 +1,9 @@
-import { Paper, Grid, Button, CircularProgress } from '@material-ui/core';
+import { Paper, Grid, Button } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { TokenContext } from '../../contexts/TokenContext';
 import { OffersByToken } from '../../interfaces/token_interface';
 import { marketplaceHomeStyles } from '../../styles/marketplace/marketplace_home_styles';
+import { parseToDollar } from '../../utils/currency';
 import history from '../History';
 
 interface MarketplaceCardProps {
@@ -10,9 +11,8 @@ interface MarketplaceCardProps {
 }
 
 const MarketplaceCardRow = (props: MarketplaceCardProps) => {
+  const { showValuesInIcp } = useContext(TokenContext);
   const classes = marketplaceHomeStyles();
-  const { videoMap } = useContext(TokenContext);
-  const video = videoMap.map.get(props.offersByToken.storageCanisterId);
 
   return (
     <Paper style={{ width: '100%', paddingTop: 15, paddingBottom: 15, marginBottom: 10 }}>
@@ -21,19 +21,22 @@ const MarketplaceCardRow = (props: MarketplaceCardProps) => {
           {props.offersByToken.tokenName}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {'$ 253,343'}
+          {showValuesInIcp ? 2 : `$ ${parseToDollar(2)}`}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {props.offersByToken.minPrice + ' - ' + props.offersByToken.maxPrice}
+          {showValuesInIcp
+            ? props.offersByToken.minPrice + ' - ' + props.offersByToken.maxPrice
+            : `$ ${parseToDollar(props.offersByToken.minPrice)} -
+                ${parseToDollar(props.offersByToken.maxPrice)}`}
         </Grid>
         <Grid item className={classes.tableCell}>
           {`${props.offersByToken.offeredAmount}`}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {'$ 50,000'}
+          {showValuesInIcp ? 5 : `$ ${parseToDollar(5)}`}
         </Grid>
         <Grid item className={classes.tableCell}>
-          {'$ 7043'}
+          {showValuesInIcp ? 7 : `$ ${parseToDollar(7)}`}
         </Grid>
         <Grid item className={classes.buttonCell}>
           <Grid container justify="center" spacing={1}>
