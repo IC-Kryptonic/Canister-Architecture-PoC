@@ -56,6 +56,7 @@ export function parseOffers(result: Array<VideoTokenOffer>): Array<OffersByToken
     entry[1].minPrice = addDecimalPlace(Number(entry[1].minPrice));
     parsedResult.push(entry[1]);
   }
+  parsedResult.sort((a, b) => (a.tokenName > b.tokenName ? 1 : b.tokenName > a.tokenName ? -1 : 0));
   return parsedResult;
 }
 

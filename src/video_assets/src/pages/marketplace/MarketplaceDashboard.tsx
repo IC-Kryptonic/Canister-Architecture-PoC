@@ -25,13 +25,23 @@ const MarketplaceDashboard = () => {
         <Grid container justify="center">
           <Grid container justify="center" spacing={2} className={classes.cards}>
             <Grid item>
-              <MarketplaceStatCard title="Transactions" value="23" img={globe} />
+              <MarketplaceStatCard title="Transactions" value="23" img={globe} footer="+ 50%" />
             </Grid>
             <Grid item>
-              <MarketplaceStatCard title="Total Views (last week)" value="64,434" img={eye} />
+              <MarketplaceStatCard
+                title="Total Views (last week)"
+                value="64,434"
+                img={eye}
+                footer="+ 12.2%"
+              />
             </Grid>
             <Grid item>
-              <MarketplaceStatCard title="Payed Revenue (last week)" value="$ 4,102" img={money} />
+              <MarketplaceStatCard
+                title="Payed Revenue (last week)"
+                value="$ 4,102"
+                img={money}
+                footer="+ 9.5%"
+              />
             </Grid>
           </Grid>
         </Grid>
@@ -50,7 +60,7 @@ const MarketplaceDashboard = () => {
             className={classes.cards}
             style={{ paddingLeft: 80 }}
           >
-            {videoTokensForCreator.map((videoToken: VideoToken) => {
+            {videoTokensForCreator.map((videoToken: VideoToken, index: number) => {
               let video = videoMap.map.get(videoToken.storageCanisterId);
               return (
                 <React.Fragment key={videoToken.canisterId}>
@@ -108,7 +118,7 @@ const MarketplaceDashboard = () => {
                     </Grid>
                     <Grid item style={{ width: 500, height: 290 }}>
                       <div style={{ paddingTop: 86 }}>
-                        <MarketplaceTable />
+                        <MarketplaceTable index={index} />
                       </div>
                     </Grid>
                   </Grid>
