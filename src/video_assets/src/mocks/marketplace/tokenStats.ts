@@ -71,5 +71,15 @@ tokenStats.set("World's smallest cat 🐈- BBC", {
   revenueLastWeek: 3.7,
   priceChangeLastWeek: '- 8.2%',
 });
+tokenStats.set('Encounter Noble Pokémon in Pokémon Legends: Arceus!', {
+  marketCap: 14,
+  revenueLastWeek: 3.2,
+  priceChangeLastWeek: '+ 4.2%',
+});
+tokenStats.set("Kid Cudi - Day 'N' Nite", {
+  marketCap: 28,
+  revenueLastWeek: 2.8,
+  priceChangeLastWeek: '+ 5.1%',
+});
 
 export { tokenStats };
