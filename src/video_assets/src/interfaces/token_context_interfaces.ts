@@ -16,5 +16,7 @@ export interface TokenContextProperties {
   setNativeTokenBalance: (input: number) => void;
   setBalanceTrigger: (input: boolean) => void;
   setTokenTrigger: (input: boolean) => void;
+  showValuesInIcp: boolean;
+  setShowValuesInIcp: (input: boolean) => void;
   videoMap: VideoMap;
 }

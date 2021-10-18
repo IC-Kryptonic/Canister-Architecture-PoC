@@ -25,6 +25,7 @@ const TokenContextState = (props: TokenContextStateProps) => {
   const [tokenTrigger, setTokenTrigger] = useState<boolean>(true);
   const [nativeTokenBalance, setNativeTokenBalance] = useState<null | Number>(null);
   const [balanceTrigger, setBalanceTrigger] = useState<boolean>(true);
+  const [showValuesInIcp, setShowValuesInIcp] = useState<boolean>(true);
   const [videoMap, setVideoMap] = useState<VideoMap>({
     timestamp: '',
     map: new Map<string, string>(),
@@ -84,7 +85,7 @@ const TokenContextState = (props: TokenContextStateProps) => {
         }
         try {
           const videoPrincipal = Principal.fromText(storageId);
-          const loadedVideoInfo = (await loadVideoPost(identity, videoPrincipal));
+          const loadedVideoInfo = await loadVideoPost(identity, videoPrincipal);
           const loadedVideo = await loadVideo(identity, loadedVideoInfo);
           videoMap.map.set(storageId, loadedVideo);
           // required to trigger state event handlers
@@ -117,6 +118,8 @@ const TokenContextState = (props: TokenContextStateProps) => {
         nativeTokenBalance,
         setNativeTokenBalance,
         videoMap,
+        showValuesInIcp,
+        setShowValuesInIcp,
       }}
     >
       {props.children}

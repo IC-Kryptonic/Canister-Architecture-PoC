@@ -14,5 +14,7 @@ export const TokenContext = createContext<TokenContextProperties>({
   setNativeTokenBalance: () => {},
   setBalanceTrigger: () => {},
   setTokenTrigger: () => {},
+  showValuesInIcp: false,
+  setShowValuesInIcp: () => {},
   videoMap: { timestamp: '', map: new Map() },
 });
