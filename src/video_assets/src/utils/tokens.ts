@@ -1,3 +1,4 @@
+import { Identity } from '@dfinity/agent';
 import {
   OffersByToken,
   VideoToken,
@@ -22,9 +23,16 @@ export function parseTokenResult(result: Array<VideoTokenResult>): Array<VideoTo
   return parsedResult;
 }
 
-export function parseOffers(result: Array<VideoTokenOffer>): Array<OffersByToken> {
+export function parseOffers(
+  result: Array<VideoTokenOffer>,
+  identity: Identity
+): Array<OffersByToken> {
   const offerMap = new Map<string, OffersByToken>();
+  const caller = identity.getPrincipal().toString();
   for (let entry of result) {
+    const offerer = entry.from.toString();
+    // ignore offers from caller
+    if (offerer === caller) continue;
     const tokenAsString = entry.token.toString();
     if (offerMap.has(tokenAsString)) {
       const existingOffers = offerMap.get(tokenAsString);

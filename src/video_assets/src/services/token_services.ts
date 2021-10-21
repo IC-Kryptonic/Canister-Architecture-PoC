@@ -188,7 +188,7 @@ export const getAllOffers = async (identity: Identity): Promise<VideoTokenOffer[
 export const getAllOffersByToken = async (identity: Identity): Promise<OffersByToken[]> => {
   const dexActor = await getDexActor(identity);
   const result = (await dexActor.getAllOffers()) as Array<VideoTokenOffer>;
-  return parseOffers(result);
+  return parseOffers(result, identity);
 };
 
 export async function getAllTokens(identity: Identity): Promise<Array<VideoToken>> {

@@ -26,7 +26,7 @@ export interface VideoTokenResult {
 }
 
 export interface VideoTokenOffer {
-  from: string;
+  from: Principal;
   token: Principal;
   tokenName: string;
   canisterId: string;
