@@ -1,6 +1,5 @@
-import { Button, CircularProgress, Grid, Input, InputAdornment, Paper } from '@material-ui/core';
+import { Button, CircularProgress, Grid, Paper } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
-import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import Layout from '../../components/shared/Layout';
 import { OffersByToken } from '../../interfaces/token_interface';
 import Select from 'react-select';
@@ -10,6 +9,7 @@ import { realizeExchange } from '../../services/token_services';
 import { AuthContext } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import { parseToDollar } from '../../utils/currency';
+import { useMarketplaceBuyStyles } from '../../styles/marketplace/marketplace_buy_styles';
 
 interface SelectOption {
   value: string;
@@ -29,6 +29,7 @@ function findId(id: string | null, tokens: Array<OffersByToken>): OffersByToken 
 }
 
 const MarketplaceBuy = () => {
+  const classes = useMarketplaceBuyStyles();
   const { tokenOffers, setTokenTrigger, setBalanceTrigger, nativeTokenBalance } =
     useContext(TokenContext);
   const { identity } = useContext(AuthContext);
@@ -95,21 +96,16 @@ const MarketplaceBuy = () => {
 
   return (
     <Layout title={'Dashboard'} marginTop={20} marketplaceHeader>
-      <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
+      <Grid container justify="center" className={classes.title}>
         Buy
       </Grid>
-      <Grid container justify="center" style={{ marginTop: 10 }}>
+      <Grid container justify="center" className={classes.outerContainer}>
         <Grid container spacing={2} justify="center" alignItems="center">
-          <Grid
-            container
-            item
-            justify="center"
-            style={{ marginBottom: 30, fontWeight: 300, fontSize: 22, color: 'grey' }}
-          >
+          <Grid container item justify="center" className={classes.subtitle}>
             Acquire video share tokens
           </Grid>
-          <Paper style={{ padding: 30 }}>
-            <Grid container item style={{ width: 500 }} spacing={2}>
+          <Paper className={classes.paper}>
+            <Grid container item className={classes.paperContainer} spacing={2}>
               <Grid item xs={12}>
                 {offersByToken?.tokenName}
               </Grid>
@@ -130,28 +126,18 @@ const MarketplaceBuy = () => {
                     disabled
                     type="string"
                     placeholder="Price per share"
-                    style={{
-                      width: '100%',
-                      marginTop: 5,
-                      fontSize: 'inherit',
-                      fontFamily: 'inherit',
-                      fontWeight: 'inherit',
-                      borderRadius: 4,
-                      borderColor: 'rgb(204, 204, 204)',
-                      padding: 5,
-                      height: 41.5,
-                    }}
+                    className={classes.priceInput}
                   />
                 </Grid>
                 <Grid item>
-                  <p style={{ fontSize: 16 }}>{`$ ${parseToDollar(price)}`}</p>
+                  <p className={classes.priceInDollar}>{`$ ${parseToDollar(price)}`}</p>
                 </Grid>
               </Grid>
               <Grid container item xs={12} justify="center">
                 <Button
                   variant="contained"
                   color="primary"
-                  style={{ width: 150 }}
+                  className={classes.button}
                   disabled={!buttonEnabled()}
                   onClick={() => buyShares()}
                 >
