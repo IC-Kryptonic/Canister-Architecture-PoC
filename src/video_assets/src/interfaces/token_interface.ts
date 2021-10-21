@@ -45,3 +45,17 @@ export interface OffersByToken {
   offeredAmount: number;
   offers: Array<VideoTokenOffer>;
 }
+
+export interface ExchangeRequest {
+  currentTokenHolder: Principal;
+  pricePerShare: number;
+  offerShareAmount: number;
+  exchangeShareAmount: number;
+}
+
+export interface ExchangeInput {
+  caller: Principal;
+  tokenId: string;
+  totalPrice: number;
+  requestedExchanges: Array<ExchangeRequest>;
+}

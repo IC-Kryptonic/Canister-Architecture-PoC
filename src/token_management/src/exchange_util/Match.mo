@@ -6,8 +6,9 @@ module Match {
   type TokenActor = Types.TokenActor;
 
   public func findMatchingOffer(
-    offerMap: ExchangeMap, owner: Principal, token: TokenActor, pricePerShare: Nat, shareAmount: Nat
+    offerMap: ExchangeMap, owner: Principal, token: TokenActor, pricePerShare: Nat, offerAmount: Nat, shareAmount: Nat
   ): ?(Nat, Exchange) {
+    if(shareAmount > offerAmount) return null;
     let offers = offerMap.get(owner);
     switch(offers) {
       case null {
@@ -19,7 +20,7 @@ module Match {
           if(
             offer.1.token == token and 
             offer.1.pricePerShare == pricePerShare and
-            offer.1.shareAmount >= shareAmount
+            offer.1.shareAmount == offerAmount
           ) {
             return ?(offer.0, offer.1);
           };

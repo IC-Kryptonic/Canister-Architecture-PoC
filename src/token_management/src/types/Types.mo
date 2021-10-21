@@ -68,6 +68,19 @@ module Types {
     metadata: Text;
   };
 
+  public type ExchangeRequest = {
+    currentTokenHolder: Principal;
+    pricePerShare: Nat;
+    offerShareAmount: Nat;
+    exchangeShareAmount: Nat;
+  };
+
+  public type ExchangeInput = {
+    caller: Principal;
+    tokenId: Text;
+    requestedExchanges: [ExchangeRequest];
+  };
+
   public type StorageActor = actor {
       set_owner: (token: Principal) -> async ();
     };

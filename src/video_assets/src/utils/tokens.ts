@@ -1,5 +1,6 @@
 import { Identity } from '@dfinity/agent';
 import {
+  ExchangeInput,
   OffersByToken,
   VideoToken,
   VideoTokenOffer,
@@ -30,6 +31,7 @@ export function parseOffers(
   const offerMap = new Map<string, OffersByToken>();
   const caller = identity.getPrincipal().toString();
   for (let entry of result) {
+    entry = parseBigInts(entry);
     const offerer = entry.from.toString();
     // ignore offers from caller
     if (offerer === caller) continue;
@@ -44,6 +46,9 @@ export function parseOffers(
       }
       existingOffers.offeredAmount += entry.shareAmount;
       existingOffers.offers.push(entry);
+      existingOffers.offers.sort((a, b) =>
+        a.pricePerShare > b.pricePerShare ? 1 : b.pricePerShare > a.pricePerShare ? -1 : 0
+      );
       offerMap.set(tokenAsString, existingOffers);
     } else {
       const newTokenOffers: OffersByToken = {
@@ -68,6 +73,12 @@ export function parseOffers(
   return parsedResult;
 }
 
+function parseBigInts(entry: VideoTokenOffer): VideoTokenOffer {
+  entry.pricePerShare = Number(entry.pricePerShare);
+  entry.shareAmount = Number(entry.shareAmount);
+  return entry;
+}
+
 export function removeDecimalPlace(amount: number) {
   return amount * Math.pow(10, nativeTokenDecimals);
 }
@@ -79,4 +90,46 @@ export function addDecimalPlace(amount: number) {
 export function countDecimals(value: number): number {
   if (value % 1 != 0) return value.toString().split('.')[1].length;
   return 0;
+}
+
+// function expects offers param to be ordered by price
+export function selectOffers(
+  identity: Identity,
+  offersByToken: OffersByToken,
+  amount: number
+): ExchangeInput {
+  let totalPrice = 0;
+  let curAmount = 0;
+  const caller = identity.getPrincipal();
+  const exchangeInput: ExchangeInput = {
+    totalPrice,
+    caller,
+    tokenId: offersByToken.canisterId,
+    requestedExchanges: [],
+  };
+
+  for (let offer of offersByToken.offers) {
+    let missingAmount = amount - curAmount;
+    if (missingAmount > offer.shareAmount) {
+      exchangeInput.requestedExchanges.push({
+        currentTokenHolder: offer.from,
+        pricePerShare: offer.pricePerShare,
+        offerShareAmount: offer.shareAmount,
+        exchangeShareAmount: offer.shareAmount,
+      });
+      totalPrice += offer.pricePerShare * offer.shareAmount;
+      curAmount += offer.shareAmount;
+    } else if (missingAmount <= offer.shareAmount) {
+      exchangeInput.requestedExchanges.push({
+        currentTokenHolder: offer.from,
+        pricePerShare: offer.pricePerShare,
+        offerShareAmount: offer.shareAmount,
+        exchangeShareAmount: missingAmount,
+      });
+      totalPrice += offer.pricePerShare * missingAmount;
+      exchangeInput.totalPrice = addDecimalPlace(totalPrice);
+      return exchangeInput;
+    }
+  }
+  throw new Error('Error finding fitting offers for requested token amount');
 }
