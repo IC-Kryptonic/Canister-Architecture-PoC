@@ -10,6 +10,8 @@ import {AdMeta} from "../../../../.dfx/local/canisters/ad_manager/ad_manager.did
 import {Identity} from "@dfinity/agent";
 import {getAdManagerActor, getNativeTokenActor, getVideoCanisterActor} from "../utils/actors";
 
+import canisterIds from '../../../../.dfx/local/canister_ids.json';
+
 
 async function createAd(identity: Identity, post: CreateAdPost){
   let created_principal = await uploadVideo(identity, post, false, (current: number, total: number) => {});
@@ -24,7 +26,9 @@ async function createAd(identity: Identity, post: CreateAdPost){
   const tokenActor = await getNativeTokenActor(identity);
   const adManager = await getAdManagerActor(identity);
 
-  await tokenActor.approve(identity.getPrincipal(), adManager, adMeta.allowance);
+  let adManagerPrincipal = Principal.fromText(canisterIds.ad_manager.local);
+
+  await tokenActor.approve(identity.getPrincipal(), adManagerPrincipal, adMeta.allowance);
 
   await adManager.add_ad(adMeta);
 }
