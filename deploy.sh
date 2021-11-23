@@ -1,7 +1,10 @@
 # Requires a cloned version of https://github.com/dfinity/internet-identity
 export IDENTITY_PATH=../internet-identity
 
-# # Update identity
+# Requires the stoic-wallet-kryptonic-fork repo https://gitlab.lrz.de/tum-nft/video_nft
+export WALLET_PATH=../stoic-wallet-kryptonic-fork
+
+# Update identity
 pushd $IDENTITY_PATH
 git clean -df # we assume we make no changes to internet identity repo
 git checkout -- . # so we discard any changes, e.g package-lock.json
@@ -30,6 +33,25 @@ echo $IDENTITY_CANISTER_ID > .env
 # Deploy local canisters
 dfx deploy native_token
 dfx deploy token_management
+
+export NATIVE_TOKEN_CANISTER_ID=NATIVE_TOKEN_ID\=http://localhost:8000?canisterId=$(dfx canister id native_token)
+export TOKEN_MANAGEMENT_CANISTER_ID=TOKEN_MANAGEMENT_ID\=http://localhost:8000?canisterId=$(dfx canister id token_management)
+
+# Deploy video wallet
+pushd $WALLET_PATH
+rm -rf .dfx
+
+# Add canister ids
+echo "# Autoinserted token ids" > .env
+echo $NATIVE_TOKEN_CANISTER_ID >> .env
+echo $TOKEN_MANAGEMENT_CANISTER_ID >> .env
+
+dfx deploy video_wallet_assets
+export WALLET_CANISTER_ID=WALLET_ID\=http://localhost:8000?canisterId=$(dfx canister id video_wallet_assets)
+popd
+
+# Update env file
+echo $WALLET_CANISTER_ID >> .env
 
 export TOKEN_MANAGER_CANISTER_ID=$(dfx canister id token_management)
 dfx canister create video_canister
