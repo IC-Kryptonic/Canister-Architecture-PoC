@@ -13,6 +13,11 @@ git checkout c4296058c5ac61bb50c9dd84300f5ad1ed22f5fe
 npm install
 popd
 
+# Stoic wallet fork
+pushd $WALLET_PATH
+npm install
+popd
+
 # Update current repository
 git checkout package-lock.json
 git pull

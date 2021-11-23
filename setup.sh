@@ -6,6 +6,11 @@ pushd ..
 git clone https://github.com/dfinity/internet-identity
 popd
 
+# Clone stoic wallet fork
+pushd ..
+git clone https://gitlab.lrz.de/ga92joj/stoic-wallet-kryptonic-fork.git
+popd
+
 # Install rust
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 
