@@ -2,6 +2,7 @@ import { Actor, Identity } from '@dfinity/agent';
 import { Principal } from '@dfinity/principal';
 import { idlFactory as nativeTokenIdl } from 'dfx-generated/native_token';
 import {
+  ExchangeInput,
   OffersByToken,
   VideoToken,
   VideoTokenOffer,
@@ -144,37 +145,37 @@ export const createShareOffer = async (
   }
 };
 
-export const realizeExchange = async (
-  identity: Identity,
-  offers: Array<VideoTokenOffer>,
-  amount: number
-) => {
+export const realizeExchange = async (identity: Identity, exchangeInput: ExchangeInput) => {
   const dexActor = await getDexActor(identity);
   const nativeTokenActor = await getNativeTokenActor(identity);
   const tokenBackend = await getTokenManagementActor(identity);
   const dexPrincipal = Principal.fromText(canisterIds.dex.local);
   const identityPrincipal = identity.getPrincipal();
 
-  // TODO determine which offers must be realized
-  let offer = offers[0];
-  // allow dex to transfer the token on video token canister
-  await nativeTokenActor.approve(
-    identityPrincipal,
-    dexPrincipal,
-    amount * removeDecimalPlace(parseFloat(offer.pricePerShare.toString()))
-  );
+  // parse total price
+  const totalPrice = removeDecimalPlace(exchangeInput.totalPrice);
+  // allow dex to transfer the total price in native tokens
+  await nativeTokenActor.approve(identityPrincipal, dexPrincipal, totalPrice);
   // realize exchanges on dex canister for each offer
-  const result = (await dexActor.realizeExchange(
-    identityPrincipal,
-    offer.from,
-    offer.canisterId,
-    offer.pricePerShare,
-    amount
-  )) as EmptyResult;
+  const result = (await dexActor.realizeExchange({
+    caller: exchangeInput.caller,
+    tokenId: exchangeInput.tokenId,
+    requestedExchanges: exchangeInput.requestedExchanges,
+  })) as EmptyResult;
   if ('ok' in result) {
-    // change ownership
-    await tokenBackend.changeOwnership(offer.from, offer.canisterId, -amount);
-    await tokenBackend.changeOwnership(identityPrincipal, offer.canisterId, amount);
+    // change token ownership data for marketplace dashboard
+    let totalAmount = 0;
+    // ownership data for each seller
+    for (let exchange of exchangeInput.requestedExchanges) {
+      await tokenBackend.changeOwnership(
+        exchange.currentTokenHolder,
+        exchangeInput.tokenId,
+        -exchange.exchangeShareAmount
+      );
+      totalAmount += exchange.exchangeShareAmount;
+    }
+    // ownership data for buyer
+    await tokenBackend.changeOwnership(identityPrincipal, exchangeInput.tokenId, totalAmount);
   } else {
     throw new Error(JSON.stringify(result));
   }
@@ -188,7 +189,7 @@ export const getAllOffers = async (identity: Identity): Promise<VideoTokenOffer[
 export const getAllOffersByToken = async (identity: Identity): Promise<OffersByToken[]> => {
   const dexActor = await getDexActor(identity);
   const result = (await dexActor.getAllOffers()) as Array<VideoTokenOffer>;
-  return parseOffers(result);
+  return parseOffers(result, identity);
 };
 
 export async function getAllTokens(identity: Identity): Promise<Array<VideoToken>> {

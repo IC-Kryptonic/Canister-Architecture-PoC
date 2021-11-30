@@ -1,8 +1,7 @@
-import { Button, CircularProgress, Grid, Input, InputAdornment, Paper } from '@material-ui/core';
+import { Button, CircularProgress, Grid, Paper } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
-import MarketplaceHeader from '../../components/marketplace/MarketplaceHeader';
 import Layout from '../../components/shared/Layout';
-import { OffersByToken } from '../../interfaces/token_interface';
+import { ExchangeInput, OffersByToken } from '../../interfaces/token_interface';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -10,6 +9,8 @@ import { realizeExchange } from '../../services/token_services';
 import { AuthContext } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import { parseToDollar } from '../../utils/currency';
+import { useMarketplaceBuyStyles } from '../../styles/marketplace/marketplace_buy_styles';
+import { selectOffers } from '../../utils/tokens';
 
 interface SelectOption {
   value: string;
@@ -29,6 +30,7 @@ function findId(id: string | null, tokens: Array<OffersByToken>): OffersByToken 
 }
 
 const MarketplaceBuy = () => {
+  const classes = useMarketplaceBuyStyles();
   const { tokenOffers, setTokenTrigger, setBalanceTrigger, nativeTokenBalance } =
     useContext(TokenContext);
   const { identity } = useContext(AuthContext);
@@ -36,7 +38,7 @@ const MarketplaceBuy = () => {
 
   const [offersByToken, setOffersByToken] = useState<OffersByToken>(findId(id, tokenOffers));
   const [selectedAmount, setSelectedAmount] = useState<SelectOption | null>(null);
-  const [price, setPrice] = useState<number | null>(null);
+  const [exchangeInput, setExchangeInput] = useState<ExchangeInput | null>(null);
   const [amountOptions, setAmountOptions] = useState<Array<SelectOption>>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -57,8 +59,16 @@ const MarketplaceBuy = () => {
     switch (action) {
       case 'select-option':
         setSelectedAmount(value);
-        // TODO actually calculate the total price
-        setPrice(parseInt(value.value) * parseFloat(offersByToken.minPrice.toString()));
+        try {
+          setExchangeInput(selectOffers(identity, offersByToken, parseInt(value.value)));
+        } catch (error) {
+          console.error('Error finding matching offers for desired token amount', error);
+          toast.error(`Error finding matching offers for desired token amount!`, {
+            position: 'bottom-left',
+            autoClose: 5000,
+            hideProgressBar: true,
+          });
+        }
         break;
       default:
         setSelectedAmount(null);
@@ -67,13 +77,15 @@ const MarketplaceBuy = () => {
   };
 
   const buttonEnabled = () => {
-    return selectedAmount && price > 0 && !loading && nativeTokenBalance >= price;
+    return (
+      !loading && selectedAmount && exchangeInput && nativeTokenBalance >= exchangeInput.totalPrice
+    );
   };
 
   const buyShares = async () => {
     try {
       setLoading(true);
-      await realizeExchange(identity, offersByToken.offers, parseInt(selectedAmount.value));
+      await realizeExchange(identity, exchangeInput);
       setBalanceTrigger(true);
       setTokenTrigger(true);
       toast.success(`Successfully purchased ${selectedAmount.value} share tokens`, {
@@ -95,21 +107,16 @@ const MarketplaceBuy = () => {
 
   return (
     <Layout title={'Dashboard'} marginTop={20} marketplaceHeader>
-      <Grid container justify="center" style={{ marginTop: 40, fontSize: 32 }}>
+      <Grid container justify="center" className={classes.title}>
         Buy
       </Grid>
-      <Grid container justify="center" style={{ marginTop: 10 }}>
+      <Grid container justify="center" className={classes.outerContainer}>
         <Grid container spacing={2} justify="center" alignItems="center">
-          <Grid
-            container
-            item
-            justify="center"
-            style={{ marginBottom: 30, fontWeight: 300, fontSize: 22, color: 'grey' }}
-          >
+          <Grid container item justify="center" className={classes.subtitle}>
             Acquire video share tokens
           </Grid>
-          <Paper style={{ padding: 30 }}>
-            <Grid container item style={{ width: 500 }} spacing={2}>
+          <Paper className={classes.paper}>
+            <Grid container item className={classes.paperContainer} spacing={2}>
               <Grid item xs={12}>
                 {offersByToken?.tokenName}
               </Grid>
@@ -126,32 +133,24 @@ const MarketplaceBuy = () => {
               <Grid container item xs={12} justify="space-between" alignItems="center">
                 <Grid item xs={6}>
                   <input
-                    value={price ? `${price} ICP` : ''}
+                    value={exchangeInput ? `${exchangeInput.totalPrice} ICP` : ''}
                     disabled
                     type="string"
                     placeholder="Price per share"
-                    style={{
-                      width: '100%',
-                      marginTop: 5,
-                      fontSize: 'inherit',
-                      fontFamily: 'inherit',
-                      fontWeight: 'inherit',
-                      borderRadius: 4,
-                      borderColor: 'rgb(204, 204, 204)',
-                      padding: 5,
-                      height: 41.5,
-                    }}
+                    className={classes.priceInput}
                   />
                 </Grid>
                 <Grid item>
-                  <p style={{ fontSize: 16 }}>{`$ ${parseToDollar(price)}`}</p>
+                  <p className={classes.priceInDollar}>{`$ ${
+                    exchangeInput ? parseToDollar(exchangeInput.totalPrice) : '0'
+                  }`}</p>
                 </Grid>
               </Grid>
               <Grid container item xs={12} justify="center">
                 <Button
                   variant="contained"
                   color="primary"
-                  style={{ width: 150 }}
+                  className={classes.button}
                   disabled={!buttonEnabled()}
                   onClick={() => buyShares()}
                 >

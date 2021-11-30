@@ -26,7 +26,7 @@ export interface VideoTokenResult {
 }
 
 export interface VideoTokenOffer {
-  from: string;
+  from: Principal;
   token: Principal;
   tokenName: string;
   canisterId: string;
@@ -44,4 +44,18 @@ export interface OffersByToken {
   maxPrice: number;
   offeredAmount: number;
   offers: Array<VideoTokenOffer>;
+}
+
+export interface ExchangeRequest {
+  currentTokenHolder: Principal;
+  pricePerShare: number;
+  offerShareAmount: number;
+  exchangeShareAmount: number;
+}
+
+export interface ExchangeInput {
+  caller: Principal;
+  tokenId: string;
+  totalPrice: number;
+  requestedExchanges: Array<ExchangeRequest>;
 }
