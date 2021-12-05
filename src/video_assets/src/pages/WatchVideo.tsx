@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import {
   Box,
@@ -40,8 +40,9 @@ import {
 import useQuery from '../utils/use_params';
 import { watchVideoStyles } from "../styles/watchvideo_styles";
 import { getLazyUserProfile } from "../services/profile_backend";
-import {AuthContext} from "../contexts/AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import history from '../components/History';
+import { loadRandomAdPost } from '../services/ad_manager';
 
 interface WatchVideoPathParam {
   id: string;
@@ -50,20 +51,17 @@ interface WatchVideoPathParam {
 const WatchVideo = () => {
   const { identity } = useContext(AuthContext);
 
-    const classes = watchVideoStyles();
-    const [post, setPost] = useState<VideoPost | null>(null);
-    const [videoNumber, setVideoNumber] = useState(0);
+  const classes = watchVideoStyles();
+  const [post, setPost] = useState<VideoPost | null>(null);
+  let { id }: WatchVideoPathParam = useParams();
 
   const [video, setVideo] = useState(null);
   const [profile, setProfile] = useState<LazyProfilePost | null>(null);
 
-  let { id }: WatchVideoPathParam = useParams();
-
-  // Extract query params
-  let query = useQuery();
-  if (query.get('id') && query.get('id') !== `${videoNumber}`) {
-    setVideoNumber(parseInt(query.get('id')));
-  }
+  // Keeps track of watched videos in order to play adds
+  const [watchedVideos, setWatchedVideos] = useState(1);
+  const addPlaybackRate = 3;
+  console.log("Currently played videos: " + watchedVideos);
 
   let history = useHistory();
 
@@ -113,15 +111,18 @@ const WatchVideo = () => {
 
   // Load next video in queue
   const loadNext = async (loadNext: boolean) => {
-    let videoToLoad = videoNumber;
-    if (loadNext) {
-      videoToLoad = videoToLoad - 1;
+    if(watchedVideos % addPlaybackRate == 0) {
+      // Play add
+      let post = await loadRandomAdPost(identity);
+      setPost(post);
     } else {
-      videoToLoad = videoToLoad + 1;
+      // TODO: Get a real random video call
+      let { post } = await getRandomNextVideoPost(identity, watchedVideos, 10);
+      history.push(`/video/${post.storageType.canister}`);
+      setPost(post);
     }
-    let { post, index } = await getRandomNextVideoPost(identity, videoToLoad, 10);
-    history.push(`/video/${post.storageType.canister}?id=${index}`);
-    setPost(post);
+    // increment watched videos
+    setWatchedVideos(watchedVideos + 1);
     // Null other attributes to cause a rerender
     setVideo(null);
     setProfile(null);
@@ -175,8 +176,8 @@ const VideoBox = ({ video }: VideoBoxProps) => {
       <source src={video} type="video/mp4" />
     </video>
   ) : (
-    <CircularProgress />
-  );
+      <CircularProgress />
+    );
 
   return (
     <Box

@@ -243,7 +243,7 @@ interface GetRandomNextVideoPostReturn {
 
 async function getRandomNextVideoPost(identity: Identity, videoId: number, sampleSize: number): Promise<GetRandomNextVideoPostReturn> {
   let posts = (await loadRandomFeed(identity, sampleSize));
-  let index = Math.abs(videoId % Math.min(sampleSize, posts.length));
+  let index = videoId % Math.min(sampleSize, posts.length);
   return {
     post: posts[index],
     index: index
