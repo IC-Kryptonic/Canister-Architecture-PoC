@@ -37,12 +37,11 @@ import {
   getVideoLikes,
   getVideoViews,
 } from '../services/videometadata_service';
-import useQuery from '../utils/use_params';
 import { watchVideoStyles } from "../styles/watchvideo_styles";
 import { getLazyUserProfile } from "../services/profile_backend";
 import { AuthContext } from "../contexts/AuthContext";
 import history from '../components/History';
-import { loadRandomAdPost } from '../services/ad_manager';
+import { loadRandomAdPost, watchedAd } from '../services/ad_manager';
 
 interface WatchVideoPathParam {
   id: string;
@@ -133,6 +132,8 @@ const WatchVideo = () => {
   };
 
   const adWatched = () => {
+    // TODO: Fix this call
+    // watchedAd(identity, post.owner, post.storageType.canister);
     loadNext(true);
   }
 
