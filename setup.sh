@@ -8,7 +8,7 @@ popd
 
 # Clone stoic wallet fork
 pushd ..
-git clone https://gitlab.lrz.de/ga92joj/stoic-wallet-kryptonic-fork.git
+git clone https://gitlab.lrz.de/ga92joj/stoic-wallet-kryptonic-fork.git stoic-wallet
 popd
 
 # Install rust
