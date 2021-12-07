@@ -2,7 +2,7 @@
 export IDENTITY_PATH=../internet-identity
 
 # Requires the stoic-wallet-kryptonic-fork repo https://gitlab.lrz.de/tum-nft/video_nft
-export WALLET_PATH=../stoic-wallet-kryptonic-fork
+export WALLET_PATH=../stoic-wallet
 
 # Update identity
 pushd $IDENTITY_PATH
