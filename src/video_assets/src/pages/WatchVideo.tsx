@@ -42,6 +42,7 @@ import { getLazyUserProfile } from "../services/profile_backend";
 import { AuthContext } from "../contexts/AuthContext";
 import history from '../components/History';
 import { loadRandomAdPost, watchedAd } from '../services/ad_manager';
+import { AdPost } from '../interfaces/ad_interface';
 
 interface WatchVideoPathParam {
   id: string;
@@ -58,6 +59,7 @@ const WatchVideo = () => {
 
   // Ad state variables
   const [isVideo, setIsVideo] = useState(true);
+  const [prevVideoPrincipal, setPrevVideoPrincipal] = useState<Principal | null>(null);
   const [watchedVideos, setWatchedVideos] = useState(1);
   const addPlaybackRate = 3;
   console.log("Currently played videos: " + watchedVideos);
@@ -117,6 +119,7 @@ const WatchVideo = () => {
     if (watchedVideos % addPlaybackRate == 0) {
       // Play add
       let post = await loadRandomAdPost(identity);
+      setPrevVideoPrincipal(post.storageType.canister);
       setIsVideo(false);
       setPost(post);
     } else {
@@ -133,7 +136,7 @@ const WatchVideo = () => {
 
   const adWatched = () => {
     // TODO: Fix this call
-    // watchedAd(identity, post.owner, post.storageType.canister);
+    watchedAd(identity, post.owner, prevVideoPrincipal);
     loadNext(true);
   }
 
