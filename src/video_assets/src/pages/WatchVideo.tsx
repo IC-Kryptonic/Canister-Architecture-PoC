@@ -196,10 +196,11 @@ const VideoBox = ({ video, isVideo, adWatched }: VideoBoxProps) => {
       <video controls autoPlay className={classes.videoPlayer}>
         <source src={video} type="video/mp4" />
       </video>
-    ) : (
-        <video autoPlay muted className={classes.videoPlayer} onEnded={adWatched}>
-          <source src={video} type="video/mp4" />
-        </video>
+    ) : (<>
+          <video autoPlay muted className={classes.dimmedVideoPlayer} onEnded={adWatched}>
+            <source src={video} type="video/mp4" />
+          </video>
+        </>
       )
   ) : (
       <CircularProgress />
