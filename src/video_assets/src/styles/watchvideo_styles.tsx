@@ -12,7 +12,6 @@ const watchVideoStyles = makeStyles({
         width: "75vh",
         height: "85vh",
         // border: "1px solid black",
-        backgroundColor: "#E9E6E6"
     },
     videoPlayer: {
         width: "75vh",
@@ -44,7 +43,13 @@ const watchVideoStyles = makeStyles({
     },
     fullWidth: {
         width: "100%"
-    }
+    },
+    dimmedVideoPlayer: {
+        width: "75vh",
+        height: "42vh",
+        boxShadow: "0 0 0 100vmax rgba(0, 0, 0, .3)",
+        pointerEvents: "none"
+    },
 });
 
 export { watchVideoStyles };

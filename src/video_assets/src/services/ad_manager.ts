@@ -42,7 +42,7 @@ async function watchedAd(identity: Identity, adPrincipal: Principal, videoPrinci
 async function loadRandomAdPost(identity: Identity): Promise<AdPost> {
   const adManager = await getAdManagerActor(identity);
 
-  let maybe_ad_principal = await adManager.getRandomAdPrincipal() as [Principal];
+  let maybe_ad_principal = await adManager.get_random_ad_principal() as [Principal];
   let ad_principal = maybe_ad_principal[0];
   if (ad_principal === undefined) {
     console.error("No ad uploaded yet")
@@ -72,7 +72,7 @@ async function loadAdVideo(identity: Identity, post: AdPost): Promise<string>{
 async function _loadAdPostFromCanister(identity: Identity, principal: Principal): Promise<AdPost>{
   const adActor = await getVideoCanisterActor(identity, principal);
 
-  let adInfo = await adActor.getInfo() as VideoInfo;
+  let adInfo = await adActor.get_info() as VideoInfo;
 
   let canisterStore = adInfo.storage_type as { 'canister' : [ChunkNum, [] | [Principal]] };
   let storage: CanisterStorage = {

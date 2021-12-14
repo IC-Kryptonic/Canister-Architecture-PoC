@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import {
   Box,
@@ -37,11 +37,12 @@ import {
   getVideoLikes,
   getVideoViews,
 } from '../services/videometadata_service';
-import useQuery from '../utils/use_params';
 import { watchVideoStyles } from "../styles/watchvideo_styles";
 import { getLazyUserProfile } from "../services/profile_backend";
-import {AuthContext} from "../contexts/AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import history from '../components/History';
+import { loadRandomAdPost, watchedAd } from '../services/ad_manager';
+import { AdPost } from '../interfaces/ad_interface';
 
 interface WatchVideoPathParam {
   id: string;
@@ -50,20 +51,20 @@ interface WatchVideoPathParam {
 const WatchVideo = () => {
   const { identity } = useContext(AuthContext);
 
-    const classes = watchVideoStyles();
-    const [post, setPost] = useState<VideoPost | null>(null);
-    const [videoNumber, setVideoNumber] = useState(0);
-
+  const classes = watchVideoStyles();
+  // General state variables
+  const [post, setPost] = useState<VideoPost | null>(null);
   const [video, setVideo] = useState(null);
   const [profile, setProfile] = useState<LazyProfilePost | null>(null);
 
-  let { id }: WatchVideoPathParam = useParams();
+  // Ad state variables
+  const [isVideo, setIsVideo] = useState(true);
+  const [prevVideoPrincipal, setPrevVideoPrincipal] = useState<Principal | null>(null);
+  const [watchedVideos, setWatchedVideos] = useState(1);
+  const addPlaybackRate = 3;
+  console.log("Currently played videos: " + watchedVideos);
 
-  // Extract query params
-  let query = useQuery();
-  if (query.get('id') && query.get('id') !== `${videoNumber}`) {
-    setVideoNumber(parseInt(query.get('id')));
-  }
+  let { id }: WatchVideoPathParam = useParams();
 
   let history = useHistory();
 
@@ -113,26 +114,38 @@ const WatchVideo = () => {
 
   // Load next video in queue
   const loadNext = async (loadNext: boolean) => {
-    let videoToLoad = videoNumber;
-    if (loadNext) {
-      videoToLoad = videoToLoad - 1;
+    // increment watched videos
+    setWatchedVideos(watchedVideos + 1);
+    if (watchedVideos % addPlaybackRate == 0) {
+      // Play add
+      let post = await loadRandomAdPost(identity);
+      setPrevVideoPrincipal(post.storageType.canister);
+      setIsVideo(false);
+      setPost(post);
     } else {
-      videoToLoad = videoToLoad + 1;
+      // TODO: Get a real random video call
+      let { post } = await getRandomNextVideoPost(identity, watchedVideos, 10);
+      history.push(`/video/${post.storageType.canister}`);
+      setIsVideo(true);
+      setPost(post);
     }
-    let { post, index } = await getRandomNextVideoPost(identity, videoToLoad, 10);
-    history.push(`/video/${post.storageType.canister}?id=${index}`);
-    setPost(post);
     // Null other attributes to cause a rerender
     setVideo(null);
     setProfile(null);
   };
 
+  const adWatched = () => {
+    // TODO: Fix this call
+    watchedAd(identity, post.storageType.canister, prevVideoPrincipal);
+    loadNext(true);
+  }
+
   return (
     <Layout title={'test'} marginTop={0}>
       <Box display="flex" flexWrap="nowrap" justifyContent="space-evenly" alignItems="stretch">
-        <VideoControls loadNext={loadNext} />
-        <VideoBox video={video} />
-        <MetaDataBox post={post} profile={profile} />
+        <VideoControls loadNext={loadNext} isVideo={isVideo} />
+        <VideoBox video={video} isVideo={isVideo} adWatched={adWatched} />
+        <MetaDataBox post={post} profile={profile} isVideo={isVideo} />
       </Box>
     </Layout>
   );
@@ -140,9 +153,10 @@ const WatchVideo = () => {
 
 interface VideoControlsProps {
   loadNext: (next: boolean) => void;
+  isVideo: Boolean;
 }
 
-const VideoControls = ({ loadNext }: VideoControlsProps) => {
+const VideoControls = ({ loadNext, isVideo }: VideoControlsProps) => {
   const classes = watchVideoStyles();
 
   return (
@@ -153,30 +167,44 @@ const VideoControls = ({ loadNext }: VideoControlsProps) => {
       alignItems="center"
       className={classes.arrowControlWrapper}
     >
-      <Button onClick={() => loadNext(false)}>
-        <ArrowDropUpIcon className={classes.arrowControl} />
-      </Button>
-      <Button onClick={() => loadNext(true)}>
-        <ArrowDropDownIcon className={classes.arrowControl} />
-      </Button>
+      { isVideo ? (
+        <>
+          <Button onClick={() => loadNext(false)}>
+            <ArrowDropUpIcon className={classes.arrowControl} />
+          </Button>
+          <Button onClick={() => loadNext(true)}>
+            <ArrowDropDownIcon className={classes.arrowControl} />
+          </Button>
+        </>
+      ) : <></>}
+
     </Box>
   );
 };
 
 interface VideoBoxProps {
   video?: string;
+  isVideo?: Boolean;
+  adWatched?: () => void;
 }
 
-const VideoBox = ({ video }: VideoBoxProps) => {
+const VideoBox = ({ video, isVideo, adWatched }: VideoBoxProps) => {
   const classes = watchVideoStyles();
   //let key = (post)? post.video_id: "";
   let content = video ? (
-    <video controls className={classes.videoPlayer}>
-      <source src={video} type="video/mp4" />
-    </video>
+    isVideo ? (
+      <video controls autoPlay className={classes.videoPlayer}>
+        <source src={video} type="video/mp4" />
+      </video>
+    ) : (<>
+          <video autoPlay muted className={classes.dimmedVideoPlayer} onEnded={adWatched}>
+            <source src={video} type="video/mp4" />
+          </video>
+        </>
+      )
   ) : (
-    <CircularProgress />
-  );
+      <CircularProgress />
+    );
 
   return (
     <Box
@@ -193,9 +221,10 @@ const VideoBox = ({ video }: VideoBoxProps) => {
 interface MetaDataBoxProperties {
   post?: VideoPost;
   profile?: LazyProfilePost;
+  isVideo?: Boolean;
 }
 
-const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
+const MetaDataBox = ({ post, profile, isVideo }: MetaDataBoxProperties) => {
   const classes = watchVideoStyles();
   const [viewNumber, setViewNumber] = useState(0);
   const [likeNumber, setLikeNumber] = useState(0);
@@ -207,27 +236,8 @@ const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
     }
   }, [post]);
 
-  return (
-    <Grid
-      container
-      direction="column"
-      justify="flex-start"
-      alignItems="center"
-      spacing={2}
-      className={classes.metadataBox}
-    >
-      <Grid item className={classes.fullWidth}>
-        <Box className={classes.titleBox}>
-          <Typography align="center" variant="h4">
-            <b>{post?.name}</b>
-          </Typography>
-          <Divider />
-          <Typography align="left" variant="body1">
-            {post?.description}
-          </Typography>
-        </Box>
-      </Grid>
-
+  let videoContent = (
+    <>
       <Grid item>
         <Box
           display="flex"
@@ -264,9 +274,9 @@ const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
         {/* <Button>Follow</Button> */}
       </Grid>
 
-      <Grid item>
+      {/* <Grid item>
         <OwnerBidSection profile={profile} />
-      </Grid>
+      </Grid> */}
 
       <Grid item>
         <Box display="flex" flexWrap="no-wrap" justifyContent="center">
@@ -286,6 +296,32 @@ const MetaDataBox = ({ post, profile }: MetaDataBoxProperties) => {
           </Box>
         </Box>
       </Grid>
+    </>
+  );
+
+  return (
+    <Grid
+      container
+      direction="column"
+      justify="flex-start"
+      alignItems="center"
+      spacing={2}
+      className={classes.metadataBox}
+    >
+      <Grid item className={classes.fullWidth}>
+        <Box className={classes.titleBox}>
+          <Typography align="center" variant="h4">
+            <b>{post?.name}</b>
+          </Typography>
+          <Divider />
+          <Typography align="left" variant="body1">
+            {post?.description}
+          </Typography>
+        </Box>
+      </Grid>
+
+      { isVideo ? videoContent : <></>}
+
     </Grid>
   );
 };
