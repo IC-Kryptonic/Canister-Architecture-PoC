@@ -136,7 +136,7 @@ const WatchVideo = () => {
 
   const adWatched = () => {
     // TODO: Fix this call
-    watchedAd(identity, post.owner, prevVideoPrincipal);
+    watchedAd(identity, post.storageType.canister, prevVideoPrincipal);
     loadNext(true);
   }
 
@@ -197,7 +197,7 @@ const VideoBox = ({ video, isVideo, adWatched }: VideoBoxProps) => {
         <source src={video} type="video/mp4" />
       </video>
     ) : (
-        <video autoPlay className={classes.videoPlayer} onEnded={adWatched}>
+        <video autoPlay muted className={classes.videoPlayer} onEnded={adWatched}>
           <source src={video} type="video/mp4" />
         </video>
       )
