@@ -171,7 +171,7 @@ In that case, run `rm -rf .dfx` in the internet-identity repository and then dep
 
 # Testing
 
-To run the testing script first make sure there is no replica already running and then just execute the script:
+To run the testing script just execute the script:
 
 ```
 
