@@ -5,7 +5,6 @@ use ic_cdk::export::Principal;
 use video_types::{VideoInfo, Chunk, Chunks, ChunkNum, StorageType, Comment, MAX_COMMENT_LENGTH};
 
 use std::collections::{HashSet, HashMap};
-use std::str::FromStr;
 
 pub type Comments = HashMap<Principal, String>;
 
@@ -85,19 +84,6 @@ pub async fn get_chunk(chunk_num: ChunkNum) -> Option<&'static Chunk>{
             Some(chunk)
         }
     });
-}
-
-///Set the owner contract of this video
-#[update]
-pub async fn set_owner(owner: Principal){
-    let meta_info = storage::get_mut::<MetaInformation>();
-
-    if meta_info.owner.is_none() && ic_cdk::caller() == Principal::from_str(TOKEN_MANAGER_STRING).expect("Could not derive Token Manager Principal from String"){
-        std::mem::replace(&mut meta_info.owner, Some(owner));
-        ic_cdk::print(format!("Owner set to {}", meta_info.owner.expect("Owner was not set, but should have been")));
-    } else{
-        ic_cdk::trap("Owner already set or caller is not token_manager");
-    }
 }
 
 #[query]

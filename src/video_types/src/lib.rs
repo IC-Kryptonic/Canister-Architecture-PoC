@@ -1,4 +1,5 @@
 use ic_cdk::export::candid::{{CandidType, Deserialize}, Principal};
+use serde::Serialize;
 use std::collections::{HashSet};
 
 pub type ChunkNum = usize;

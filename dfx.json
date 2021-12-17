@@ -11,14 +11,6 @@
       "candid": "src/video_backend/video_backend.did",
       "wasm": "target/wasm32-unknown-unknown/release/video_backend.wasm",
       "type": "custom"
-    },
-    "video_assets": {
-      "dependencies": ["video_backend"],
-      "frontend": {
-        "entrypoint": "src/video_assets/src/index.html"
-      },
-      "source": ["src/video_assets/src/assets", "dist/video_assets/"],
-      "type": "assets"
     }
   },
   "networks": {

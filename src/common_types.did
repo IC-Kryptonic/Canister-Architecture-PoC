@@ -2,8 +2,6 @@ type ChunkNum = nat64;
 type Chunk = blob;
 type Feed = vec principal;
 
-type Balance = nat;
-
 type Comment = record {
     "commenter": principal;
     "text": text;
@@ -29,18 +27,3 @@ type VideoInfo = record {
     "views": nat64;
     "likes": nat64;
 };
-
-type Profile = record {
-    "principal": principal;
-    "name": text;
-    "likes": vec principal;
-    "comments": vec principal;
-    "viewed": vec principal;
-};
-
-type AdMeta = record {
-    "principal": principal;
-    "allowance": Balance;
-    "amount_per_view": Balance;
-    "advertiser": principal;
-}

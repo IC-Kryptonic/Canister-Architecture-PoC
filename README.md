@@ -146,28 +146,15 @@ ic-cdk-optimizer target/wasm32-unknown-unknown/release/bucket.wasm -o target/was
 
 ```
 
-9. In Repository **video_nft**, deploy the front-end canisters and its dependencies:
+9. In Repository **video_nft**, deploy the backend canister:
 
 ```
 
-dfx deploy video_assets
+dfx deploy video_backend
 
 ```
 
-10. Access the application in your browser. Either:
-a) Access the deployed frontend canister (production-like):
-
-`http://ryjl3-tyaaa-aaaaa-aaaba-cai.localhost:8000/`
-(ryjl3-tyaaa-aaaaa-aaaba-cai is your frontend canister id)
-
-You can retrieve the canister id like this:
-`dfx canister id video_assets`
-
-b) Run a development server:
-`npm start`
-(will automatically open a browser tab for http://localhost:8080)
-
-11. Stop / Restart the application
+10. Stop / Restart the application
 
 ```
 
@@ -180,19 +167,6 @@ To restart the replica just use `dfx start` again or `dfx start --clean` to star
 If you start with a clean dfx replica, the deployment of the internet-identity canister might fail because it tries to upgrade a (now deleted) canister. 
 
 In that case, run `rm -rf .dfx` in the internet-identity repository and then deploy the canister.
-
-# Uploading Seed Videos
-
-To upload the seed video just run the seeder program
-
-```
-
-cargo run --release --bin=seeder
-
-```
-
-If you want to add additional videos to be seeded just put them in the seed_data folder before running the seeder.
-
 # Troubleshooting
 
 # Testing

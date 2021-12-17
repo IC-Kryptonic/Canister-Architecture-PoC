@@ -13,7 +13,6 @@ popd
 # Update current repository
 git checkout package-lock.json
 git pull
-npm install
 
 # Setup clean replica with identity
 dfx stop
@@ -31,7 +30,4 @@ dfx canister create video_canister
 dfx build video_canister
 ic-cdk-optimizer target/wasm32-unknown-unknown/release/video_canister.wasm -o target/wasm32-unknown-unknown/release/video_canister_opt.wasm
 
-dfx deploy video_assets
-
-# Seed data
-cargo run --bin=seeder --release
+dfx deploy video_backend
