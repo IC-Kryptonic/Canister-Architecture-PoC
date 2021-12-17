@@ -175,8 +175,6 @@ To run the testing script first make sure there is no replica already running an
 
 ```
 
-dfx stop
-
 ./test.sh
 
 ```
