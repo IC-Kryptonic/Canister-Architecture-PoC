@@ -35,8 +35,6 @@ impl Default for MetaInformation{
     }
 }
 
-const TOKEN_MANAGER_STRING: &'static str = env!("TOKEN_MANAGER_CANISTER_ID");
-
 #[init]
 pub async fn init(video_info: VideoInfo){
     let chunk_num = match video_info.storage_type{

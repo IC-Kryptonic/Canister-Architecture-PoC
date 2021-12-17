@@ -4,7 +4,4 @@ members = [
   "src/video_backend",
   "src/video_backend/video_canister",
   "src/canister_tests",
-  "src/ad_manager",
-  "src/profile_backend",
-  "src/seeder"
 ]
